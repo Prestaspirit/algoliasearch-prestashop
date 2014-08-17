@@ -30,6 +30,8 @@ if (!defined('_PS_VERSION_'))
 class Algolia extends Module
 {
 	protected $config_form = false;
+	protected $_warnings = false;
+	protected $algolia = false;
 
 	public function __construct()
 	{
@@ -46,6 +48,8 @@ class Algolia extends Module
 		$this->description = $this->l('My Algolia module.');
 
 		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+		
+		$this->init();
 	}
 
 	public function install()
@@ -65,6 +69,9 @@ class Algolia extends Module
 
 	public function hookDisplayHeader()
 	{
+		if ($this->algolia->isConfigurationValid() === false)
+			return false;
+	
 		require_once(dirname(__FILE__).'/classes/AlgoliaSearch.php');
 
 		$algolia_search = new AlgoliaSearch();
@@ -92,11 +99,24 @@ class Algolia extends Module
 	{
 		return true;
 	}
+	
+	public function init()
+	{
+		$this->_warnings = array();
+		
+		require_once(dirname(__FILE__).'/classes/AlgoliaLibrary.php');
+		$this->algolia = new AlgoliaLibrary();
+		
+		if ($this->algolia->isConfigurationValid() === false)
+			array_push($this->_warnings, $this->l('Invalid settings, please check your Algolia API keys.'));
+	}
 
 	public function getContent()
 	{
 		if (((bool)Tools::isSubmit('submitAlgolia')) == true)
 			$this->_postProcess();
+
+		$this->init();
 
 		require_once(dirname(__FILE__).'/classes/AlgoliaSync.php');
 		$algolia_sync = new AlgoliaSync();
@@ -104,6 +124,8 @@ class Algolia extends Module
 
 		$this->context->smarty->assign('module_dir', $this->_path);
 		$this->context->smarty->assign('settings_form', $this->renderForm());
+		$this->context->smarty->assign('warnings', $this->_warnings);
+		
 		return $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
 	}
 

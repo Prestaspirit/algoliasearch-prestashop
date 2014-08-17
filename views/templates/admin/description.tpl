@@ -33,8 +33,8 @@
 			<h4>{l s='Fast - Secure - Reliable' mod='algolia'}</h4>
 		</div>
 		<div class="col-xs-12 col-md-4 text-center">
-			<a href="#" onclick="javascript:return false;" class="btn btn-primary" id="create-account-btn">{l s='Create an account now!' mod='algolia'}</a><br />
-			{l s='Already have an account?' mod='algolia'}<a href="#" onclick="javascript:return false;"> {l s='Log in' mod='algolia'}</a>
+			<a href="https://www.algolia.com/users/sign_up" target="_blank" class="btn btn-primary" id="create-account-btn">{l s='Create an account now!' mod='algolia'}</a><br />
+			{l s='Already have an account?' mod='algolia'}<a href="https://www.algolia.com/users/sign_in" target="_blank"> {l s='Log in' mod='algolia'}</a>
 		</div>
 	</div>
 

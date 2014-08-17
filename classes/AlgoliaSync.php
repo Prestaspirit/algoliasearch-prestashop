@@ -1,12 +1,15 @@
 <?php
 
-require_once(dirname(__FILE__).'/AbstractAlgolia.php');
+require_once(dirname(__FILE__).'/AlgoliaLibrary.php');
 
-class AlgoliaSync extends AbstractAlgolia
+class AlgoliaSync extends AlgoliaLibrary
 {
 
     public function syncProducts()
     {
+    	if ($this->isConfigurationValid() == false)
+    		return false;
+    
         $iso_codes = array();
         $client = new \AlgoliaSearch\Client($this->application_id, $this->api_key);
 

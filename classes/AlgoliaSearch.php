@@ -1,8 +1,8 @@
 <?php
 
-require_once(dirname(__FILE__).'/AbstractAlgolia.php');
+require_once(dirname(__FILE__).'/AlgoliaLibrary.php');
 
-class AlgoliaSearch extends AbstractAlgolia
+class AlgoliaSearch extends AlgoliaLibrary
 {
     public function getIndexName()
     {

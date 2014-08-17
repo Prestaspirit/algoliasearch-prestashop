@@ -37,6 +37,10 @@
 	max-width: 900px;
 }
 
+#algolia-alerts {
+	margin-bottom: 20px;
+}
+
 .algolia-header .text-branded,
 .algolia-content .text-branded {
 	color: #00aff0;

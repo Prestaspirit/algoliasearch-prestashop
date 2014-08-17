@@ -1,6 +1,6 @@
 <?php
 
-abstract class AbstractAlgolia
+class AlgoliaLibrary
 {
     public $application_id = false;
     public $api_key = false;
@@ -15,6 +15,13 @@ abstract class AbstractAlgolia
         $this->search_only_api_key = Configuration::get('ALGOLIA_SEARCH_ONLY_API_KEY');
 
         $this->loadClasses();
+    }
+    
+    public function isConfigurationValid()
+    {
+	    $empty = empty($this->getApplicationID()) || empty($this->getAPIKey()) || empty($this->getSearchOnlyAPIKey());
+	    
+	    return $empty ? false : true;
     }
 
     public function getApplicationID()

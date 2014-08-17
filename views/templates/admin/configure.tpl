@@ -23,6 +23,16 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 
+{if $warnings|count > 0}
+	<div class="alert alert-warning" id="algolia-alerts">
+		<ul class="list-unstyled">
+			{foreach from=$warnings item=warning}
+				<li>{$warning}</li>
+			{/foreach}
+		</ul>
+	</div>
+{/if}
+
 <!-- Nav tabs -->
 <ul class="nav nav-tabs" role="tablist">
 	<li class="active"><a href="#template_1" role="tab" data-toggle="tab">Description</a></li>
