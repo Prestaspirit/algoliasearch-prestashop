@@ -92,6 +92,9 @@ class Algolia extends Module
 
 	public function hookDisplayTop()
 	{
+		if ($this->algolia->isConfigurationValid() === false)
+			return false;
+		
 		return $this->display(__FILE__, 'views/templates/hook/search.tpl');
 	}
 
@@ -100,8 +103,11 @@ class Algolia extends Module
 		return true;
 	}
 	
-	public function init()
+	protected function init()
 	{
+		if (Module::isEnabled($this->name) === false)
+			return false;
+		
 		$this->_warnings = array();
 		
 		require_once(dirname(__FILE__).'/classes/AlgoliaLibrary.php');
@@ -109,6 +115,27 @@ class Algolia extends Module
 		
 		if ($this->algolia->isConfigurationValid() === false)
 			array_push($this->_warnings, $this->l('Invalid settings, please check your Algolia API keys.'));
+		elseif (Configuration::get('ALGOLIA_POSITION_FIXED', false) == false)
+			$this->fixPosition();
+	}
+	
+	protected function fixPosition()
+	{
+		$blocksearch = Module::getInstanceByName('blocksearch');
+		
+		if ($blocksearch !== false)
+		{
+			$hook_top = Hook::getIdByName('displayTop');
+			$position = $blocksearch->getPosition($hook_top);
+
+			if (is_null($position) == false)
+			{
+				Module::disableByName('blocksearch');
+				$this->updatePosition($hook_top, 0, $position);
+			}
+		}
+		
+		Configuration::updateValue('ALGOLIA_POSITION_FIXED', true);
 	}
 
 	public function getContent()

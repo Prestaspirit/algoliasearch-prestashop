@@ -10,18 +10,16 @@ class AlgoliaLibrary
 
     public function __construct()
     {
-        $this->application_id = Configuration::get('ALGOLIA_APPLICATION_ID', null);
-        $this->api_key = Configuration::get('ALGOLIA_API_KEY', null);
-        $this->search_only_api_key = Configuration::get('ALGOLIA_SEARCH_ONLY_API_KEY', null);
+        $this->application_id = Configuration::get('ALGOLIA_APPLICATION_ID', false);
+        $this->api_key = Configuration::get('ALGOLIA_API_KEY', false);
+        $this->search_only_api_key = Configuration::get('ALGOLIA_SEARCH_ONLY_API_KEY', false);
 
         $this->loadClasses();
     }
     
     public function isConfigurationValid()
     {
-	    $invalid = is_null($this->getApplicationID()) || is_null($this->getAPIKey()) || is_null($this->getSearchOnlyAPIKey());
-	    
-	    return $invalid ? false : true;
+	    return $this->getApplicationID() && $this->getAPIKey() && $this->getSearchOnlyAPIKey();
     }
 
     public function getApplicationID()
