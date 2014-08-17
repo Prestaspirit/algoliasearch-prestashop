@@ -4,7 +4,7 @@ $(document).ready(function() {
 
 	var template = Hogan.compile('<div class="hit">' +
 	  '<div class="name">' +
-	  	'<img src="//{{{ image_link }}}" class="algolia-search-image" />' +
+	  	'<img src="//{{{ image_link }}}" class="algolia-search-image img-circle" />' +
 	    '{{{ _highlightResult.name.value }}} ' +
 	    '({{{ _highlightResult.category.value }}})' +
 	  '</div>' +
