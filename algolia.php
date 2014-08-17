@@ -48,7 +48,7 @@ class Algolia extends Module
 		$this->description = $this->l('My Algolia module.');
 
 		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
-		
+
 		$this->init();
 	}
 
@@ -71,7 +71,7 @@ class Algolia extends Module
 	{
 		if ($this->algolia->isConfigurationValid() === false)
 			return false;
-	
+
 		require_once(dirname(__FILE__).'/classes/AlgoliaSearch.php');
 
 		$algolia_search = new AlgoliaSearch();
@@ -84,7 +84,7 @@ class Algolia extends Module
 
 		$this->context->controller->addJS('//twitter.github.com/hogan.js/builds/3.0.1/hogan-3.0.1.js');
 		$this->context->controller->addJS($this->_path.'/js/typeahead.bundle.js');
-		
+
 		$this->context->controller->addJS('//rawgithub.com/algolia/algoliasearch-client-js/master/dist/algoliasearch.min.js');
 		$this->context->controller->addJS($this->_path.'/js/algolia.js');
 		$this->context->controller->addCSS($this->_path.'/css/algolia.css');
@@ -94,7 +94,7 @@ class Algolia extends Module
 	{
 		if ($this->algolia->isConfigurationValid() === false)
 			return false;
-		
+
 		return $this->display(__FILE__, 'views/templates/hook/search.tpl');
 	}
 
@@ -102,27 +102,27 @@ class Algolia extends Module
 	{
 		return true;
 	}
-	
+
 	protected function init()
 	{
 		if (Module::isEnabled($this->name) === false)
 			return false;
-		
+
 		$this->_warnings = array();
-		
+
 		require_once(dirname(__FILE__).'/classes/AlgoliaLibrary.php');
 		$this->algolia = new AlgoliaLibrary();
-		
+
 		if ($this->algolia->isConfigurationValid() === false)
 			array_push($this->_warnings, $this->l('Invalid settings, please check your Algolia API keys.'));
 		elseif (Configuration::get('ALGOLIA_POSITION_FIXED', false) == false)
 			$this->fixPosition();
 	}
-	
+
 	protected function fixPosition()
 	{
 		$blocksearch = Module::getInstanceByName('blocksearch');
-		
+
 		if ($blocksearch !== false)
 		{
 			$hook_top = Hook::getIdByName('displayTop');
@@ -134,7 +134,7 @@ class Algolia extends Module
 				$this->updatePosition($hook_top, 0, $position);
 			}
 		}
-		
+
 		Configuration::updateValue('ALGOLIA_POSITION_FIXED', true);
 	}
 
@@ -148,20 +148,20 @@ class Algolia extends Module
 		$this->init();
 
 		$this->context->smarty->assign('module_dir', $this->_path);
-		
+
 		$settings_form = $this->getSettingsForm();
 		$settings_form_values = $this->getSettingsFormValues();
 		$this->context->smarty->assign('settings_form', $this->renderForm('settings', $settings_form, $settings_form_values));
-		
+
 		$sync_form = $this->getSyncForm();
 		$sync_form_values = $this->getSyncFormValues();
 		$this->context->smarty->assign('sync_form', $this->renderForm('sync', $sync_form, $sync_form_values));
-		
+
 		$this->context->smarty->assign('warnings', $this->_warnings);
-		
+
 		return $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
 	}
-	
+
 	protected function syncProducts()
 	{
 		require_once(dirname(__FILE__).'/classes/AlgoliaSync.php');

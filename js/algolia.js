@@ -3,19 +3,18 @@ $(document).ready(function() {
 	var index = algolia.initIndex(algolia_index_name);
 
 	var template = Hogan.compile('<div class="hit">' +
-	  '<div class="name">' +
+	  '<a href="{{{ link }}}" class="algolia-search-result">' +
 	  	'<img src="//{{{ image_link }}}" class="algolia-search-image img-circle" />' +
 	    '{{{ _highlightResult.name.value }}} ' +
 	    '({{{ _highlightResult.category.value }}})' +
-	  '</div>' +
+	  '</a>' +
 	  '{{#matchingAttributes}}' +
 	    '<div class="attribute"><b>{{ attribute }}</b>: {{{ value }}}</div>' +
 	  '{{/matchingAttributes}}' +
 	  '</div>');
 
 	$('#algolia-search-query-top').typeahead(null, {
-	  source: index.ttAdapter({ hitsPerPage: 5 }),
-	  displayKey: 'email',
+	  source: index.ttAdapter({ hitsPerPage: 8 }),
 	  templates: {
 	    suggestion: function(hit) {
 	      hit.matchingAttributes = [];

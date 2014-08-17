@@ -1,4 +1,5 @@
 #algolia-search-query-top { margin-top: 50px; }
+.algolia-search-result { display: block; }
 .algolia-search-image { width: 32px; height: 32px; margin-right: 8px; }
 
 .twitter-typeahead { width: 100%; }

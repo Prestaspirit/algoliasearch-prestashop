@@ -14,7 +14,7 @@ class AlgoliaSync extends AlgoliaLibrary
     {
     	if ($this->isConfigurationValid() == false)
     		return false;
-    
+
         $iso_codes = array();
         $client = new \AlgoliaSearch\Client($this->application_id, $this->api_key);
 
@@ -24,7 +24,7 @@ class AlgoliaSync extends AlgoliaLibrary
             $index = $client->initIndex($index_name);
 
             $products = $this->addProductsToIndex($index, $language);
-            
+
             $index->setSettings($this->index_settings);
             $index->saveObjects($products);
         }
@@ -41,9 +41,9 @@ class AlgoliaSync extends AlgoliaLibrary
             {
             	$id_lang = $language['id_lang'];
             	$id_product = $product['id_product'];
-            	
+
                 $product = (array) $this->formatProduct($id_product, $id_lang);
-                
+
 
                 foreach ($product as $key => $value)
                     if (is_array($value))
@@ -55,17 +55,24 @@ class AlgoliaSync extends AlgoliaLibrary
 
         return $products;
     }
-    
+
     protected function formatProduct($id_product, $id_lang)
     {
     	$link = new Link();
     	$product = new Product($id_product, true, $id_lang);
 	    $category = new Category($product->id_category_default, $id_lang);
-	    
+
         $product->objectID = $product->id;
 	    $product->category = $category->name;
-	    $product->image_link = $link->getImageLink($product->link_rewrite, $product->id);
-	    
+		$product->link = $link->getProductLink($product->id);
+
+
+
+		$cover = Image::getCover($product->id);
+		$type = ImageType::getFormatedName('small');
+
+	    $product->image_link = $link->getImageLink($product->link_rewrite, $cover['id_image'], $type);
+
 	    return $product;
     }
 }
