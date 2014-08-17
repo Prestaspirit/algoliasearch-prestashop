@@ -2,6 +2,11 @@
 	margin-top: 50px;
 }
 
+.algolia-search-image {
+	width: 20px;
+	height: 20px;
+}
+
 .typeahead, .tt-query, .tt-hint { padding: 12px 12px; width: 320px; border: 2px solid #ccc; outline: none; margin: 0px; }
 .typeahead { background-color: #fff; }
 .typeahead:focus { border: 2px solid #0097cf; }
