@@ -6,6 +6,7 @@ class AlgoliaSearch extends AbstractAlgolia
 {
     public function getIndexName()
     {
-        return $this->index_name;
+        $iso_code = Context::getContext()->language->iso_code;
+        return $this->index_name.'_'.$iso_code;
     }
 }

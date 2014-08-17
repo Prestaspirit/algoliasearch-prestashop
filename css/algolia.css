@@ -1,15 +1,18 @@
 #algolia_search_block_top {
-    margin-top: 50px;
+	margin-top: 50px;
 }
 
-#algolia_search_query_top {
-    padding: 11px 11px 12px 11px;
-}
-
-#algolia_search_query_top + .button {
-    border: none;
-    color: white;
-    text-align: center;
-    background: #333333;
-    padding: 13px 13px 14px 13px;
-}
+.typeahead, .tt-query, .tt-hint { padding: 12px 12px; width: 320px; border: 2px solid #ccc; outline: none; margin: 0px; }
+.typeahead { background-color: #fff; }
+.typeahead:focus { border: 2px solid #0097cf; }
+.tt-query { -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); }
+.tt-hint { color: #999 }
+.tt-dropdown-menu { width: 100%; padding: 8px 0; background-color: #fff; border: 1px solid rgba(0, 0, 0, 0.2); border-top: 0px; -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2); -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2); box-shadow: 0 5px 10px rgba(0,0,0,.2); }
+.tt-suggestion { text-align: left; padding: 3px 20px; line-height: 24px; }
+.tt-suggestion.tt-cursor { color: #fff; background-color: #0097cf; }
+.tt-suggestion p { margin: 0; }
+.tt-suggestion a { color: #000; text-decoration: none; }
+.tt-suggestion em { font-weight: bold; font-style: normal; }
+.tt-suggestion .attribute { margin-left: 10px; }
+.tt-suggestion .attribute b { color: #666; }
+.tt-suggestion.tt-cursor .attribute b { color: white; }
