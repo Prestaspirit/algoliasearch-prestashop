@@ -36,11 +36,13 @@
 <!-- Nav tabs -->
 <ul class="nav nav-tabs" role="tablist">
 	<li class="active"><a href="#template_1" role="tab" data-toggle="tab">Description</a></li>
-	<li><a href="#template_2" role="tab" data-toggle="tab">Settings</a></li>
+	<li><a href="#settings_template" role="tab" data-toggle="tab">Settings</a></li>
+	<li><a href="#sync_template" role="tab" data-toggle="tab">Sync</a></li>
 </ul>
 
 <!-- Tab panes -->
 <div class="tab-content">
 	<div class="tab-pane active" id="template_1">{include file='./description.tpl'}</div>
-	<div class="tab-pane" id="template_2">{$settings_form}</div>
+	<div class="tab-pane" id="settings_template">{$settings_form}</div>
+	<div class="tab-pane" id="sync_template">{$sync_form}</div>
 </div>

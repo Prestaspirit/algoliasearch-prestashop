@@ -113,23 +113,36 @@ class Algolia extends Module
 
 	public function getContent()
 	{
-		if (((bool)Tools::isSubmit('submitAlgolia')) == true)
+		if (((bool)Tools::isSubmit('submitAlgoliaSettings')) == true)
 			$this->_postProcess();
+		elseif (((bool)Tools::isSubmit('submitAlgoliaSync')) == true)
+			$this->syncProducts();
 
 		$this->init();
 
-		require_once(dirname(__FILE__).'/classes/AlgoliaSync.php');
-		$algolia_sync = new AlgoliaSync();
-		$algolia_sync->syncProducts();
-
 		$this->context->smarty->assign('module_dir', $this->_path);
-		$this->context->smarty->assign('settings_form', $this->renderForm());
+		
+		$settings_form = $this->getSettingsForm();
+		$settings_form_values = $this->getSettingsFormValues();
+		$this->context->smarty->assign('settings_form', $this->renderForm('settings', $settings_form, $settings_form_values));
+		
+		$sync_form = $this->getSyncForm();
+		$sync_form_values = $this->getSyncFormValues();
+		$this->context->smarty->assign('sync_form', $this->renderForm('sync', $sync_form, $sync_form_values));
+		
 		$this->context->smarty->assign('warnings', $this->_warnings);
 		
 		return $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
 	}
+	
+	protected function syncProducts()
+	{
+		require_once(dirname(__FILE__).'/classes/AlgoliaSync.php');
+		$algolia_sync = new AlgoliaSync();
+		$algolia_sync->syncProducts();
+	}
 
-	protected function renderForm()
+	protected function renderForm($name, $form, $values)
 	{
 		$helper = new HelperForm();
 
@@ -140,21 +153,21 @@ class Algolia extends Module
 		$helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
 
 		$helper->identifier = $this->identifier;
-		$helper->submit_action = 'submitAlgolia';
+		$helper->submit_action = 'submitAlgolia'.ucfirst($name);
 		$helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
 			.'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
 		$helper->token = Tools::getAdminTokenLite('AdminModules');
 
 		$helper->tpl_vars = array(
-			'fields_value' => $this->getConfigFormValues(),
+			'fields_value' => $values,
 			'languages' => $this->context->controller->getLanguages(),
 			'id_language' => $this->context->language->id,
 		);
 
-		return $helper->generateForm(array($this->getConfigForm()));
+		return $helper->generateForm(array($form));
 	}
 
-	protected function getConfigForm()
+	protected function getSettingsForm()
 	{
 		return array(
 			'form' => array(
@@ -185,7 +198,25 @@ class Algolia extends Module
 		);
 	}
 
-	protected function getConfigFormValues()
+	protected function getSyncForm()
+	{
+		return array(
+			'form' => array(
+				'input' => array(
+					array(
+						'type' => 'free',
+						'name' => 'ALGOLIA_SYNC_DESC',
+					),
+				),
+				'submit' => array(
+					'icon' => 'icon-refresh',
+					'title' => $this->l('Sync'),
+				),
+			),
+		);
+	}
+
+	protected function getSettingsFormValues()
 	{
 		return array(
 			'ALGOLIA_APPLICATION_ID' => Configuration::get('ALGOLIA_APPLICATION_ID', null),
@@ -194,9 +225,16 @@ class Algolia extends Module
 		);
 	}
 
+	protected function getSyncFormValues()
+	{
+		return array(
+			'ALGOLIA_SYNC_DESC' => '<p>Click on the "Sync" button to update your indexes on Algolia</p>'
+		);
+	}
+
 	protected function _postProcess()
 	{
-		$form_values = $this->getConfigFormValues();
+		$form_values = $this->getSettingsFormValues();
 
 		foreach (array_keys($form_values) as $key)
 			Configuration::updateValue($key, Tools::getValue($key));
