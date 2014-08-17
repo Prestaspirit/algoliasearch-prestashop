@@ -58,11 +58,13 @@ class AlgoliaSync extends AlgoliaLibrary
     
     protected function formatProduct($id_product, $id_lang)
     {
+    	$link = new Link();
     	$product = new Product($id_product, true, $id_lang);
 	    $category = new Category($product->id_category_default, $id_lang);
 	    
         $product->objectID = $product->id;
 	    $product->category = $category->name;
+	    $product->image_link = $link->getImageLink($product->link_rewrite, $product->id);
 	    
 	    return $product;
     }
