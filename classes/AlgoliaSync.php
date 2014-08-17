@@ -5,6 +5,11 @@ require_once(dirname(__FILE__).'/AlgoliaLibrary.php');
 class AlgoliaSync extends AlgoliaLibrary
 {
 
+	protected $index_settings = array(
+		"attributesToIndex" => array("name", "category"),
+		"customRanking" => array("asc(base_price)", 'desc(date_upd)')
+	);
+
     public function syncProducts()
     {
     	if ($this->isConfigurationValid() == false)
@@ -19,6 +24,8 @@ class AlgoliaSync extends AlgoliaLibrary
             $index = $client->initIndex($index_name);
 
             $products = $this->addProductsToIndex($index, $language);
+            
+            $index->setSettings($this->index_settings);
             $index->saveObjects($products);
         }
     }
@@ -32,8 +39,11 @@ class AlgoliaSync extends AlgoliaLibrary
         {
             foreach ($id_products as &$product)
             {
-                $product = (array) new Product($product['id_product'], true, $language['id_lang']);
-                $product['objectID'] = $product['id'];
+            	$id_lang = $language['id_lang'];
+            	$id_product = $product['id_product'];
+            	
+                $product = (array) $this->formatProduct($id_product, $id_lang);
+                
 
                 foreach ($product as $key => $value)
                     if (is_array($value))
@@ -44,5 +54,16 @@ class AlgoliaSync extends AlgoliaLibrary
         }
 
         return $products;
+    }
+    
+    protected function formatProduct($id_product, $id_lang)
+    {
+    	$product = new Product($id_product, true, $id_lang);
+	    $category = new Category($product->id_category_default, $id_lang);
+	    
+        $product->objectID = $product->id;
+	    $product->category = $category->name;
+	    
+	    return $product;
     }
 }

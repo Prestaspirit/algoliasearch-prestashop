@@ -209,7 +209,7 @@ class Algolia extends Module
 					),
 				),
 				'submit' => array(
-					'icon' => 'icon-refresh',
+					'icon' => 'process-icon-refresh',
 					'title' => $this->l('Sync'),
 				),
 			),
