@@ -88,13 +88,16 @@ class Algolia extends Module
 		require_once(dirname(__FILE__).'/classes/AlgoliaSearch.php');
 
 		$algolia_search = new AlgoliaSearch();
+		$search_url = Context::getContext()->link->getModuleLink('algolia', 'search', $params = array('q' => ''));
 
 		Media::addJsDef(array(
-			'algolia_search_url' => Context::getContext()->link->getModuleLink('algolia', 'search', $params = array('q' => '')),
 			'algolia_application_id' => $algolia_search->getApplicationID(),
 			'algolia_search_only_api_key' => $algolia_search->getSearchOnlyAPIKey(),
 			'algolia_index_name' => $algolia_search->getIndexName(),
+			'algolia_search_url' => $search_url,
 		));
+		
+		$this->context->smarty->assign('algolia_search_url', $search_url);
 
 		$this->context->controller->addJS($this->_path.'/js/typeahead.bundle.js');
 		$this->context->controller->addJS($this->_path.'/js/hogan-3.0.1.js');
