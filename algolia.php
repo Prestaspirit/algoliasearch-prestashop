@@ -82,10 +82,9 @@ class Algolia extends Module
 			'algolia_index_name' => $algolia_search->getIndexName(),
 		));
 
-		$this->context->controller->addJS('//twitter.github.com/hogan.js/builds/3.0.1/hogan-3.0.1.js');
 		$this->context->controller->addJS($this->_path.'/js/typeahead.bundle.js');
-
-		$this->context->controller->addJS('//rawgithub.com/algolia/algoliasearch-client-js/master/dist/algoliasearch.min.js');
+		$this->context->controller->addJS($this->_path.'/js/hogan-3.0.1.js');
+		$this->context->controller->addJS($this->_path.'/js/algoliasearch.min.js');
 		$this->context->controller->addJS($this->_path.'/js/algolia.js');
 		$this->context->controller->addCSS($this->_path.'/css/algolia.css');
 	}
