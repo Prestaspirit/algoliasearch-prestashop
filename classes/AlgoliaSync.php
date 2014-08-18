@@ -7,6 +7,7 @@ class AlgoliaSync extends AlgoliaLibrary
 
 	protected $index_settings = array(
 		"attributesToIndex" => array("name", "category"),
+		"attributesForFaceting" => array("available_now", "category"),
 		"customRanking" => array("asc(base_price)", 'desc(date_upd)')
 	);
 
@@ -64,14 +65,12 @@ class AlgoliaSync extends AlgoliaLibrary
 
         $product->objectID = $product->id;
 	    $product->category = $category->name;
-		$product->link = $link->getProductLink($product->id);
+		$product->url = $link->getProductLink($product->id);
 
-
-
+		/* Cover */
 		$cover = Image::getCover($product->id);
-		$type = ImageType::getFormatedName('small');
-
-	    $product->image_link = $link->getImageLink($product->link_rewrite, $cover['id_image'], $type);
+	    $product->image_link_small = $link->getImageLink($product->link_rewrite, $cover['id_image'], ImageType::getFormatedName('small'));
+		$product->image_link_large = $link->getImageLink($product->link_rewrite, $cover['id_image'], ImageType::getFormatedName('large'));
 
 	    return $product;
     }

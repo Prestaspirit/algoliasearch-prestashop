@@ -29,6 +29,9 @@ if (!defined('_PS_VERSION_'))
 
 class Algolia extends Module
 {
+	const Facet_Search = true;
+	const Simple_Search = false;
+
 	protected $config_form = false;
 	protected $_warnings = false;
 	protected $algolia = false;
@@ -54,11 +57,21 @@ class Algolia extends Module
 
 	public function install()
 	{
+		Configuration::updateValue('ALGOLIA_SEARCH_TYPE', Algolia::Facet_Search);
+
 		return parent::install() &&
 			$this->registerHook('displayTop') &&
 			$this->registerHook('displayHeader') &&
 			$this->registerHook('displayBackOfficeHeader') &&
 			$this->registerHook('actionCronJob');
+	}
+
+	public function uninstall()
+	{
+		Configuration::deleteByName('ALGOLIA_POSITION_FIXED');
+		Module::enableByName('blocksearch');
+
+		return parent::uninstall();
 	}
 
 	public function hookDisplayBackOfficeHeader()
@@ -77,6 +90,7 @@ class Algolia extends Module
 		$algolia_search = new AlgoliaSearch();
 
 		Media::addJsDef(array(
+			'algolia_search_url' => Context::getContext()->link->getModuleLink('algolia', 'search', $params = array('q' => '')),
 			'algolia_application_id' => $algolia_search->getApplicationID(),
 			'algolia_search_only_api_key' => $algolia_search->getSearchOnlyAPIKey(),
 			'algolia_index_name' => $algolia_search->getIndexName(),
@@ -86,8 +100,12 @@ class Algolia extends Module
 		$this->context->controller->addJS($this->_path.'/js/typeahead.bundle.js');
 
 		$this->context->controller->addJS('//rawgithub.com/algolia/algoliasearch-client-js/master/dist/algoliasearch.min.js');
-		$this->context->controller->addJS($this->_path.'/js/algolia.js');
 		$this->context->controller->addCSS($this->_path.'/css/algolia.css');
+
+		if (Configuration::get('ALGOLIA_SEARCH_TYPE') == Algolia::Facet_Search)
+			$this->context->controller->addJS($this->_path.'/js/algolia_facet_search.js');
+		elseif (Configuration::get('ALGOLIA_SEARCH_TYPE') == Algolia::Simple_Search)
+			$this->context->controller->addJS($this->_path.'/js/algolia_simple_search.js');
 	}
 
 	public function hookDisplayTop()
@@ -108,6 +126,9 @@ class Algolia extends Module
 		if (Module::isEnabled($this->name) === false)
 			return false;
 
+		if (function_exists('curl_init') == false)
+			$this->warning = $this->l('To be able to use this module, please activate cURL (PHP extension).');
+
 		$this->_warnings = array();
 
 		require_once(dirname(__FILE__).'/classes/AlgoliaLibrary.php');
@@ -116,11 +137,12 @@ class Algolia extends Module
 		if ($this->algolia->isConfigurationValid() === false)
 			array_push($this->_warnings, $this->l('Invalid settings, please check your Algolia API keys.'));
 		elseif (Configuration::get('ALGOLIA_POSITION_FIXED', false) == false)
-			$this->fixPosition();
+			$this->setPosition();
 	}
 
-	protected function fixPosition()
+	protected function setPosition()
 	{
+		$position = 0;
 		$blocksearch = Module::getInstanceByName('blocksearch');
 
 		if ($blocksearch !== false)
@@ -135,7 +157,7 @@ class Algolia extends Module
 			}
 		}
 
-		Configuration::updateValue('ALGOLIA_POSITION_FIXED', true);
+		Configuration::updateValue('ALGOLIA_POSITION_FIXED', $position);
 	}
 
 	public function getContent()
@@ -164,9 +186,16 @@ class Algolia extends Module
 
 	protected function syncProducts()
 	{
-		require_once(dirname(__FILE__).'/classes/AlgoliaSync.php');
-		$algolia_sync = new AlgoliaSync();
-		$algolia_sync->syncProducts();
+		try
+		{
+			require_once(dirname(__FILE__).'/classes/AlgoliaSync.php');
+			$algolia_sync = new AlgoliaSync();
+			$algolia_sync->syncProducts();
+		}
+		catch (Exception $exception)
+		{
+			array_push($this->_warnings, $exception->getMessage());
+		}
 	}
 
 	protected function renderForm($name, $form, $values)
@@ -217,6 +246,24 @@ class Algolia extends Module
 						'name' => 'ALGOLIA_SEARCH_ONLY_API_KEY',
 						'label' => $this->l('Search-Only API Key'),
 					),
+					array(
+						'type' => 'switch',
+						'name' => 'ALGOLIA_SEARCH_TYPE',
+						'label' => $this->l('Enable faceting'),
+						'is_bool' => true,
+						'values' => array(
+							array(
+								'id' => 'faceting_on',
+								'value' => (int)Algolia::Facet_Search,
+								'label' => $this->l('Enabled')
+							),
+							array(
+								'id' => 'faceting_off',
+								'value' => (int)Algolia::Simple_Search,
+								'label' => $this->l('Disabled')
+							)
+						),
+					),
 				),
 				'submit' => array(
 					'title' => $this->l('Save'),
@@ -249,6 +296,7 @@ class Algolia extends Module
 			'ALGOLIA_APPLICATION_ID' => Configuration::get('ALGOLIA_APPLICATION_ID', null),
 			'ALGOLIA_API_KEY' => Configuration::get('ALGOLIA_API_KEY', null),
 			'ALGOLIA_SEARCH_ONLY_API_KEY' => Configuration::get('ALGOLIA_SEARCH_ONLY_API_KEY', null),
+			'ALGOLIA_SEARCH_TYPE' => (int)Configuration::get('ALGOLIA_SEARCH_TYPE'),
 		);
 	}
 

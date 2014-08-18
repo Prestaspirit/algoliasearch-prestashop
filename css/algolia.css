@@ -1,4 +1,4 @@
-#algolia-search-query-top { margin-top: 50px; }
+#algolia { margin-top: 50px; }
 .algolia-search-result { display: block; }
 .algolia-search-image { width: 32px; height: 32px; margin-right: 8px; }
 
@@ -17,3 +17,10 @@
 .tt-suggestion .attribute { margin-left: 10px; }
 .tt-suggestion .attribute b { color: #666; }
 .tt-suggestion.tt-cursor .attribute b { color: white; }
+
+#hits { padding:5px 0px; }
+.hit { cursor: pointer; padding: 5px 0; }
+.hit:hover { background-color: #e9f0ff; }
+em { font-style: normal; font-weight: bold; }
+.grey { display: inline; color: #888; }
+li.refined { font-weight: bold; }
