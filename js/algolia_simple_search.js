@@ -17,7 +17,6 @@ $(document).ready(function() {
 		source: index.ttAdapter({ hitsPerPage: 8 }),
 		templates: {
 			suggestion: function(hit) {
-				console.log(hit);
 				hit.matchingAttributes = [];
 				for (var attribute in hit._highlightResult) {
 					if (attribute === 'name' || attribute === 'category') {
