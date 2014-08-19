@@ -1,11 +1,16 @@
 $(document).ready(function() {
 	var initial_dom = $("#columns");
 	var refinements = {};
-	var currentURL = document.URL;
+	var currentURL = window.location.href;
 	var $inputfield = $("#algolia-search");
 	var algolia = new AlgoliaSearch(algolia_application_id, algolia_search_only_api_key);
 	var index = algolia.initIndex(algolia_index_name);
-
+	
+	var buildUrl = function(base, key, value) {
+		var sep = (base.indexOf('?') > -1) ? '&' : '?';
+		return base + sep + key + '=' + value;
+	}
+	
 	if ($inputfield.val().length > 0) {
 		search();
 	}
@@ -26,7 +31,7 @@ $(document).ready(function() {
 		var url = currentURL;
 		if ($inputfield.val().length > 0) {
 			showHits();
-			url = algolia_search_url + encodeURI($inputfield.val());
+			url = buildUrl(algolia_search_url, 'q', encodeURI($inputfield.val()));
 		} else if ($('#algolia-hits').length > 0) {
 			$('#algolia-hits').remove();
 			initial_dom.show();

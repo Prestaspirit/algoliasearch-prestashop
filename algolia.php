@@ -88,7 +88,7 @@ class Algolia extends Module
 		require_once(dirname(__FILE__).'/classes/AlgoliaSearch.php');
 
 		$algolia_search = new AlgoliaSearch();
-		$search_url = Context::getContext()->link->getModuleLink('algolia', 'search', $params = array('q' => ''));
+		$search_url = Context::getContext()->link->getModuleLink('algolia', 'search');
 
 		Media::addJsDef(array(
 			'algolia_application_id' => $algolia_search->getApplicationID(),
