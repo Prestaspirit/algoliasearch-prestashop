@@ -87,8 +87,12 @@ class Algolia extends Module
 
 		require_once(dirname(__FILE__).'/classes/AlgoliaSearch.php');
 
-		$algolia_search = new AlgoliaSearch();
+		/* Generate Algolia front controller link for search form */
 		$search_url = Context::getContext()->link->getModuleLink('algolia', 'search');
+		$this->context->smarty->assign('algolia_search_url', $search_url);
+
+		/* Add JS values for Algolia scripts */
+		$algolia_search = new AlgoliaSearch();
 
 		Media::addJsDef(array(
 			'algolia_application_id' => $algolia_search->getApplicationID(),
@@ -96,14 +100,17 @@ class Algolia extends Module
 			'algolia_index_name' => $algolia_search->getIndexName(),
 			'algolia_search_url' => $search_url,
 		));
-		
-		$this->context->smarty->assign('algolia_search_url', $search_url);
 
+		/* Add CSS & JS files required for Algolia search */
 		$this->context->controller->addJS($this->_path.'/js/typeahead.bundle.js');
 		$this->context->controller->addJS($this->_path.'/js/hogan-3.0.1.js');
 		$this->context->controller->addJS($this->_path.'/js/algoliasearch.min.js');
 		$this->context->controller->addCSS($this->_path.'/css/algolia.css');
 
+		/**
+		 * Load the appropriate JS search script
+		 * Depending on the search method
+		 */
 		if (Configuration::get('ALGOLIA_SEARCH_TYPE') == Algolia::Facet_Search)
 			$this->context->controller->addJS($this->_path.'/js/algolia_facet_search.js');
 		elseif (Configuration::get('ALGOLIA_SEARCH_TYPE') == Algolia::Simple_Search)
@@ -112,32 +119,37 @@ class Algolia extends Module
 
 	public function hookDisplayTop()
 	{
+		/**
+		 * If the configuration is not valid
+		 * No need to load anything
+		 */
 		if ($this->algolia->isConfigurationValid() === false)
 			return false;
 
 		return $this->display(__FILE__, 'views/templates/hook/search.tpl');
 	}
 
-	public function hookActionCronJob()
-	{
-		return true;
-	}
-
 	protected function init()
 	{
+		/* If the module is not active */
 		if (Module::isEnabled($this->name) === false)
 			return false;
 
+		/* Add a default warning message if cURL extension is not available */
 		if (function_exists('curl_init') == false)
 			$this->warning = $this->l('To be able to use this module, please activate cURL (PHP extension).');
 
+		/* Init warning array to be displayed at the top of the configuration form */
 		$this->_warnings = array();
 
+		/* Instantiate Algolia library to check configuration */
 		require_once(dirname(__FILE__).'/classes/AlgoliaLibrary.php');
 		$this->algolia = new AlgoliaLibrary();
 
+		/* Check Algolia configuration */
 		if ($this->algolia->isConfigurationValid() === false)
 			array_push($this->_warnings, $this->l('Invalid settings, please check your Algolia API keys.'));
+		/* Update the position of the search field */
 		elseif (Configuration::get('ALGOLIA_POSITION_FIXED', false) == false)
 			$this->setPosition();
 	}
@@ -147,6 +159,10 @@ class Algolia extends Module
 		$position = 0;
 		$blocksearch = Module::getInstanceByName('blocksearch');
 
+		/**
+		 * If 'blocksearch' is not installed the module requires
+		 * A manual position update
+		 */
 		if ($blocksearch !== false)
 		{
 			$hook_top = Hook::getIdByName('displayTop');
@@ -154,38 +170,45 @@ class Algolia extends Module
 
 			if (is_null($position) == false)
 			{
+				/* Disable the default 'blocksearch' module */
 				Module::disableByName('blocksearch');
 				$this->updatePosition($hook_top, 0, $position);
 			}
 		}
 
+		/* Register configuration key so we know the position has been updated */
 		Configuration::updateValue('ALGOLIA_POSITION_FIXED', $position);
 	}
 
 	public function getContent()
 	{
+		/* Treat posted data via configuration forms */
 		if (((bool)Tools::isSubmit('submitAlgoliaSettings')) == true)
 			$this->_postProcess();
 		elseif (((bool)Tools::isSubmit('submitAlgoliaSync')) == true)
 			$this->syncProducts();
 
+		/* Reload configuration with newly posted values */
 		$this->init();
 
+		/* Assign default values for template */
 		$this->context->smarty->assign('module_dir', $this->_path);
+		$this->context->smarty->assign('warnings', $this->_warnings);
 
+		/* Generate settings form */
 		$settings_form = $this->getSettingsForm();
 		$settings_form_values = $this->getSettingsFormValues();
 		$this->context->smarty->assign('settings_form', $this->renderForm('settings', $settings_form, $settings_form_values));
 
+		/* Generate sync form */
 		$sync_form = $this->getSyncForm();
 		$sync_form_values = $this->getSyncFormValues();
 		$this->context->smarty->assign('sync_form', $this->renderForm('sync', $sync_form, $sync_form_values));
 
-		$this->context->smarty->assign('warnings', $this->_warnings);
-
 		return $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
 	}
 
+	/* Init products synchronisation */
 	protected function syncProducts()
 	{
 		try
@@ -200,6 +223,7 @@ class Algolia extends Module
 		}
 	}
 
+	/* Generic method to render configuration forms */
 	protected function renderForm($name, $form, $values)
 	{
 		$helper = new HelperForm();
@@ -225,6 +249,7 @@ class Algolia extends Module
 		return $helper->generateForm(array($form));
 	}
 
+	/* Generate settings form structure */
 	protected function getSettingsForm()
 	{
 		return array(
@@ -274,6 +299,7 @@ class Algolia extends Module
 		);
 	}
 
+	/* Generate sync form structure */
 	protected function getSyncForm()
 	{
 		return array(
@@ -292,6 +318,7 @@ class Algolia extends Module
 		);
 	}
 
+	/* Get settings form values */
 	protected function getSettingsFormValues()
 	{
 		return array(
@@ -302,6 +329,7 @@ class Algolia extends Module
 		);
 	}
 
+	/* Get sync form values */
 	protected function getSyncFormValues()
 	{
 		return array(
@@ -309,6 +337,10 @@ class Algolia extends Module
 		);
 	}
 
+	/**
+	 * Treat posted data for settings form only
+	 * Sync form does not require any storage
+	 */
 	protected function _postProcess()
 	{
 		$form_values = $this->getSettingsFormValues();
@@ -317,6 +349,13 @@ class Algolia extends Module
 			Configuration::updateValue($key, Tools::getValue($key));
 	}
 
+	/* Run cron tasks */
+	public function hookActionCronJob()
+	{
+		return $this->syncProducts();
+	}
+
+	/* Return cron job execution frequency */
 	public function getCronFrequency()
 	{
 		return array(
