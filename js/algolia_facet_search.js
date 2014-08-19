@@ -5,20 +5,18 @@ $(document).ready(function() {
 	var $inputfield = $("#algolia-search");
 	var algolia = new AlgoliaSearch(algolia_application_id, algolia_search_only_api_key);
 	var index = algolia.initIndex(algolia_index_name);
-	
+
 	var buildUrl = function(base, key, value) {
 		var sep = (base.indexOf('?') > -1) ? '&' : '?';
 		return base + sep + key + '=' + value;
 	}
-	
+
 	if ($inputfield.val().length > 0) {
 		search();
 	}
 
 	$inputfield.keyup(function() {
-		if (typeof algolia_search_controller == 'undefined') {
-			setState();
-		}
+		setState();
 		search();
 	}).focus();
 
@@ -29,11 +27,17 @@ $(document).ready(function() {
 
 	function setState() {
 		var url = currentURL;
+
 		if ($inputfield.val().length > 0) {
-			showHits();
+			if (typeof algolia_search_controller == 'undefined') {
+				showHits();
+			}
 			url = buildUrl(algolia_search_url, 'q', encodeURI($inputfield.val()));
 		} else if ($('#algolia-hits').length > 0) {
-			$('#algolia-hits').remove();
+			if (typeof algolia_search_controller == 'undefined') {
+				$('#algolia-hits').remove();
+			}
+
 			initial_dom.show();
 		}
 		window.history.pushState("", "", url);
@@ -63,7 +67,10 @@ $(document).ready(function() {
 				filters.push(refinement);
 			}
 		}
-		index.search($inputfield.val(), searchCallback, { facets: '*', facetFilters: filters });
+		index.search($inputfield.val(), searchCallback, {
+			facets: '*',
+			facetFilters: filters
+		});
 	}
 
 	function searchCallback(success, content) {
