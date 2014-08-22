@@ -1,6 +1,7 @@
 <?php
 
 require_once(dirname(__FILE__).'/AlgoliaLibrary.php');
+require_once(dirname(__FILE__).'/AlgoliaProduct.php');
 
 class AlgoliaSync extends AlgoliaLibrary
 {
@@ -21,8 +22,7 @@ class AlgoliaSync extends AlgoliaLibrary
 
         foreach (Language::getLanguages() as $language)
         {
-            $index_name = $this->index_name.'_'.$language['iso_code'];
-            $index = $client->initIndex($index_name);
+            $index = $client->initIndex($this->index_name);
 
             $products = $this->addProductsToIndex($index, $language);
 
@@ -34,25 +34,13 @@ class AlgoliaSync extends AlgoliaLibrary
     protected function addProductsToIndex(&$index, $language)
     {
         $products = array();
-        $id_products = Db::getInstance()->executeS('SELECT `id_product` FROM `'._DB_PREFIX_.'product`');
+        $id_products = Db::getInstance()->executeS('SELECT `id_product` FROM `'._DB_PREFIX_.'product` WHERE `active` IS TRUE');
 
         if (count($id_products) > 0)
-        {
-            foreach ($id_products as &$product)
-            {
-            	$id_lang = $language['id_lang'];
-            	$id_product = $product['id_product'];
+            foreach ($id_products as $id_product)
+                array_push($products, AlgoliaProduct::getProduct($id_product));
 
-                $product = (array) $this->formatProduct($id_product, $id_lang);
-
-
-                foreach ($product as $key => $value)
-                    if (is_array($value))
-                        unset($product[$key]);
-
-                array_push($products, $product);
-            }
-        }
+		d($products);
 
         return $products;
     }
