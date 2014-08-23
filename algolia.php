@@ -219,7 +219,7 @@ class Algolia extends Module
 		}
 		catch (Exception $exception)
 		{
-			array_push($this->_warnings, $exception->getMessage());
+			$this->context->smarty->assign('sync_error', $exception->getMessage());
 		}
 	}
 

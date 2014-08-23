@@ -23,10 +23,20 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 
-{if $warnings|count > 0}
+{if ($warnings|count > 0)}
 	<div class="alert alert-warning" id="algolia-alerts">
 		<ul class="list-unstyled">
 			{foreach from=$warnings item=warning}
+				<li>{$warning}</li>
+			{/foreach}
+		</ul>
+	</div>
+{/if}
+
+{if isset($sync_error)}
+	<div class="alert alert-danger" id="algolia-alerts">
+		<ul class="list-unstyled">
+			{foreach from=$sync_error item=warning}
 				<li>{$warning}</li>
 			{/foreach}
 		</ul>
