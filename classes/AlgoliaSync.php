@@ -6,8 +6,8 @@ require_once(dirname(__FILE__).'/AlgoliaProduct.php');
 class AlgoliaSync extends AlgoliaLibrary
 {
 
-	protected $index_settings = array(
-		"attributesToIndex" => array("name", "categories"),
+	public $index_settings = array(
+		"attributesToIndex" => array("name", "description_short", "categories"),
 		"attributesForFaceting" => array("available_now", "category"),
 		"customRanking" => array("asc(price)"),
 	);
@@ -19,12 +19,44 @@ class AlgoliaSync extends AlgoliaLibrary
 
         $client = new \AlgoliaSearch\Client($this->application_id, $this->api_key);
         $index = $client->initIndex($this->index_name);
-
 		$products = $this->getProductsToIndex();
 
-		$index->setSettings($this->index_settings);
-        $index->saveObjects($products);
+		$settings = $this->getSettings();
+		$index->setSettings($settings);
+
+		$index->saveObjects($products);
     }
+
+	public function getSettings($id_lang = false)
+	{
+		$settings = $this->index_settings;
+
+		$attributes_to_index = array();
+		$attributes_for_faceting = array();
+
+		foreach ($this->index_settings['attributesToIndex'] as $attribute)
+		{
+			if ($id_lang === false)
+				foreach (Language::getLanguages() as $language)
+					array_push($attributes_to_index, $attribute."_".$language['iso_code']);
+			else
+				array_push($attributes_to_index, $attribute."_".Language::getIsoById($id_lang));
+		}
+
+		foreach ($this->index_settings['attributesForFaceting'] as $attribute)
+		{
+			if ($id_lang === false)
+				foreach (Language::getLanguages() as $language)
+					array_push($attributes_for_faceting, $attribute."_".$language['iso_code']);
+			else
+				array_push($attributes_for_faceting, $attribute."_".Language::getIsoById($id_lang));
+		}
+
+		$settings['attributesToIndex'] = $attributes_to_index;
+		$settings['attributesForFaceting'] = $attributes_for_faceting;
+
+		return $settings;
+	}
 
     protected function getProductsToIndex()
     {

@@ -68,8 +68,9 @@ $(document).ready(function() {
 			}
 		}
 		index.search($inputfield.val(), searchCallback, {
-			facets: '*',
-			facetFilters: filters
+			facets: algolia_attributes_for_faceting,
+			facetFilters: filters,
+			attributesToHighlight: algolia_attributes_to_index
 		});
 	}
 
@@ -110,19 +111,19 @@ function formatProductDetails(hit) {
 	return '<li class="ajax_block_product col-xs-12 col-sm-6 col-md-4 first-in-line first-item-of-tablet-line first-item-of-mobile-line">\
 		<div class="product-container" itemscope="" itemtype="http://schema.org/Product">\
 			<div class="product-image-container">\
-				<a class="product_img_link" href="//' + hit.url + '" title="' + hit.name + '" itemprop="url">\
-					<img class="replace-2x img-responsive" src="//' + hit.image_link_large + '" alt="' + hit.name + '" title="' + hit.name + '" width="250" height="250" itemprop="image">\
+				<a class="product_img_link" href="//' + hit['link_'+algolia_search_iso_code] + '" title="' + hit['name_'+algolia_search_iso_code] + '" itemprop="url">\
+					<img class="replace-2x img-responsive" src="//' + hit['image_link_large_'+algolia_search_iso_code] + '" alt="' + hit['name_'+algolia_search_iso_code] + '" title="' + hit.name + '" width="250" height="250" itemprop="image">\
 				</a>\
 			</div>\
 			<div class="right-block">\
-				<h5 itemprop="name"><a class="product-name" href="//' + hit.url + '" title="' + hit.name + '" itemprop="url">' + hit.name + '</a></h5>\
+				<h5 itemprop="name"><a class="product-name" href="//' + hit['link_'+algolia_search_iso_code] + '" title="' + hit['name_'+algolia_search_iso_code] + '" itemprop="url">' + hit['name_'+algolia_search_iso_code] + '</a></h5>\
 				<div itemprop="offers" itemscope="" itemtype="http://schema.org/Offer" class="content_price">\
-					<span itemprop="price" class="price product-price">' + hit.price.toFixed(2) + ' &euro;</span>\
+					<span itemprop="price" class="price product-price">' + hit.price + ' &euro;</span>\
 					<meta itemprop="priceCurrency" content="EUR">\
 				</div>\
 				<div class="button-container">\
 					<a class="button ajax_add_to_cart_button btn btn-default" href="http://prestashop.dev/en/cart?add=1&amp;id_product=1&amp;token=c04a62c7b2666757f6907cb217934d2a" rel="nofollow" title="Add to cart" data-id-product="1"><span>Add to cart</span></a>\
-					<a itemprop="url" class="button lnk_view btn btn-default" href="//' + hit.url + '" title="View"><span>More</span></a>\
+					<a itemprop="url" class="button lnk_view btn btn-default" href="//' + hit['link_'+algolia_search_iso_code] + '" title="View"><span>More</span></a>\
 				</div>\
 			</div>\
 			<div class="functional-buttons clearfix"></div>\

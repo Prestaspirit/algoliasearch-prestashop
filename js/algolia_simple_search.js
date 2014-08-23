@@ -3,10 +3,10 @@ $(document).ready(function() {
 	var index = algolia.initIndex(algolia_index_name);
 
 	var template = Hogan.compile('<div class="hit">' +
-	'<a href="{{{ url }}}" class="algolia-search-result">' +
-	'<img src="//{{{ image_link_small }}}" class="algolia-search-image img-circle" />' +
-	'{{{ _highlightResult.name.value }}} ' +
-	'({{{ _highlightResult.category.value }}})' +
+	'<a href="{{{ \'link_\'+algolia_search_iso_code }}}" class="algolia-search-result">' +
+	'<img src="//{{{ [\'image_link_small_\'+algolia_search_iso_code] }}}" class="algolia-search-image img-circle" />' +
+	'{{{ _highlightResult[\'name_\'+algolia_search_iso_code].value }}} ' +
+	'({{{ _highlightResult[\'category_\'+algolia_search_iso_code].value }}})' +
 	'</a>' +
 	'{{#matchingAttributes}}' +
 	'<div class="attribute"><b>{{ attribute }}</b>: {{{ value }}}</div>' +
