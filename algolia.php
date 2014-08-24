@@ -222,7 +222,10 @@ class Algolia extends Module
 		{
 			require_once(dirname(__FILE__).'/classes/AlgoliaSync.php');
 			$algolia_sync = new AlgoliaSync();
-			$algolia_sync->syncProducts();
+			$sync_result = $algolia_sync->syncProducts();
+
+			if ($sync_result == true)
+				$this->context->smarty->assign('success', $this->l('Your products have been succesfuly updated.'));
 		}
 		catch (Exception $exception)
 		{

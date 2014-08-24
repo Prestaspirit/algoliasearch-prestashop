@@ -26,8 +26,8 @@
 {if ($warnings|count > 0)}
 	<div class="alert alert-warning" id="algolia-alerts">
 		<ul class="list-unstyled">
-			{foreach from=$warnings item=warning}
-				<li>{$warning}</li>
+			{foreach from=$warnings item=message}
+				<li>{$message}</li>
 			{/foreach}
 		</ul>
 	</div>
@@ -36,8 +36,18 @@
 {if isset($sync_error)}
 	<div class="alert alert-danger" id="algolia-alerts">
 		<ul class="list-unstyled">
-			{foreach from=$sync_error item=warning}
-				<li>{$warning}</li>
+			{foreach from=$sync_error item=message}
+				<li>{$message}</li>
+			{/foreach}
+		</ul>
+	</div>
+{/if}
+
+{if isset($success)}
+	<div class="alert alert-success" id="algolia-alerts">
+		<ul class="list-unstyled">
+			{foreach from=$success item=message}
+				<li>{$message}</li>
 			{/foreach}
 		</ul>
 	</div>

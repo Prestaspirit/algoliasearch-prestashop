@@ -12,20 +12,19 @@ class AlgoliaSync extends AlgoliaLibrary
 		"customRanking" => array("asc(price)"),
 	);
 
-    public function syncProducts()
-    {
-    	if ($this->isConfigurationValid() == false)
-    		return false;
+	public function syncProducts()
+	{
+		if ($this->isConfigurationValid() == false)
+			return false;
 
-        $client = new \AlgoliaSearch\Client($this->application_id, $this->api_key);
-        $index = $client->initIndex($this->index_name);
+		$client = new \AlgoliaSearch\Client($this->application_id, $this->api_key);
+		$index = $client->initIndex($this->index_name);
 		$products = $this->getProductsToIndex();
 
 		$settings = $this->getSettings();
 		$index->setSettings($settings);
-
-		$index->saveObjects($products);
-    }
+		return $index->saveObjects($products);
+	}
 
 	public function getSettings($id_lang = false)
 	{
@@ -58,33 +57,33 @@ class AlgoliaSync extends AlgoliaLibrary
 		return $settings;
 	}
 
-    protected function getProductsToIndex()
-    {
-        $products = array();
-        $id_products = Db::getInstance()->executeS('SELECT `id_product` FROM `'._DB_PREFIX_.'product` WHERE `active` IS TRUE');
+	protected function getProductsToIndex()
+	{
+		$products = array();
+		$id_products = Db::getInstance()->executeS('SELECT `id_product` FROM `'._DB_PREFIX_.'product` WHERE `active` IS TRUE');
 
-        if (count($id_products) > 0)
-            foreach ($id_products as $id_product)
-                array_push($products, AlgoliaProduct::getProduct($id_product['id_product']));
+		if (count($id_products) > 0)
+			foreach ($id_products as $id_product)
+				array_push($products, AlgoliaProduct::getProduct($id_product['id_product']));
 
-        return $products;
-    }
+		return $products;
+	}
 
-    protected function formatProduct($id_product, $id_lang)
-    {
-    	$link = new Link();
-    	$product = new Product($id_product, true, $id_lang);
-	    $category = new Category($product->id_category_default, $id_lang);
+	protected function formatProduct($id_product, $id_lang)
+	{
+		$link = new Link();
+		$product = new Product($id_product, true, $id_lang);
+		$category = new Category($product->id_category_default, $id_lang);
 
-        $product->objectID = $product->id;
-	    $product->category = $category->name;
+		$product->objectID = $product->id;
+		$product->category = $category->name;
 		$product->url = $link->getProductLink($product->id);
 
 		/* Cover */
 		$cover = Image::getCover($product->id);
-	    $product->image_link_small = $link->getImageLink($product->link_rewrite, $cover['id_image'], ImageType::getFormatedName('small'));
+		$product->image_link_small = $link->getImageLink($product->link_rewrite, $cover['id_image'], ImageType::getFormatedName('small'));
 		$product->image_link_large = $link->getImageLink($product->link_rewrite, $cover['id_image'], ImageType::getFormatedName('large'));
 
-	    return $product;
-    }
+		return $product;
+	}
 }
