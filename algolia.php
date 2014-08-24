@@ -342,8 +342,14 @@ class Algolia extends Module
 	/* Get sync form values */
 	protected function getSyncFormValues()
 	{
+		require_once(dirname(__FILE__).'/classes/AlgoliaSearch.php');
+
+		$algolia_search = new AlgoliaSearch();
+		$index_name = $algolia_search->getIndexName();
+
 		return array(
-			'ALGOLIA_SYNC_DESC' => '<p>Click on the "Sync" button to update your indexes on Algolia</p>'
+			'ALGOLIA_SYNC_DESC' => '<p>'.$this->l('Click on the "Sync" button below to update your products on Algolia.').
+				'<br />'.$this->l('The index used for this instance is known as').': <strong>'.$index_name.'</strong></p>'
 		);
 	}
 

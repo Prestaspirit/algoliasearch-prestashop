@@ -28,11 +28,11 @@
 		<div class="col-xs-6 col-md-4 text-center">
 			<img src="{$module_dir|escape:'html':'UTF-8'}img/algolia.png" id="algolia-logo" />
 		</div>
-		<div class="col-xs-6 col-md-4 text-center">
-			<h4>{l s='Online payment processing' mod='algolia'}</h4>
-			<h4>{l s='Fast - Secure - Reliable' mod='algolia'}</h4>
+		<div class="col-xs-6 col-md-5 text-center">
+			<h4>{l s='Build Realtime Search' mod='algolia'}</h4>
+			<h4>{l s='A powerful API built for developers' mod='algolia'}</h4>
 		</div>
-		<div class="col-xs-12 col-md-4 text-center">
+		<div class="col-xs-12 col-md-3 text-center">
 			<a href="https://www.algolia.com/users/sign_up" target="_blank" class="btn btn-primary" id="create-account-btn">{l s='Create an account now!' mod='algolia'}</a><br />
 			{l s='Already have an account?' mod='algolia'}<a href="https://www.algolia.com/users/sign_in" target="_blank"> {l s='Log in' mod='algolia'}</a>
 		</div>
@@ -43,37 +43,30 @@
 	<div class="algolia-content">
 		<div class="row">
 			<div class="col-md-6">
-				<h5>{l s='My payment module offers the following benefits' mod='algolia'}</h5>
+				<h5>{l s='Search your database in realtime' mod='algolia'}</h5>
 				<dl>
-					<dt>&middot; {l s='Increase customer payment options' mod='algolia'}</dt>
-					<dd>{l s='Visa®, Mastercard®, Diners Club®, American Express®, Discover®, Network and CJB®, plus debit, gift cards and more.' mod='algolia'}</dd>
+					<dt>&middot; {l s='Search as a service' mod='algolia'}</dt>
+					<dd>{l s='Algolia is a fully hosted search service, available as a REST API. API clients are also available for all major frameworks, platforms and languages.' mod='algolia'}</dd>
 
-					<dt>&middot; {l s='Help to improve cash flow' mod='algolia'}</dt>
-					<dd>{l s='Receive funds quickly from the bank of your choice.' mod='algolia'}</dd>
+					<dt>&middot; {l s='High-Performance' mod='algolia'}</dt>
+					<dd>{l s='We built our instant search engine from the ground-up with performance in mind, with response times up to 200 times faster than Elasticsearch, and up to 20,000 times faster than SQLite FTS4.' mod='algolia'}</dd>
 
-					<dt>&middot; {l s='Enhanced security' mod='algolia'}</dt>
-					<dd>{l s='Multiple firewalls, encryption protocols and fraud protection.' mod='algolia'}</dd>
+					<dt>&middot; {l s='Dashboard, all statistics in one location' mod='algolia'}</dt>
+					<dd>{l s='One graphical interface for all operations.' mod='algolia'}</dd>
 
-					<dt>&middot; {l s='One-source solution' mod='algolia'}</dt>
-					<dd>{l s='Conveniance of one invoice, one set of reports and one 24/7 customer service contact.' mod='algolia'}</dd>
+					<dt>&middot; {l s='Database search' mod='algolia'}</dt>
+					<dd>{l s='A perfect solution for SQL and NoSQL databases, with a transparent ranking algorithm optimized for semi-structured data.' mod='algolia'}</dd>
 				</dl>
+				<a class="text-muted small" href="https://www.algolia.com/features" target="_blank">
+					<em>And many more features!</em>
+				</a>
 			</div>
 
 			<div class="col-md-6">
-				<h5>{l s='FREE My Payment Module Glocal Gateway (Value of 400$)' mod='algolia'}</h5>
-				<ul>
-					<li>{l s='Simple, secure and reliable solution to process online payments' mod='algolia'}</li>
-					<li>{l s='Virtual terminal' mod='algolia'}</li>
-					<li>{l s='Reccuring billing' mod='algolia'}</li>
-					<li>{l s='24/7/365 customer support' mod='algolia'}</li>
-					<li>{l s='Ability to perform full or patial refunds' mod='algolia'}</li>
-				</ul>
-				<br />
-				<em class="text-muted small">
-					* {l s='New merchant account required and subject to credit card approval.' mod='algolia'}
-					{l s='The free My Payment Module Global Gateway will be accessed through log in information provided via email within 48 hours.' mod='algolia'}
-					{l s='Monthly fees for My Payment Module Global Gateway will apply.' mod='algolia'}
-				</em>
+				<div class="row">
+					<h5 class="text-center">{l s='Dashboard, all statistics in one location' mod='algolia'}</h5>
+					<img src="https://d3ibatyzauff7b.cloudfront.net/assets/flat/capture_dashboard-ee27604719e0162598f67192a5edfbcb.png" class="col-md-6 col-md-offset-3 img-thumbnail" />
+				</div>
 			</div>
 		</div>
 	</div>
