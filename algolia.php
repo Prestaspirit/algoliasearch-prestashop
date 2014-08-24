@@ -86,6 +86,7 @@ class Algolia extends Module
 			return false;
 
 		require_once(dirname(__FILE__).'/classes/AlgoliaSearch.php');
+		require_once(dirname(__FILE__).'/classes/AlgoliaSync.php');
 
 		/* Generate Algolia front controller link for search form */
 		$search_url = Context::getContext()->link->getModuleLink('algolia', 'search');
@@ -93,12 +94,18 @@ class Algolia extends Module
 
 		/* Add JS values for Algolia scripts */
 		$algolia_search = new AlgoliaSearch();
+		$algolia_sync = new AlgoliaSync();
+		$language = Context::getContext()->language;
+		$algolia_sync_settings = $algolia_sync->getSettings($language->id);
 
 		Media::addJsDef(array(
 			'algolia_application_id' => $algolia_search->getApplicationID(),
-			'algolia_search_only_api_key' => $algolia_search->getSearchOnlyAPIKey(),
 			'algolia_index_name' => $algolia_search->getIndexName(),
+			'algolia_search_iso_code' => $language->iso_code,
+			'algolia_search_only_api_key' => $algolia_search->getSearchOnlyAPIKey(),
 			'algolia_search_url' => $search_url,
+			'algolia_attributes_to_index' => $algolia_sync_settings['attributesToIndex'],
+			'algolia_attributes_for_faceting' => $algolia_sync_settings['attributesForFaceting'],
 		));
 
 		/* Add CSS & JS files required for Algolia search */
@@ -215,11 +222,14 @@ class Algolia extends Module
 		{
 			require_once(dirname(__FILE__).'/classes/AlgoliaSync.php');
 			$algolia_sync = new AlgoliaSync();
-			$algolia_sync->syncProducts();
+			$sync_result = $algolia_sync->syncProducts();
+
+			if ($sync_result == true)
+				$this->context->smarty->assign('success', $this->l('Your products have been succesfuly updated.'));
 		}
 		catch (Exception $exception)
 		{
-			array_push($this->_warnings, $exception->getMessage());
+			$this->context->smarty->assign('sync_error', $exception->getMessage());
 		}
 	}
 

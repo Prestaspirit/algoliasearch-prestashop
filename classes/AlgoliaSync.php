@@ -1,77 +1,89 @@
 <?php
 
 require_once(dirname(__FILE__).'/AlgoliaLibrary.php');
+require_once(dirname(__FILE__).'/AlgoliaProduct.php');
 
 class AlgoliaSync extends AlgoliaLibrary
 {
 
-	protected $index_settings = array(
-		"attributesToIndex" => array("name", "category"),
+	public $index_settings = array(
+		"attributesToIndex" => array("name", "description_short", "categories"),
 		"attributesForFaceting" => array("available_now", "category"),
-		"customRanking" => array("asc(base_price)", 'desc(date_upd)')
+		"customRanking" => array("asc(price)"),
 	);
 
-    public function syncProducts()
-    {
-    	if ($this->isConfigurationValid() == false)
-    		return false;
+	public function syncProducts()
+	{
+		if ($this->isConfigurationValid() == false)
+			return false;
 
-        $iso_codes = array();
-        $client = new \AlgoliaSearch\Client($this->application_id, $this->api_key);
+		$client = new \AlgoliaSearch\Client($this->application_id, $this->api_key);
+		$index = $client->initIndex($this->index_name);
+		$products = $this->getProductsToIndex();
 
-        foreach (Language::getLanguages() as $language)
-        {
-            $index_name = $this->index_name.'_'.$language['iso_code'];
-            $index = $client->initIndex($index_name);
+		$settings = $this->getSettings();
+		$index->setSettings($settings);
+		return $index->saveObjects($products);
+	}
 
-            $products = $this->addProductsToIndex($index, $language);
+	public function getSettings($id_lang = false)
+	{
+		$settings = $this->index_settings;
 
-            $index->setSettings($this->index_settings);
-            $index->saveObjects($products);
-        }
-    }
+		$attributes_to_index = array();
+		$attributes_for_faceting = array();
 
-    protected function addProductsToIndex(&$index, $language)
-    {
-        $products = array();
-        $id_products = Db::getInstance()->executeS('SELECT `id_product` FROM `'._DB_PREFIX_.'product`');
+		foreach ($this->index_settings['attributesToIndex'] as $attribute)
+		{
+			if ($id_lang === false)
+				foreach (Language::getLanguages() as $language)
+					array_push($attributes_to_index, $attribute."_".$language['iso_code']);
+			else
+				array_push($attributes_to_index, $attribute."_".Language::getIsoById($id_lang));
+		}
 
-        if (count($id_products) > 0)
-        {
-            foreach ($id_products as &$product)
-            {
-            	$id_lang = $language['id_lang'];
-            	$id_product = $product['id_product'];
+		foreach ($this->index_settings['attributesForFaceting'] as $attribute)
+		{
+			if ($id_lang === false)
+				foreach (Language::getLanguages() as $language)
+					array_push($attributes_for_faceting, $attribute."_".$language['iso_code']);
+			else
+				array_push($attributes_for_faceting, $attribute."_".Language::getIsoById($id_lang));
+		}
 
-                $product = (array) $this->formatProduct($id_product, $id_lang);
+		$settings['attributesToIndex'] = $attributes_to_index;
+		$settings['attributesForFaceting'] = $attributes_for_faceting;
 
+		return $settings;
+	}
 
-                foreach ($product as $key => $value)
-                    if (is_array($value))
-                        unset($product[$key]);
+	protected function getProductsToIndex()
+	{
+		$products = array();
+		$id_products = Db::getInstance()->executeS('SELECT `id_product` FROM `'._DB_PREFIX_.'product` WHERE `active` IS TRUE');
 
-                array_push($products, $product);
-            }
-        }
+		if (count($id_products) > 0)
+			foreach ($id_products as $id_product)
+				array_push($products, AlgoliaProduct::getProduct($id_product['id_product']));
 
-        return $products;
-    }
+		return $products;
+	}
 
-    protected function formatProduct($id_product, $id_lang)
-    {
-    	$link = new Link();
-    	$product = new Product($id_product, true, $id_lang);
-	    $category = new Category($product->id_category_default, $id_lang);
+	protected function formatProduct($id_product, $id_lang)
+	{
+		$link = new Link();
+		$product = new Product($id_product, true, $id_lang);
+		$category = new Category($product->id_category_default, $id_lang);
 
-        $product->objectID = $product->id;
-	    $product->category = $category->name;
+		$product->objectID = $product->id;
+		$product->category = $category->name;
 		$product->url = $link->getProductLink($product->id);
 
 		/* Cover */
 		$cover = Image::getCover($product->id);
-	    $product->image_link_small = $link->getImageLink($product->link_rewrite, $cover['id_image'], ImageType::getFormatedName('small'));
+		$product->image_link_small = $link->getImageLink($product->link_rewrite, $cover['id_image'], ImageType::getFormatedName('small'));
 		$product->image_link_large = $link->getImageLink($product->link_rewrite, $cover['id_image'], ImageType::getFormatedName('large'));
 
-	    return $product;
-    }
+		return $product;
+	}
 }
