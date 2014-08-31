@@ -17,13 +17,27 @@ class AlgoliaSync extends AlgoliaLibrary
 		if ($this->isConfigurationValid() == false)
 			return false;
 
-		$client = new \AlgoliaSearch\Client($this->application_id, $this->api_key);
-		$index = $client->initIndex($this->index_name);
-		$products = $this->getProductsToIndex();
-
-		$settings = $this->getSettings();
-		$index->setSettings($settings);
-		return $index->saveObjects($products);
+		try
+		{
+			$client = new \AlgoliaSearch\Client($this->application_id, $this->api_key);
+			$index = $client->initIndex($this->index_name);
+			
+			$products = $this->getProductsToIndex();
+			$settings = $this->getSettings();
+			$index->setSettings($settings);
+			
+			$products = array_chunk($products, 10);
+			
+			foreach ($products as $product_group)
+				$index->saveObjects($product_group);
+		}
+		catch (Exception $exception)
+		{
+			d($exception);
+			return false;
+		}
+		
+		return true;
 	}
 
 	public function getSettings($id_lang = false)
