@@ -70,7 +70,7 @@ $(document).ready(function() {
 		index.search($inputfield.val(), searchCallback, {
 			facets: algolia_attributes_for_faceting,
 			facetFilters: filters,
-			attributesToHighlight: algolia_attributes_to_index
+			restrictSearchableAttributes: algolia_attributes_to_index
 		});
 	}
 
