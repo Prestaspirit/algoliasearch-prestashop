@@ -11,12 +11,12 @@ class AlgoliaLibrary
 
 	public function __construct()
 	{
-		$this->application_id       = Configuration::get('ALGOLIA_APPLICATION_ID', false);
-		$this->api_key              = Configuration::get('ALGOLIA_API_KEY', false);
-		$this->search_only_api_key  = Configuration::get('ALGOLIA_SEARCH_ONLY_API_KEY', false);
+		$this->application_id = Configuration::get('ALGOLIA_APPLICATION_ID', false);
+		$this->api_key = Configuration::get('ALGOLIA_API_KEY', false);
+		$this->search_only_api_key = Configuration::get('ALGOLIA_SEARCH_ONLY_API_KEY', false);
 
-        $shop_name                  = Configuration::get('PS_SHOP_NAME');
-		$this->index_name           = $this->index_prefix.self::slugify($shop_name);
+        $shop_name = Configuration::get('PS_SHOP_NAME');
+		$this->index_name = $this->index_prefix.self::slugify($shop_name);
 
 		$this->loadClasses();
 	}
