@@ -40,19 +40,21 @@ class Indexer
 
     public function moveTempIndexes()
     {
-        $this->algolia_helper->move($this->algolia_registry->index_name.'all_temp', $this->algolia_registry->index_name.'all');
+        foreach (\Language::getLanguages() as $language)
+            $this->algolia_helper->move($this->algolia_registry->index_name.'all_' . $language['iso_code'] . '_temp',
+                                        $this->algolia_registry->index_name.'all_' . $language['iso_code']);
 
         $this->algolia_helper->handleIndexCreation();
     }
 
-    private function getProducts($limit)
+    private function getProducts($limit, $language)
     {
         $products = array();
         $id_products = \Db::getInstance()->executeS('SELECT `id_product` FROM `'._DB_PREFIX_.'product` WHERE `active` IS TRUE '.$limit);
 
         if (count($id_products) > 0)
             foreach ($id_products as $id_product)
-                array_push($products, $this->prestashop_fetcher->getProductObj($id_product['id_product']));
+                array_push($products, $this->prestashop_fetcher->getProductObj($id_product['id_product'], $language));
 
         return $products;
     }
@@ -71,8 +73,11 @@ class Indexer
 
     public function indexProductsPart($count, $offset)
     {
-        $objects = $this->getProducts("LIMIT ".($offset * $count).",".$count);
+        foreach (\Language::getLanguages() as $language)
+        {
+            $objects = $this->getProducts("LIMIT ".($offset * $count).",".$count, $language);
 
-        $this->algolia_helper->pushObjects($this->algolia_registry->index_name.'all_temp', $objects);
+            $this->algolia_helper->pushObjects($this->algolia_registry->index_name.'all_' . $language['iso_code'] . '_temp', $objects);
+        }
     }
 }

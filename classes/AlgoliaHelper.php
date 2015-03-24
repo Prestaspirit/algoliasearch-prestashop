@@ -82,144 +82,152 @@ class AlgoliaHelper
 
     public function handleIndexCreation()
     {
-        /*$created_indexes    = $this->algolia_client->listIndexes();
-        $index_name         = $this->algolia_registry->index_name;
-        $indexes            = array();
-        $facets             = array();
-        $customRankingTemp  = array();
-
-        $facets[]           = "type";
-
-        global $attributesToHighlight;
-        global $attributesToSnippet;
-
-        $attributesToIndex  = array();
-
-        foreach ($this->algolia_registry->searchable as $key => $value)
-            if ($value['ordered'] == 'unordered')
-                $attributesToIndex[] = $value['ordered'].'('.$key.')';
-            else
-                $attributesToIndex[] = $key;
-
-        foreach ($attributesToSnippet as &$attribute)
-            if ($attribute == 'content')
-                $attribute = $attribute.':'.$this->algolia_registry->number_of_word_for_content;
-
-        $defaultSettings = array(
-            "attributesToIndex"     => $attributesToIndex,
-            "attributesToHighlight" => $attributesToHighlight,
-            "attributesToSnippet"   => $attributesToSnippet
-        );
-
-        if (isset($indexes["items"]))
+        foreach (\Language::getLanguages() as $language)
         {
-            $indexes = array_map(function ($obj) {
-                return $obj["name"];
-            }, $created_indexes["items"]);
-        }*/
+            $created_indexes = $this->algolia_client->listIndexes();
+            $index_name = $this->algolia_registry->index_name;
+            $indexes = array();
+            $facets = array();
+            $customRankingTemp = array();
 
-        /**
-         * Handle Autocomplete Taxonomies
-         */
-        /*foreach (array_keys($this->algolia_registry->indexable_tax) as $name)
-        {
-            if (in_array($index_name.$name, $indexes) == false)
+            //$facets[]           = "type";
+
+            //global $attributesToHighlight;
+            //global $attributesToSnippet;
+            $attributesToHighlight = array();
+            $attributesToSnippet = array();
+
+            $attributesToIndex  = array();
+
+            /*foreach ($this->algolia_registry->searchable as $key => $value)
+                if ($value['ordered'] == 'unordered')
+                    $attributesToIndex[] = $value['ordered'].'('.$key.')';
+                else
+                    $attributesToIndex[] = $key;*/
+
+            foreach ($attributesToSnippet as &$attribute)
+                if ($attribute == 'content')
+                    $attribute = $attribute.':'.$this->algolia_registry->number_of_word_for_content;
+
+            $defaultSettings = array(
+                "attributesToIndex"     => $attributesToIndex,
+                "attributesToHighlight" => $attributesToHighlight,
+                "attributesToSnippet"   => $attributesToSnippet
+            );
+
+            if (isset($indexes["items"]))
             {
-                $mergeSettings = $this->mergeSettings($index_name.$name, $defaultSettings);
-
-                $this->setSettings($index_name.$name, $mergeSettings);
-                $this->setSettings($index_name.$name."_temp", $mergeSettings);
-
-                $facets[] = $name;
+                $indexes = array_map(function ($obj) {
+                    return $obj["name"];
+                }, $created_indexes["items"]);
             }
-        }*/
 
-        /**
-         * Handle Autocomplete Types
-         */
-        /*foreach (array_keys($this->algolia_registry->indexable_types) as $name)
-        {
-            if (in_array($index_name."_".$name, $indexes) == false)
+            /**
+             * Handle Autocomplete Taxonomies
+             */
+            /*foreach (array_keys($this->algolia_registry->indexable_tax) as $name)
             {
-                if (isset($this->algolia_registry->metas[$name]))
+                if (in_array($index_name.$name, $indexes) == false)
                 {
-                    foreach ($this->algolia_registry->metas[$name] as $key => $value)
-                    {
-                        if ($value['facetable'])
-                            $facets[] = $key;
+                    $mergeSettings = $this->mergeSettings($index_name.$name, $defaultSettings);
 
-                        if ($value['custom_ranking'])
-                            $customRankingTemp[] = array('sort' => $value['custom_ranking_sort'], 'value' => $value['custom_ranking_order'].'('.$key.')');
-                    }
+                    $this->setSettings($index_name.$name, $mergeSettings);
+                    $this->setSettings($index_name.$name."_temp", $mergeSettings);
+
+                    $facets[] = $name;
                 }
+            }*/
 
-                $mergeSettings = $this->mergeSettings($index_name.$name, $defaultSettings);
-
-                $this->setSettings($index_name.$name, $mergeSettings);
-                $this->setSettings($index_name.$name."_temp", $mergeSettings);
-            }
-        }*/
-
-        /**
-         * Prepare Settings
-         */
-
-        /*$date_custom_ranking = $this->algolia_registry->date_custom_ranking;
-
-        if ($date_custom_ranking['enabled'])
-            $customRankingTemp[] = array('sort' => $date_custom_ranking['sort'], 'value' => $date_custom_ranking['order'].'(date)');
-
-        usort($customRankingTemp, function ($a, $b) {
-            if ($a['sort'] < $b['sort'])
-                return -1;
-            if ($a['sort'] == $b['sort'])
-                return 0;
-            return 1;
-        });
-
-        $customRanking = array_map(function ($obj) {
-            return $obj['value'];
-        }, $customRankingTemp);
-
-        $settings = array(
-            'attributesToIndex'     => $attributesToIndex,
-            'attributesForFaceting' => array_values(array_unique($facets)),
-            'attributesToHighlight' => $attributesToHighlight,
-            'attributesToSnippet'   => $attributesToSnippet,
-            'customRanking'         => $customRanking
-        );*/
-
-        /**
-         * Handle Instant Search Indexes
-         */
-
-        /*$mergeSettings = $this->mergeSettings($index_name.'all', $settings);
-
-        $this->setSettings($index_name.'all', $mergeSettings);
-        $this->setSettings($index_name.'all_temp', $mergeSettings);*/
-
-        /**
-         * Handle Slaves
-         */
-
-        /*if (count($this->algolia_registry->sortable) > 0)
-        {
-            $slaves = array();
-
-            foreach ($this->algolia_registry->sortable as $values)
-                $slaves[] = $index_name.'all_'.$values['name'].'_'.$values['sort'];
-
-            $this->setSettings($index_name.'all', array('slaves' => $slaves));
-
-            foreach ($this->algolia_registry->sortable as $values)
+            /**
+             * Handle Autocomplete Types
+             */
+            /*foreach (array_keys($this->algolia_registry->indexable_types) as $name)
             {
-                $settings = array(
-                    'ranking' => array($values['sort'].'('.$values['name'].')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom')
-                );
+                if (in_array($index_name."_".$name, $indexes) == false)
+                {
+                    if (isset($this->algolia_registry->metas[$name]))
+                    {
+                        foreach ($this->algolia_registry->metas[$name] as $key => $value)
+                        {
+                            if ($value['facetable'])
+                                $facets[] = $key;
 
-                $this->setSettings($index_name.'all_'.$values['name'].'_'.$values['sort'], $settings);
-            }
-        }*/
+                            if ($value['custom_ranking'])
+                                $customRankingTemp[] = array('sort' => $value['custom_ranking_sort'], 'value' => $value['custom_ranking_order'].'('.$key.')');
+                        }
+                    }
+
+                    $mergeSettings = $this->mergeSettings($index_name.$name, $defaultSettings);
+
+                    $this->setSettings($index_name.$name, $mergeSettings);
+                    $this->setSettings($index_name.$name."_temp", $mergeSettings);
+                }
+            }*/
+
+            /**
+             * Prepare Settings
+             */
+
+            //$date_custom_ranking = $this->algolia_registry->date_custom_ranking;
+
+            //if ($date_custom_ranking['enabled'])
+            //    $customRankingTemp[] = array('sort' => $date_custom_ranking['sort'], 'value' => $date_custom_ranking['order'].'(date)');
+
+            /*usort($customRankingTemp, function ($a, $b) {
+                if ($a['sort'] < $b['sort'])
+                    return -1;
+                if ($a['sort'] == $b['sort'])
+                    return 0;
+                return 1;
+            });*/
+
+            /*$customRanking = array_map(function ($obj) {
+                return $obj['value'];
+            }, $customRankingTemp);*/
+
+            foreach (\Feature::getFeatures($language['id_lang']) as $feature)
+                $facets[] = $feature['name'];
+
+            $settings = array(
+                //'attributesToIndex'     => $attributesToIndex,
+                'attributesForFaceting' => array_values(array_unique($facets)),
+                //'attributesToHighlight' => $attributesToHighlight,
+                //'attributesToSnippet'   => $attributesToSnippet,
+                //'customRanking'         => $customRanking
+            );
+
+            /**
+             * Handle Instant Search Indexes
+             */
+
+            $mergeSettings = $this->mergeSettings($index_name.'all', $settings);
+
+            $this->setSettings($index_name.'all_'.$language['iso_code'], $mergeSettings);
+            $this->setSettings($index_name.'all_'.$language['iso_code'].'_temp', $mergeSettings);
+
+            /**
+             * Handle Slaves
+             */
+
+            /*if (count($this->algolia_registry->sortable) > 0)
+            {
+                $slaves = array();
+
+                foreach ($this->algolia_registry->sortable as $values)
+                    $slaves[] = $index_name.'all_'.$values['name'].'_'.$values['sort'];
+
+                $this->setSettings($index_name.'all', array('slaves' => $slaves));
+
+                foreach ($this->algolia_registry->sortable as $values)
+                {
+                    $settings = array(
+                        'ranking' => array($values['sort'].'('.$values['name'].')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom')
+                    );
+
+                    $this->setSettings($index_name.'all_'.$values['name'].'_'.$values['sort'], $settings);
+                }
+            }*/
+        }
     }
 
     public function move($temp_index_name, $index_name)

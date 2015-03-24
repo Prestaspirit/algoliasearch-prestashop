@@ -27,15 +27,24 @@ class PrestashopFetcher
         ),
         "name",
         "price",
+        "prices" => array(
+            "method" => "getPrices"
+        ),
         "reference",
         "supplier" => array(
             "method" => "getSupplierName"
         ),
+        "features" => array(
+            "method" => "getFeatures"
+        )
     );
 
     private $product_definition = false;
 
-    private $languages = array();
+    public function __construct()
+    {
+        $this->product_definition = \Product::$definition['fields'];
+    }
 
     private function try_cast($value)
     {
@@ -48,20 +57,33 @@ class PrestashopFetcher
         return $value;
     }
 
-    public function getProductObj($id_product)
+    public function getProductObj($id_product, $language)
     {
-        if (count($this->languages) === 0)
-        {
-            foreach (\Language::getLanguages() as $language)
-                $this->languages[$language["id_lang"]] = $language["iso_code"];
-
-            $this->product_definition = \Product::$definition['fields'];
-        }
-
-        return (array) $this->initProduct($id_product);
+        return (array) $this->initProduct($id_product, $language);
     }
 
-    private function initProduct($id_product)
+    public function getPrices($product, $ps_product)
+    {
+        $product->price_tax_excl = \Product::getPriceStatic($ps_product->id, false, null, 2);
+        $product->price_tax_incl = \Product::getPriceStatic($ps_product->id, true, null, 2);
+
+        return $product;
+    }
+
+    public function getFeatures($product, $ps_product, $id_lang, $iso_code)
+    {
+        foreach ($ps_product->getFrontFeatures($id_lang) as $feature)
+        {
+            $name   = $feature['name'];
+            $value  = $feature['value'];
+
+            $product->$name = $value;
+        }
+
+        return $product;
+    }
+
+    private function initProduct($id_product, $language)
     {
         $product = new \stdClass();
         $ps_product = new \Product($id_product);
@@ -71,18 +93,15 @@ class PrestashopFetcher
 
         foreach (static::$attributes as $key => $value)
         {
-            foreach ($this->languages as $id_lang => $iso_code)
+            if ((is_array($value) == true) && (isset($value["method"]) === true))
             {
-                if ((is_array($value) == true) && (isset($value["method"]) === true))
-                {
-                    $method = $value["method"];
-                    $product = self::$method($product, $ps_product, $id_lang, $iso_code);
-                }
-                elseif (isset($this->product_definition[$value]["lang"]) == true)
-                    $product->{$value.'_'.$iso_code} = $ps_product->{$value}[$id_lang];
-                else
-                    $product->{$value} = $ps_product->{$value};
+                $method = $value["method"];
+                $product = self::$method($product, $ps_product, $language['id_lang'], $language['iso_code']);
             }
+            elseif (isset($this->product_definition[$value]["lang"]) == true)
+                $product->{$value} = $ps_product->{$value}[$language['id_lang']];
+            else
+                $product->{$value} = $ps_product->{$value};
         }
 
         return $product;
@@ -93,8 +112,8 @@ class PrestashopFetcher
         $link = new \Link();
         $cover = \Image::getCover($ps_product->id);
 
-        $product->{"image_link_small_$iso_code"} = $link->getImageLink($ps_product->link_rewrite[$id_lang], $cover["id_image"], \ImageType::getFormatedName("small"));
-        $product->{"image_link_large_$iso_code"} = $link->getImageLink($ps_product->link_rewrite[$id_lang], $cover["id_image"], \ImageType::getFormatedName("large"));
+        $product->image_link_small = $link->getImageLink($ps_product->link_rewrite[$id_lang], $cover["id_image"], \ImageType::getFormatedName("small"));
+        $product->image_link_large = $link->getImageLink($ps_product->link_rewrite[$id_lang], $cover["id_image"], \ImageType::getFormatedName("large"));
 
         return $product;
     }
@@ -102,26 +121,28 @@ class PrestashopFetcher
     protected static function generateLinkRewrite($product, $ps_product, $id_lang, $iso_code)
     {
         $link = new \Link();
-        $product->{"link_$iso_code"} = $link->getProductLink($ps_product->id, $ps_product->link_rewrite[$id_lang], null, null, $id_lang);
+        $product->link = $link->getProductLink($ps_product->id, $ps_product->link_rewrite[$id_lang], null, null, $id_lang);
+
         return $product;
     }
 
     protected static function getCategoryName($product, $ps_product, $id_lang, $iso_code)
     {
         $category = new \Category($ps_product->id_category_default, $id_lang);
-        $product->{"category_$iso_code"} = $category->name;
+        $product->category = $category->name;
+
         return $product;
     }
 
     protected static function getCategoriesNames($product, $ps_product, $id_lang, $iso_code)
     {
-        $product->{"categories_$iso_code"} = array();
+        $product->categories = array();
         $id_categories = \Product::getProductCategories($ps_product->id);
 
         foreach ($id_categories as $id_category)
         {
             $category = new \Category($id_category, $id_lang);
-            array_push($product->{"categories_$iso_code"}, $category->name);
+            array_push($product->categories, $category->name);
         }
 
         return $product;

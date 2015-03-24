@@ -1,10 +1,10 @@
 <script type="text/template" id="autocomplete-template">
     <div class="result">
         <div class="title">
-            {{#image_link_small_fr}}
-            <img style="width: 30px" src="//{{{ image_link_small_fr }}}" />
-            {{/image_link_small_fr}}
-            {{{ _highlightResult.name_fr.value }}}
+            {{#image_link_small}}
+            <img style="width: 30px" src="//{{{ image_link_small }}}" />
+            {{/image_link_small}}
+            {{{ _highlightResult.name.value }}}
         </div>
     </div>
 </script>
@@ -17,7 +17,7 @@
                 {{nbHits}} result{{^nbHits_one}}s{{/nbHits_one}} found matching "<strong>{{query}}</strong>" in {{processingTimeMS}} ms
             </div>
             <div class="logo" style="float: right;">
-                by <img src="<?php echo plugin_dir_url(__FILE__); ?>../../front/algolia-logo.png">
+                by <img src="<?php echo $path ?>/img/algolia-logo.png">
             </div>
             {{#sorting_indexes.length}}
             <div style="float: right; margin-right: 10px;">
@@ -41,21 +41,21 @@
                     <div class="result-content">
                         <div>
                             <h1 class="result-title">
-                                {{{ _highlightResult.title.value }}}
+                                {{{ _highlightResult.name.value }}}
                             </h1>
                         </div>
                         <div class="result-sub-content">
                             <div class="result-thumbnail">
-                            {{#featureImage}}
-                                <img height="216" src="{{{ featureImage.file }}}" />
-                            {{/featureImage}}
-                            {{^featureImage}}
+                            {{#image_link_large}}
+                                <img height="216" src="//{{{ image_link_large }}}" />
+                            {{/image_link_large}}
+                            {{^image_link_large}}
                             <div style="height: 216px;"></div>
-                            {{/featureImage}}
+                            {{/image_link_large}}
                             </div>
                             <div class="result-excerpt">
-                                <div class="price">Price : {{_price}}€</div>
-                                <div class="rating">Rating : {{average_rating}}/5</div>
+                                <div class="price">Price : {{price_tax_incl}}€</div>
+                                <div class="description">{{{description_short}}}</div>
                             </div>
                         </div>
                     </div>
@@ -165,3 +165,4 @@
         </ul>
     </div>
 </div>
+</script>

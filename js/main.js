@@ -72,7 +72,7 @@ if (algoliaSettings.type_of_search == "autocomplete")
             $(this).typeahead({hint: false}, hogan_objs);
 
             $(this).on('typeahead:selected', function (e, item) {
-                window.location.href = item.permalink;
+                window.location.href = item.link_fr;
             });
         });
     });
@@ -129,7 +129,7 @@ if (algoliaSettings.type_of_search == "instant")
 
                 algoliaSettings.facets = algoliaSettings.facets.sort(myCompare);
 
-                this.helper = new AlgoliaSearchHelper(algolia_client, algoliaSettings.index_name + 'all', {
+                this.helper = new AlgoliaSearchHelper(algolia_client, algoliaSettings.index_name + 'all_' + algoliaSettings.language, {
                     facets: this.conjunctive_facets,
                     disjunctiveFacets: this.disjunctive_facets,
                     hitsPerPage: algoliaSettings.number_by_page

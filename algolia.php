@@ -140,21 +140,9 @@ class Algolia extends Module
 
     public function hookDisplayFooter()
     {
-        $content = file_get_contents(__DIR__.'/themes/'.$this->algolia_registry->theme.'/templates.php');
+        $path = $this->_path;
 
-        return $content;
-    }
-
-    public function hookDisplayTop()
-    {
-        /**
-         * If the configuration is not valid
-         * No need to load anything
-         */
-        if ($this->algolia_registry->validCredential == false)
-            return false;
-
-        return $this->display(__FILE__, 'views/templates/hook/search.tpl');
+        include __DIR__.'/themes/'.$this->algolia_registry->theme.'/templates.php';
     }
 
 	public function hookDisplayHeader()
@@ -175,23 +163,33 @@ class Algolia extends Module
         $this->context->controller->addCSS($this->_path.'/themes/'.$this->algolia_registry->theme.'/styles.css');
         $this->context->controller->addJS($this->_path.'/themes/'.$this->algolia_registry->theme.'/theme.js');
 
+        global $cookie;
+
+        $current_language = \Language::getIsoById($cookie->id_lang);
+
         $indexes = array();
-        $indexes[] = array('index_name' => $this->algolia_registry->index_name.'all', 'name' => 'Products', 'order1' => 0, 'order2' => 0);
+        $indexes[] = array('index_name' => $this->algolia_registry->index_name.'all_'.$current_language, 'name' => 'Products', 'order1' => 0, 'order2' => 0);
+
+        $facets = array();
+
+        foreach (\Feature::getFeatures($cookie->id_lang) as $feature)
+            $facets[] = array('tax' => $feature['name'], 'name' => $feature['name'], 'order1' => 0,'order2' => 0, 'type' => 'conjunctive');
 
         $algoliaSettings = array(
             'app_id'                    => $this->algolia_registry->app_id,
             'search_key'                => $this->algolia_registry->search_key,
             'indexes'                   => $indexes,
-            //'sorting_indexes'           => $sorting_indexes,
+            'sorting_indexes'           => array(),//$sorting_indexes,
             'index_name'                => $this->algolia_registry->index_name,
             'type_of_search'            => $this->algolia_registry->type_of_search,
             'instant_jquery_selector'   => str_replace("\\", "", $this->algolia_registry->instant_jquery_selector),
-            //'facets'                    => $facets,
+            'facets'                    => $facets,
+            'facetsLabels'              => array(),//$facetsLabels,
             'number_by_type'            => $this->algolia_registry->number_by_type,
-            //'number_by_page'            => $this->algolia_registry->number_by_page,
+            'number_by_page'            => $this->algolia_registry->number_by_page,
             'search_input_selector'     => str_replace("\\", "", $this->algolia_registry->search_input_selector),
-            //'facetsLabels'              => $facetsLabels,
-            "plugin_url"                => $this->_path
+            "plugin_url"                => $this->_path,
+            "language"                  => $current_language
         );
 
         Media::addJsDef(array('algoliaSettings' => $algoliaSettings));
