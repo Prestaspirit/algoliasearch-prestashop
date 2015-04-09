@@ -48,7 +48,7 @@ class PrestashopFetcher
 
     private function try_cast($value)
     {
-        if (is_numeric($value) && intval($value) == intval(floatval($value)))
+        if (is_numeric($value) && floatval($value) == intval($value))
             return intval($value);
 
         if (is_numeric($value))
@@ -96,12 +96,12 @@ class PrestashopFetcher
             if ((is_array($value) == true) && (isset($value["method"]) === true))
             {
                 $method = $value["method"];
-                $product = self::$method($product, $ps_product, $language['id_lang'], $language['iso_code']);
+                $product = $this->try_cast(self::$method($product, $ps_product, $language['id_lang'], $language['iso_code']));
             }
             elseif (isset($this->product_definition[$value]["lang"]) == true)
-                $product->{$value} = $ps_product->{$value}[$language['id_lang']];
+                $product->{$value} = $this->try_cast($ps_product->{$value}[$language['id_lang']]);
             else
-                $product->{$value} = $ps_product->{$value};
+                $product->{$value} = $this->try_cast($ps_product->{$value});
         }
 
         return $product;

@@ -1,13 +1,14 @@
 /**
- * Common stuff
+ * Common variables and function for autocomplete and instant search
  */
 var algolia_client = new AlgoliaSearch(algoliaSettings.app_id, algoliaSettings.search_key);
-var indexes = [];
+var indices = [];
+var custom_facets_types = algoliaSettings.theme.facet_types;
 
-for (var i = 0; i < algoliaSettings.indexes.length; i++)
-    indexes.push(algolia_client.initIndex(algoliaSettings.indexes[i].index_name));
+for (var i = 0; i < algoliaSettings.indices.length; i++)
+    indices.push(algolia_client.initIndex(algoliaSettings.indices[i].index_name));
 
-var myCompare = function (a, b) {
+window.indicesCompare = function (a, b) {
     if (a.order1 < b.order1)
         return -1;
 
@@ -15,67 +16,29 @@ var myCompare = function (a, b) {
         return -1;
 
     return 1;
-}
+};
+
+window.facetsCompare = function (a, b) {
+    if (a.order < b.order)
+        return -1;
+
+    if (a.order == b.order)
+        return -1;
+
+    return 1;
+};
 
 /**
- * Autocomplete
+ * Autocomplete functions
  */
 
 if (algoliaSettings.type_of_search == "autocomplete")
 {
-    jQuery(document).ready(function ($)
-    {
-        $(algoliaSettings.search_input_selector).keyup(function (e) {
-            e.preventDefault();
-
-            return false;
-        });
-
-        var $autocompleteTemplate = Hogan.compile($('#autocomplete-template').text());
-
-        hogan_objs = [];
-
-        algoliaSettings.indexes.sort(myCompare);
-
-        for (var i = 0; i < algoliaSettings.indexes.length; i++)
-        {
-            hogan_objs.push({
-                source: indexes[i].ttAdapter({hitsPerPage: algoliaSettings.number_by_type}),
-                displayKey: 'title',
-                templates: {
-                    header: '<div class="category">' + algoliaSettings.indexes[i].name + '</div>',
-                    suggestion: function (hit) {
-                        return $autocompleteTemplate.render(hit);
-                    }
-                }
-            });
-
+    window.getBrandingHits = function () {
+        return function findMatches(q, cb) {
+            return cb(["algolia-branding"]);
         }
-
-        function matcher () {
-            return function findMatches(q, cb) {
-                return cb(["algolia-branding"]);
-            }
-        }
-
-        hogan_objs.push({
-            source: matcher(),
-            displayKey: 'title',
-            templates: {
-                suggestion: function (hit) {
-                    return '<div class="footer">powered by <img width="50" src="' + algoliaSettings.plugin_url + '/img/algolia.png"></div>';
-                }
-            }
-        });
-
-        $(algoliaSettings.search_input_selector).each(function (i) {
-            $(this).typeahead({hint: false}, hogan_objs);
-
-            $(this).on('typeahead:selected', function (e, item) {
-                window.location.href = item.link_fr;
-            });
-        });
-    });
+    };
 }
 
 /**
@@ -94,54 +57,21 @@ if (algoliaSettings.type_of_search == "instant")
 
             engine = new function () {
 
-                /**
-                 * Variables Initialization
-                 */
-
-                this.old_content         = $(algoliaSettings.instant_jquery_selector).html();
-
-                this.query               = "";
-
-                this.template            = Hogan.compile($('#instant-content-template').text());
-                this.facetsTemplate      = Hogan.compile($('#instant-facets-template').text());
-                this.paginationTemplate  = Hogan.compile($('#instant-pagination-template').text());
-
-                this.conjunctive_facets  = [];
-                this.disjunctive_facets  = [];
-                this.slider_facets       = [];
+                this.query = "";
 
                 var $this = this;
 
-                for (var i = 0; i < algoliaSettings.facets.length; i++)
-                {
-                    if (algoliaSettings.facets[i].type == "conjunctive")
-                        this.conjunctive_facets.push(algoliaSettings.facets[i].tax);
+                this.helper = undefined;
 
-                    if (algoliaSettings.facets[i].type == "disjunctive")
-                        this.disjunctive_facets.push(algoliaSettings.facets[i].tax);
+                this.setHelper = function (helper) {
+                    this.helper = helper;
+                };
 
-                    if (algoliaSettings.facets[i].type == "slider")
-                    {
-                        this.disjunctive_facets.push(algoliaSettings.facets[i].tax);
-                        this.slider_facets.push(algoliaSettings.facets[i].tax);
-                    }
-                }
-
-                algoliaSettings.facets = algoliaSettings.facets.sort(myCompare);
-
-                this.helper = new AlgoliaSearchHelper(algolia_client, algoliaSettings.index_name + 'all_' + algoliaSettings.language, {
-                    facets: this.conjunctive_facets,
-                    disjunctiveFacets: this.disjunctive_facets,
-                    hitsPerPage: algoliaSettings.number_by_page
-                });
-
-                /**
-                 * Functions
-                 */
                 this.updateUrl = function (push_state)
                 {
                     var refinements = [];
 
+                    /** Get refinements for conjunctive facets **/
                     for (var refine in this.helper.refinements)
                     {
                         if (this.helper.refinements[refine])
@@ -155,6 +85,7 @@ if (algoliaSettings.type_of_search == "instant")
                         }
                     }
 
+                    /** Get refinements for disjunctive facets **/
                     for (var refine in this.helper.disjunctiveRefinements)
                     {
                         for (var value in this.helper.disjunctiveRefinements[refine])
@@ -170,8 +101,9 @@ if (algoliaSettings.type_of_search == "instant")
                         }
                     }
 
-                    var url = '#q=' + encodeURIComponent(this.query) + '&page=' + this.helper.page + '&refinements=' + encodeURIComponent(JSON.stringify(refinements)) + '&numerics_refinements=' + encodeURIComponent(JSON.stringify(this.helper.numericsRefinements)) + '&in=' + encodeURIComponent(JSON.stringify(this.helper.getIndex()));
+                    var url = '#q=' + encodeURIComponent(this.query) + '&page=' + this.helper.page + '&refinements=' + encodeURIComponent(JSON.stringify(refinements)) + '&numerics_refinements=' + encodeURIComponent(JSON.stringify(this.helper.numericsRefinements)) + '&index_name=' + encodeURIComponent(JSON.stringify(this.helper.getIndex()));
 
+                    /** If push_state is false wait for one second to push the state in history **/
                     if (push_state)
                         history.pushState(url, null, url);
                     else
@@ -183,7 +115,7 @@ if (algoliaSettings.type_of_search == "instant")
                     }
                 };
 
-                this.getRefinementsFromUrl = function()
+                this.getRefinementsFromUrl = function(searchCallback)
                 {
                     if (location.hash && location.hash.indexOf('#q=') === 0)
                     {
@@ -191,18 +123,19 @@ if (algoliaSettings.type_of_search == "instant")
                         var pageParamOffset                 = params.indexOf('&page=');
                         var refinementsParamOffset          = params.indexOf('&refinements=');
                         var numericsRefinementsParamOffset  = params.indexOf('&numerics_refinements=');
-                        var indexNameOffset                 = params.indexOf('&in=');
+                        var indexNameOffset                 = params.indexOf('&index_name=');
 
                         var q                               = decodeURIComponent(params.substring(0, pageParamOffset));
-                        var page                            = parseInt(params.substring(pageParamOffset + 6, refinementsParamOffset));
-                        var refinements                     = JSON.parse(decodeURIComponent(params.substring(refinementsParamOffset + 13, numericsRefinementsParamOffset)));
-                        var numericsRefinements             = JSON.parse(decodeURIComponent(params.substring(numericsRefinementsParamOffset + 22, indexNameOffset)));
-                        var indexName                       = JSON.parse(decodeURIComponent(params.substring(indexNameOffset + 4)));
+                        var page                            = parseInt(params.substring(pageParamOffset + '&page='.length, refinementsParamOffset));
+                        var refinements                     = JSON.parse(decodeURIComponent(params.substring(refinementsParamOffset + '&refinements='.length, numericsRefinementsParamOffset)));
+                        var numericsRefinements             = JSON.parse(decodeURIComponent(params.substring(numericsRefinementsParamOffset + '&numerics_refinements='.length, indexNameOffset)));
+                        var indexName                       = JSON.parse(decodeURIComponent(params.substring(indexNameOffset + '&index_name='.length)));
 
                         this.query = q;
 
                         this.helper.clearRefinements();
 
+                        /** Set refinements from url data **/
                         for (var i = 0; i < refinements.length; ++i) {
                             for (var refine in refinements[i]) {
                                 this.helper.toggleRefine(refine, refinements[i][refine]);
@@ -216,152 +149,144 @@ if (algoliaSettings.type_of_search == "instant")
 
                         $(algoliaSettings.search_input_selector).val(this.query);
 
-                        this.helper.search(this.query, this.searchCallback);
+                        this.helper.search(this.query, searchCallback);
 
                     }
                 };
 
-                this.performQueries = function (push_state)
-                {
-                    this.helper.search(this.query, this.searchCallback);
+                this.getFacets = function (content) {
 
-                    this.updateUrl(push_state);
+                    var facets = [];
 
-                };
-
-                this.searchCallback = function(success, content) {
-
-                    if (success)
+                    for (var i = 0; i < algoliaSettings.facets.length; i++)
                     {
-                        var html_content = "";
+                        var sub_facets = [];
 
-                        html_content += "<div id='algolia_instant_selector'>";
-
-                        var facets = [];
-
-                        if (content.hits.length > 0)
+                        if (custom_facets_types[algoliaSettings.facets[i].type] != undefined)
                         {
-
-                            /**
-                             * Handle Facets
-                             */
-                            for (var i = 0; i < algoliaSettings.facets.length; i++)
+                            try
                             {
-                                var sub_facets = [];
+                                var params = custom_facets_types[algoliaSettings.facets[i].type]($this, content, algoliaSettings.facets[i]);
 
-                                if (algoliaSettings.facets[i].type == "conjunctive")
-                                {
-                                    for (var key in content.facets[algoliaSettings.facets[i].tax])
-                                    {
-                                        var checked = $this.helper.isRefined(algoliaSettings.facets[i].tax, key);
-
-                                        var name = algoliaSettings.facetsLabels[key] != undefined ? algoliaSettings.facetsLabels[key] : key;
-
-                                        sub_facets.push({
-                                            conjunctive: 1,
-                                            disjunctive: 0,
-                                            slider: 0,
-                                            checked: checked,
-                                            name: name,
-                                            count: content.facets[algoliaSettings.facets[i].tax][key]
-                                        });
-                                    }
-                                }
-
-                                if (algoliaSettings.facets[i].type == "slider")
-                                {
-                                    if (content.facets_stats[algoliaSettings.facets[i].tax] != undefined)
-                                    {
-                                        var min = content.facets_stats[algoliaSettings.facets[i].tax].min;
-                                        var max = content.facets_stats[algoliaSettings.facets[i].tax].max;
-
-                                        var current_min = $this.helper.getNumericsRefine(algoliaSettings.facets[i].tax, ">=");
-                                        var current_max = $this.helper.getNumericsRefine(algoliaSettings.facets[i].tax, "<=");
-
-                                        if (current_min == undefined)
-                                            current_min = min;
-
-                                        if (current_max == undefined)
-                                            current_max = max;
-
-                                        var name = algoliaSettings.facetsLabels[key] != undefined ? algoliaSettings.facetsLabels[key] : key;
-
-                                        sub_facets.push({ current_min: current_min, current_max: current_max, count: min == max ? 0 : 1,slider: 1, conjunctive: 0, disjunctive: 0, name: name, min: min, max: max });
-                                    }
-                                }
-
-                                if (algoliaSettings.facets[i].type == "disjunctive")
-                                {
-                                    for (var key in content.disjunctiveFacets[algoliaSettings.facets[i].tax])
-                                    {
-                                        var checked = $this.helper.isRefined(algoliaSettings.facets[i].tax, key);
-                                        var name = algoliaSettings.facetsLabels[key] != undefined ? algoliaSettings.facetsLabels[key] : key;
-
-                                        sub_facets.push({ slider: 0, conjunctive: 0, disjunctive: 1, checked: checked, name: name, count: content.disjunctiveFacets[algoliaSettings.facets[i].tax][key] });
-                                    }
-                                }
-
-                                facets.push({count: sub_facets.length, tax: algoliaSettings.facets[i].tax, facet_categorie_name: algoliaSettings.facets[i].name, sub_facets: sub_facets });
+                                if (params)
+                                    for (var k = 0; k < params.length; k++)
+                                        sub_facets.push(params[k]);
                             }
-
-                            /**
-                             * Handle Pagination
-                             */
-                            var pages = [];
-                            if (content.page > 5)
+                            catch(error)
                             {
-                                pages.push({ current: false, number: 1 });
-                                pages.push({ current: false, number: '...', disabled: true });
+                                console.log(error.message);
+                                throw("Bad facet function for '" + algoliaSettings.facets[i].type + "'");
                             }
-
-                            for (var p = content.page - 5; p < content.page + 5; ++p)
-                            {
-                                if (p < 0 || p >= content.nbPages)
-                                    continue;
-
-                                pages.push({ current: content.page == p, number: (p + 1) });
-                            }
-                            if (content.page + 5 < content.nbPages)
-                            {
-                                pages.push({ current: false, number: '...', disabled: true });
-                                pages.push({ current: false, number: content.nbPages });
-                            }
-
-                            /** Render Facet **/
-                            html_content += $this.facetsTemplate.render({ facets: facets, count: facets.length });
                         }
+                        else
+                        {
+                            var content_facets = content.facets;
 
-                        /** Render results **/
-                        html_content += $this.template.render({
-                            facets_count: facets.length,
-                            getDate: getDate,
-                            sortSelected: sortSelected,
-                            relevance_index_name: algoliaSettings.index_name + 'all',
-                            sorting_indexes: algoliaSettings.sorting_indexes,
-                            hits: content.hits,
-                            nbHits: content.nbHits,
-                            nbHits_zero: (content.nbHits === 0),
-                            nbHits_one: (content.nbHits === 1),
-                            nbHits_many: (content.nbHits > 1),
-                            query: $this.query,
-                            processingTimeMS: content.processingTimeMS
-                        });
+                            if (algoliaSettings.facets[i].type == 'disjunctive')
+                                content_facets = content.disjunctiveFacets;
 
-                        /** Render pagination **/
-                        if (content.hits.length > 0)
-                            html_content += $this.paginationTemplate.render({ pages: pages, prev_page: (content.page > 0 ? content.page : false), next_page: (content.page + 1 < content.nbPages ? content.page + 2 : false) });
+                            for (var key in content_facets[algoliaSettings.facets[i].tax])
+                            {
+                                var checked = $this.helper.isRefined(algoliaSettings.facets[i].tax, key);
 
-                        html_content += "</div>";
+                                var name = algoliaSettings.facetsLabels[key] != undefined ? algoliaSettings.facetsLabels[key] : key;
+                                var nameattr = key;
 
-                        $(algoliaSettings.instant_jquery_selector).html(html_content);
+                                var params = {
+                                    type: {},
+                                    checked: checked,
+                                    nameattr: nameattr,
+                                    name: name,
+                                    count: content_facets[algoliaSettings.facets[i].tax][key]
+                                };
+                                params.type[algoliaSettings.facets[i].type] = true;
 
-
-                        /** Call this function that should be define in the template **/
-                        finishRenderingResults();
+                                sub_facets.push(params);
+                            }
+                        }
+                        facets.push({count: sub_facets.length, tax: algoliaSettings.facets[i].tax, facet_categorie_name: algoliaSettings.facets[i].name, sub_facets: sub_facets });
                     }
+
+                    return facets;
                 };
 
-                window.sortSelected = function () {
+                this.getPages = function (content) {
+                    var pages = [];
+                    if (content.page > 5)
+                    {
+                        pages.push({ current: false, number: 1 });
+                        pages.push({ current: false, number: '...', disabled: true });
+                    }
+
+                    for (var p = content.page - 5; p < content.page + 5; ++p)
+                    {
+                        if (p < 0 || p >= content.nbPages)
+                            continue;
+
+                        pages.push({ current: content.page == p, number: (p + 1) });
+                    }
+                    if (content.page + 5 < content.nbPages)
+                    {
+                        pages.push({ current: false, number: '...', disabled: true });
+                        pages.push({ current: false, number: content.nbPages });
+                    }
+
+                    return pages;
+                };
+
+
+                /**
+                 * Rendering Html Function
+                 */
+                this.getHtmlForPagination = function (paginationTemplate, content, pages, facets) {
+                    var pagination_html = paginationTemplate.render({
+                        pages: pages,
+                        facets_count: facets.length,
+                        prev_page: (content.page > 0 ? content.page : false),
+                        next_page: (content.page + 1 < content.nbPages ? content.page + 2 : false)
+                    });
+
+                    return pagination_html;
+                };
+
+                this.getHtmlForResults = function (resultsTemplate, content, facets) {
+
+                    var results_html = resultsTemplate.render({
+                        facets_count: facets.length,
+                        getDate: this.getDate,
+                        relevance_index_name: algoliaSettings.index_name + 'all',
+                        sorting_indices: algoliaSettings.sorting_indices,
+                        sortSelected: this.sortSelected,
+                        hits: content.hits,
+                        nbHits: content.nbHits,
+                        nbHits_zero: (content.nbHits === 0),
+                        nbHits_one: (content.nbHits === 1),
+                        nbHits_many: (content.nbHits > 1),
+                        query: $this.query,
+                        processingTimeMS: content.processingTimeMS
+                    });
+
+                    return results_html;
+                };
+
+                this.getHtmlForFacets = function (facetsTemplate, facets) {
+
+                    var facets_html = facetsTemplate.render({
+                        facets: facets,
+                        count: facets.length,
+                        getDate: this.getDate,
+                        relevance_index_name: algoliaSettings.index_name + 'all',
+                        sorting_indices: algoliaSettings.sorting_indices,
+                        sortSelected: this.sortSelected
+                    });
+
+                    return facets_html;
+                };
+
+                /**
+                 * Helper methods
+                 */
+                this.sortSelected = function () {
                     return function (val) {
                         var template = Hogan.compile(val);
 
@@ -379,13 +304,13 @@ if (algoliaSettings.type_of_search == "instant")
                             return "selected";
                         return "";
                     }
-                }
-
-                window.gotoPage = function(page) {
-                    engine.helper.gotoPage(+page - 1);
                 };
 
-                window.getDate = function () {
+                this.gotoPage = function(page) {
+                    this.helper.gotoPage(+page - 1);
+                };
+
+                this.getDate = function () {
                     return function (val) {
                         var template = Hogan.compile(val);
 
@@ -401,15 +326,6 @@ if (algoliaSettings.type_of_search == "instant")
 
 
                         var date = new Date(timestamp * 1000);
-
-                        var datevalues = [
-                            date.getFullYear(),
-                            date.getMonth()+1,
-                            date.getDate(),
-                            date.getHours(),
-                            date.getMinutes(),
-                            date.getSeconds(),
-                        ];
 
                         var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
                         var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -428,18 +344,7 @@ if (algoliaSettings.type_of_search == "instant")
                         return days[date.getDay()] + ", " + months[date.getMonth()] + " " + day + ", " + date.getFullYear();
                     }
                 };
-
-                window.addEventListener("popstate", function(e) {
-                    engine.getRefinementsFromUrl();
-                });
-
-                /**
-                 * Initialization
-                 */
-
-                $(algoliaSettings.search_input_selector).attr('autocomplete', 'off');
-                this.getRefinementsFromUrl();
-            }
+            };
         }
         else
         {

@@ -253,6 +253,11 @@
                                                 {else}
                                                 <div class="no-screenshot">No screenshot</div>
                                                 {/if}
+                                                {if $theme->screenshot_autocomplete}
+                                                <img class="screenshot autocomplete" src="{$theme->screenshot_autocomplete}">
+                                                {else}
+                                                <div class="no-screenshot autocomplete instant">No screenshot</div>
+                                                {/if}
                                             </div>
                                             <div class="theme-name">
                                                 {$theme->name}

@@ -40,6 +40,8 @@ class Algolia extends Module
     public $batch_count = 50;
     private $algolia_helper;
     private $algolia_registry;
+    private $theme_helper;
+    private $indexer;
 
 	public function __construct()
 	{
@@ -59,6 +61,8 @@ class Algolia extends Module
 		$this->init();
 
         $this->algolia_registry = \Algolia\Core\Registry::getInstance();
+        $this->theme_helper = new \Algolia\Core\ThemeHelper($this);
+        $this->indexer = new \Algolia\Core\Indexer();
 
         if ($this->algolia_registry->validCredential)
         {
@@ -68,7 +72,67 @@ class Algolia extends Module
                 $this->algolia_registry->admin_key
             );
         }
+
+/*        echo '<pre>';
+        print_r(array_merge($this->getFeatures(), $this->getAttributes(), $this->getFilters()));
+        die();
+*/
+
 	}
+
+    public function getFeatures()
+    {
+        global $cookie;
+        return array_map(function ($a) {
+            return $a['name'];
+        }, \Feature::getFeatures($cookie->id_lang));
+    }
+
+    public function getAttributes()
+    {
+        global $cookie;
+
+        return array_map(function ($a) {
+            return $a['attribute_group'];
+        }, Db::getInstance()->executeS('
+			SELECT DISTINCT agl.`name` AS `attribute_group`
+			FROM `'._DB_PREFIX_.'attribute_group` ag
+			LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl
+				ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int)$cookie->id_lang.')
+			LEFT JOIN `'._DB_PREFIX_.'attribute` a
+				ON a.`id_attribute_group` = ag.`id_attribute_group`
+			LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al
+				ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int)$cookie->id_lang.')
+			'.Shop::addSqlAssociation('attribute_group', 'ag').'
+			'.Shop::addSqlAssociation('attribute', 'a').'
+			'.(false ? 'WHERE a.`id_attribute` IS NOT NULL AND al.`name` IS NOT NULL AND agl.`id_attribute_group` IS NOT NULL' : '').'
+			ORDER BY agl.`name` ASC, a.`position` ASC
+		'));
+    }
+
+    public function getFilters()
+    {
+        static $cache = null;
+
+        $id_shop = (int) Context::getContext()->shop->id;
+
+        if (is_array($cache))
+            return $cache;
+
+        $home_category = Configuration::get('PS_HOME_CATEGORY');
+        $id_parent = (int)Tools::getValue('id_category', Tools::getValue('id_category_layered', $home_category));
+
+        $filters = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
+			SELECT * FROM '._DB_PREFIX_.'layered_category
+			WHERE id_category = '.(int)$id_parent.'
+				AND id_shop = '.$id_shop.'
+			GROUP BY `type`, id_value ORDER BY position ASC'
+        );
+
+        return array_map(function ($a) {
+            return $a["type"];
+        },$filters);
+    }
 
     public function getPath()
     {
@@ -83,6 +147,9 @@ class Algolia extends Module
             $this->registerHook('displayFooter') &&
 			$this->registerHook('displayBackOfficeHeader') &&
 			$this->registerHook('actionCronJob') &&
+            $this->registerHook('actionProductUpdate') &&
+            $this->registerHook('actionProductDelete') &&
+            $this->registerHook('actionProductAdd') &&
             $this->addAdminTab();
 	}
 
@@ -95,8 +162,6 @@ class Algolia extends Module
 
 		return parent::uninstall();
 	}
-
-
 
     public function addAdminTab()
     {
@@ -132,6 +197,22 @@ class Algolia extends Module
     /**
      * HOOKS
      */
+
+    public function hookActionProductAdd($params)
+    {
+        $this->indexer->indexProduct($params['product']);
+    }
+
+    public function hookActionProductUpdate($params)
+    {
+        $this->indexer->indexProduct($params['product']);
+    }
+
+    public function hookActionProductDelete($params)
+    {
+        $this->indexer->deleteProduct($params['product']->id);
+    }
+
     public function hookDisplayBackOfficeHeader()
     {
         if (strcmp(Tools::getValue('configure'), $this->name) === 0)
@@ -167,8 +248,8 @@ class Algolia extends Module
 
         $current_language = \Language::getIsoById($cookie->id_lang);
 
-        $indexes = array();
-        $indexes[] = array('index_name' => $this->algolia_registry->index_name.'all_'.$current_language, 'name' => 'Products', 'order1' => 0, 'order2' => 0);
+        $indices = array();
+        $indices[] = array('index_name' => $this->algolia_registry->index_name.'all_'.$current_language, 'name' => 'Products', 'order1' => 0, 'order2' => 0);
 
         $facets = array();
 
@@ -178,8 +259,8 @@ class Algolia extends Module
         $algoliaSettings = array(
             'app_id'                    => $this->algolia_registry->app_id,
             'search_key'                => $this->algolia_registry->search_key,
-            'indexes'                   => $indexes,
-            'sorting_indexes'           => array(),//$sorting_indexes,
+            'indices'                   => $indices,
+            'sorting_indices'           => array(),//$sorting_indices,
             'index_name'                => $this->algolia_registry->index_name,
             'type_of_search'            => $this->algolia_registry->type_of_search,
             'instant_jquery_selector'   => str_replace("\\", "", $this->algolia_registry->instant_jquery_selector),
@@ -189,7 +270,8 @@ class Algolia extends Module
             'number_by_page'            => $this->algolia_registry->number_by_page,
             'search_input_selector'     => str_replace("\\", "", $this->algolia_registry->search_input_selector),
             "plugin_url"                => $this->_path,
-            "language"                  => $current_language
+            "language"                  => $current_language,
+            'theme'                     => $this->theme_helper->get_current_theme()
         );
 
         Media::addJsDef(array('algoliaSettings' => $algoliaSettings));

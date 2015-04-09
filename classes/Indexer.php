@@ -59,16 +59,26 @@ class Indexer
         return $products;
     }
 
-    public function indexProduct($post)
+    public function indexProduct($product)
     {
-        $object = $this->prestashop_fetcher->getPostObj($post);
+        if ($product->active == false)
+        {
+            $this->deleteProduct($product->id);
+            return;
+        }
 
-        $this->algolia_helper->pushObject($this->algolia_registry->index_name.'all', $object);
+        foreach (\Language::getLanguages() as $language)
+        {
+            $object = $this->prestashop_fetcher->getProductObj($product->id, $language);
+
+            $this->algolia_helper->pushObject($this->algolia_registry->index_name.'all_' . $language['iso_code'], $object);
+        }
     }
 
-    public function deleteProduct($post_id, $type)
+    public function deleteProduct($product_id)
     {
-        $this->algolia_helper->deleteObject($this->algolia_registry->index_name.'all', $post_id);
+        foreach (\Language::getLanguages() as $language)
+            $this->algolia_helper->deleteObject($this->algolia_registry->index_name.'all_' . $language['iso_code'], $product_id);
     }
 
     public function indexProductsPart($count, $offset)

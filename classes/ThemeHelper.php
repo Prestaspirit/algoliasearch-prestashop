@@ -4,11 +4,13 @@ class ThemeHelper
 {
     private $themes_dir;
     private $module;
+    private $algolia_registry;
 
     public function __construct($module)
     {
         $this->themes_dir = __DIR__.'/../themes/';
         $this->module = $module;
+        $this->algolia_registry = Registry::getInstance();
     }
 
     public function available_themes()
@@ -36,12 +38,28 @@ class ThemeHelper
                 else
                     $theme->screenshot = null;
 
+                $theme->screenshot_autocomplete  = isset($configs['screenshot-autocomplete']) ? $configs['screenshot-autocomplete'] : 'screenshot-autocomplete.png';
+
+                if (file_exists($this->themes_dir.$dir.'/'.$theme->screenshot_autocomplete))
+                    $theme->screenshot_autocomplete = $this->module->getPath().'/themes/'.$dir.'/'.$theme->screenshot_autocomplete;
+                else
+                    $theme->screenshot_autocomplete = null;
+
                 $theme->description = isset($configs['description']) ? $configs['description'] : '';
+
+                $theme->facet_types = isset($configs['facet_types']) ? $configs['facet_types'] : array();
 
                 $themes[] = $theme;
             }
         }
 
         return $themes;
+    }
+
+    public function get_current_theme()
+    {
+        foreach ($this->available_themes() as $theme)
+            if ($theme->dir == $this->algolia_registry->theme)
+                return $theme;
     }
 }
