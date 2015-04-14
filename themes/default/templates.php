@@ -22,7 +22,7 @@
                 {{nbHits}} result{{^nbHits_one}}s{{/nbHits_one}} found matching "<strong>{{query}}</strong>" in {{processingTimeMS}} ms
             </div>
             <div class="logo" style="float: right;">
-                by <img src="<?php echo $path ?>../../front/algolia-logo.png">
+                by <img src="<?php echo $path ?>/img/algolia-logo.png">
             </div>
             {{#sorting_indices.length}}
             <div style="float: right; margin-right: 10px;">

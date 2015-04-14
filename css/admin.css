@@ -1,11 +1,18 @@
+.bootstrap input[type="text"]
+{
+    display: inline-block;
+}
+
 #algolia-settings .wrapper
 {
+    max-width: 1100px;
     margin: 20px;
 }
 
 #algolia-settings .content-wrapper .content
 {
     background-color: white;
+    padding: 20px 5px;
     border: solid 1px #DDDDDD;
     border-top: none;
 }
@@ -13,8 +20,6 @@
 {
     border-bottom: 1px solid #DDD;
     padding-left: 5px;
-    margin: 0px;
-    margin-bottom: 8.5px;
 }
 #algolia-settings .content-wrapper .content .help-block {
     border-left: 5px solid #DDD;
@@ -53,7 +58,7 @@
 {
     padding: 5px;
     border-radius: 5px;
-    min-width: 200px;
+    width: 200px;
 }
 #algolia-settings .content-wrapper .content table {
     width: 100%;
@@ -77,7 +82,7 @@
 
 #algolia-settings .content-wrapper .content .content-item
 {
-    padding: 5px;
+    padding: 10px 5px;
 }
 
 #algolia-settings .content-wrapper .title
@@ -92,6 +97,10 @@
     margin-left: 50px;
 }
 
+#algolia-settings .table-col-enabled {
+    width: 75px;
+}
+
 #algolia-settings .tabs .title
 {
     float: left;
@@ -99,6 +108,41 @@
     padding: 10px 20px;
     border-radius: 5px 5px 0 0;
     background-color: transparent;
+    border: solid 1px #DDDDDD;
+    border-bottom: none;
+    margin-right: 2px;
+    cursor: pointer;
+}
+
+#algolia-settings #extra-metas-attributes tr td:nth-child(n+3),
+#algolia-settings #extra-metas-attributes tr th:nth-child(n+3),
+#algolia-settings #taxonomies tr td:nth-child(n+3),
+#algolia-settings #taxonomies tr th:nth-child(n+3)
+{
+    display: none;
+}
+
+#algolia-settings #extra-meta-and-taxonomies
+{
+    margin-bottom: 20px;
+}
+
+#algolia-settings #_extra-metas .title.selected
+{
+    background-color: white;
+    border-bottom: solid 1px #f5f5f5;
+    margin-bottom: -1px;
+    padding-bottom: 11px;
+    cursor: auto;
+}
+
+#algolia-settings #_extra-metas .title
+{
+    float: left;
+    display: inline;
+    padding: 10px 20px;
+    border-radius: 5px 5px 0 0;
+    background-color: rgba(241, 241, 241, 1);
     border: solid 1px #DDDDDD;
     border-bottom: none;
     margin-right: 2px;

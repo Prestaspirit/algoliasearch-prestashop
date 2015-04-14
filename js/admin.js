@@ -45,38 +45,45 @@ jQuery(document).ready(function($) {
         handleScreenshot();
     });
 
-    /*
-    selectTab = function(hash)
-    {
-        $(".tab-content").hide();
-        $(hash).show();
-        $(".tabs .title").removeClass("selected");
-        $("[data-tab='"+ hash +"']").addClass("selected");
 
-        window.location.hash = hash;
+    /** Handle Tab **/
+    if (location.hash !== '')
+        $('a[href="' + location.hash + '"]').tab('show');
 
-        $(window).scrollTop(0);
-    }
-
-    $(".tabs .title").click(function () {
-        var hash = $(this).attr("data-tab");
-
-        selectTab(hash);
+    $('a[data-toggle="tab"]').on('click', function(e) {
+        location.hash = $(e.target).attr('href').substr(1);
     });
 
-    var hash = $(".tabs .title.selected").attr("data-tab");
+    /**
+     * Handle Sub Tab
+     */
 
-    if (window.location.hash != "")
-        hash = window.location.hash;
+    function reorderMetas()
+    {
+        $('#extra-metas tr').each(function (i) {
+            if ($(this).find('td:first input[type="checkbox"]').prop('checked') || $(this).find('td:first i').length > 0)
+            {
+                $('#extra-meta-and-taxonomies').append($(this));
+            }
+        });
 
-    selectTab(hash);
+        $('#extra-meta-and-taxonomies tr').each(function (i) {
+            if ($(this).find('td:first input[type="checkbox"]').prop('checked') == false && $(this).find('td:first i').length <= 0)
+                $('#extra-metas-attributes table tr:first').after($(this));
+        });
+    }
 
-    if ($("#custom-ranking tr").length > 1)
-        $('#custom-ranking .warning').hide();
-    else
-        $('#custom-ranking .content-item').hide();
+    $('#extra-metas tr td:first-child input').click(function (e) {
+        reorderMetas();
+    });
 
-    */
+    reorderMetas();
+
+    $('#extra-metas-form').submit(function (e) {
+        $('#extra-metas tr').each(function (i) {
+            $(this).find('.order').val(i);
+        });
+    });
 
     /**
      * Handle disabling
@@ -122,7 +129,6 @@ jQuery(document).ready(function($) {
      * Handle Sorting
      */
 
-/*
     var fixHelper = function(e, ui) {
         ui.children().each(function() {
             $(this).width($(this).width());
@@ -130,7 +136,7 @@ jQuery(document).ready(function($) {
         return ui;
     };
 
-    $('#taxonomies tr, #extra-metas tr, #indexable-types tr, #custom-ranking tr, #searchable_attributes tr').sort(function (a, b) {
+    $('#extra-metas tr, #indexable-types tr, #custom-ranking tr, #searchable_attributes tr').sort(function (a, b) {
         var contentA = parseInt($(a).attr('data-order'));
         var contentB = parseInt($(b).attr('data-order'));
 
@@ -139,11 +145,11 @@ jQuery(document).ready(function($) {
         $(container).parent().append(container);
     });;
 
-    $("#taxonomies tbody, #extra-metas tbody, #indexable-types tbody, #custom-ranking tbody, #searchable_attributes tbody").sortable({
+    $("#extra-metas tbody, #indexable-types tbody, #custom-ranking tbody, #searchable_attributes tbody").sortable({
         containment: "parent",
+        items: 'tr:not(:first)',
         helper: fixHelper
-    }).disableSelection();
-*/
+    });
 
     /**
      * Handle Async Indexation

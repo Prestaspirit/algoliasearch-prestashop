@@ -27,21 +27,20 @@
 if (!defined('_PS_VERSION_'))
 	exit;
 
+require_once(dirname(__FILE__).'/controllers/front/FrontAlgolia.php');
 require_once(dirname(__FILE__).'/classes/AlgoliaHelper.php');
+require_once(dirname(__FILE__).'/classes/AttributesHelper.php');
 require_once(dirname(__FILE__).'/classes/Registry.php');
 require_once(dirname(__FILE__).'/classes/ThemeHelper.php');
 require_once(dirname(__FILE__).'/classes/Indexer.php');
 require_once(dirname(__FILE__).'/classes/PrestashopFetcher.php');
-require_once(dirname(__FILE__).'/libraries/algoliasearch-client-php/algoliasearch.php');
+require_once(dirname(__FILE__).'/libraries/algolia/algoliasearch.php');
 
 
 class Algolia extends Module
 {
-    public $batch_count = 50;
-    private $algolia_helper;
-    private $algolia_registry;
-    private $theme_helper;
-    private $indexer;
+    private $front_controller;
+    public $batch_count = 100;
 
 	public function __construct()
 	{
@@ -60,83 +59,17 @@ class Algolia extends Module
 		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
 		$this->init();
 
-        $this->algolia_registry = \Algolia\Core\Registry::getInstance();
-        $this->theme_helper = new \Algolia\Core\ThemeHelper($this);
-        $this->indexer = new \Algolia\Core\Indexer();
-
-        if ($this->algolia_registry->validCredential)
-        {
-            $this->algolia_helper   = new \Algolia\Core\AlgoliaHelper(
-                $this->algolia_registry->app_id,
-                $this->algolia_registry->search_key,
-                $this->algolia_registry->admin_key
-            );
-        }
-
-/*        echo '<pre>';
-        print_r(array_merge($this->getFeatures(), $this->getAttributes(), $this->getFilters()));
-        die();
-*/
-
+        $this->front_controller = new FrontAlgoliaController($this);
 	}
-
-    public function getFeatures()
-    {
-        global $cookie;
-        return array_map(function ($a) {
-            return $a['name'];
-        }, \Feature::getFeatures($cookie->id_lang));
-    }
-
-    public function getAttributes()
-    {
-        global $cookie;
-
-        return array_map(function ($a) {
-            return $a['attribute_group'];
-        }, Db::getInstance()->executeS('
-			SELECT DISTINCT agl.`name` AS `attribute_group`
-			FROM `'._DB_PREFIX_.'attribute_group` ag
-			LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl
-				ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int)$cookie->id_lang.')
-			LEFT JOIN `'._DB_PREFIX_.'attribute` a
-				ON a.`id_attribute_group` = ag.`id_attribute_group`
-			LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al
-				ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int)$cookie->id_lang.')
-			'.Shop::addSqlAssociation('attribute_group', 'ag').'
-			'.Shop::addSqlAssociation('attribute', 'a').'
-			'.(false ? 'WHERE a.`id_attribute` IS NOT NULL AND al.`name` IS NOT NULL AND agl.`id_attribute_group` IS NOT NULL' : '').'
-			ORDER BY agl.`name` ASC, a.`position` ASC
-		'));
-    }
-
-    public function getFilters()
-    {
-        static $cache = null;
-
-        $id_shop = (int) Context::getContext()->shop->id;
-
-        if (is_array($cache))
-            return $cache;
-
-        $home_category = Configuration::get('PS_HOME_CATEGORY');
-        $id_parent = (int)Tools::getValue('id_category', Tools::getValue('id_category_layered', $home_category));
-
-        $filters = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-			SELECT * FROM '._DB_PREFIX_.'layered_category
-			WHERE id_category = '.(int)$id_parent.'
-				AND id_shop = '.$id_shop.'
-			GROUP BY `type`, id_value ORDER BY position ASC'
-        );
-
-        return array_map(function ($a) {
-            return $a["type"];
-        },$filters);
-    }
 
     public function getPath()
     {
         return $this->_path;
+    }
+
+    public function getContext()
+    {
+        return $this->context;
     }
 
 	public function install()
@@ -200,86 +133,32 @@ class Algolia extends Module
 
     public function hookActionProductAdd($params)
     {
-        $this->indexer->indexProduct($params['product']);
+        $this->front_controller->hookActionProductAdd($params);
     }
 
     public function hookActionProductUpdate($params)
     {
-        $this->indexer->indexProduct($params['product']);
+        $this->front_controller->hookActionProductUpdate($params);
     }
 
     public function hookActionProductDelete($params)
     {
-        $this->indexer->deleteProduct($params['product']->id);
+        $this->front_controller->hookActionProductDelete($params);
     }
 
     public function hookDisplayBackOfficeHeader()
     {
-        if (strcmp(Tools::getValue('configure'), $this->name) === 0)
-            $this->context->controller->addCSS($this->_path.'css/configure.css');
+        $this->front_controller->hookDisplayBackOfficeHeader();
     }
 
     public function hookDisplayFooter()
     {
-        $path = $this->_path;
-
-        include __DIR__.'/themes/'.$this->algolia_registry->theme.'/templates.php';
+        $this->front_controller->hookDisplayFooter();
     }
 
 	public function hookDisplayHeader()
 	{
-        if ($this->algolia_registry->validCredential == false)
-			return false;
-
-        $search_url = Context::getContext()->link->getModuleLink('algolia', 'search');
-        $this->context->smarty->assign('algolia_search_url', $search_url);
-
-		/* Add CSS & JS files required for Algolia search */
-		$this->context->controller->addJS($this->_path.'/js/typeahead.bundle.js');
-		$this->context->controller->addJS($this->_path.'/js/hogan-3.0.1.js');
-		$this->context->controller->addJS($this->_path.'/js/algoliasearch.min.js');
-        $this->context->controller->addCSS($this->_path.'/css/algolia.css');
-
-        $this->context->controller->addJS($this->_path.'/js/main.js');
-        $this->context->controller->addCSS($this->_path.'/themes/'.$this->algolia_registry->theme.'/styles.css');
-        $this->context->controller->addJS($this->_path.'/themes/'.$this->algolia_registry->theme.'/theme.js');
-
-        global $cookie;
-
-        $current_language = \Language::getIsoById($cookie->id_lang);
-
-        $indices = array();
-        $indices[] = array('index_name' => $this->algolia_registry->index_name.'all_'.$current_language, 'name' => 'Products', 'order1' => 0, 'order2' => 0);
-
-        $facets = array();
-
-        foreach (\Feature::getFeatures($cookie->id_lang) as $feature)
-            $facets[] = array('tax' => $feature['name'], 'name' => $feature['name'], 'order1' => 0,'order2' => 0, 'type' => 'conjunctive');
-
-        $algoliaSettings = array(
-            'app_id'                    => $this->algolia_registry->app_id,
-            'search_key'                => $this->algolia_registry->search_key,
-            'indices'                   => $indices,
-            'sorting_indices'           => array(),//$sorting_indices,
-            'index_name'                => $this->algolia_registry->index_name,
-            'type_of_search'            => $this->algolia_registry->type_of_search,
-            'instant_jquery_selector'   => str_replace("\\", "", $this->algolia_registry->instant_jquery_selector),
-            'facets'                    => $facets,
-            'facetsLabels'              => array(),//$facetsLabels,
-            'number_by_type'            => $this->algolia_registry->number_by_type,
-            'number_by_page'            => $this->algolia_registry->number_by_page,
-            'search_input_selector'     => str_replace("\\", "", $this->algolia_registry->search_input_selector),
-            "plugin_url"                => $this->_path,
-            "language"                  => $current_language,
-            'theme'                     => $this->theme_helper->get_current_theme()
-        );
-
-        Media::addJsDef(array('algoliaSettings' => $algoliaSettings));
-
-		/*if (Configuration::get('ALGOLIA_SEARCH_TYPE') == Algolia::Facet_Search)
-			$this->context->controller->addJS($this->_path.'/js/algolia_facet_search.js');
-		elseif (Configuration::get('ALGOLIA_SEARCH_TYPE') == Algolia::Simple_Search)
-			$this->context->controller->addJS($this->_path.'/js/algolia_simple_search.js');*/
+        $this->front_controller->hookDisplayHeader();
 	}
 
 	protected function init()
@@ -296,7 +175,6 @@ class Algolia extends Module
 	/* Run cron tasks */
 	public function hookActionCronJob()
 	{
-		//return $this->syncProducts();
 	}
 
 	/* Return cron job execution frequency */

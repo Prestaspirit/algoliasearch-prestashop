@@ -4,39 +4,28 @@
 class PrestashopFetcher
 {
     static $attributes = array(
-        "available_now",
-        "category" => array(
-            "method" => "getCategoryName"
-        ),
-        "categories" => array(
-            "method" => "getCategoriesNames"
-        ),
-        "date_add",
-        "date_upd",
-        "description",
-        "description_short",
-        "ean13",
-        "image" => array(
-            "method" => "generateImageLink"
-        ),
-        "link_rewrite" => array(
-            "method" => "generateLinkRewrite"
-        ),
-        "manufacturer" => array(
-            "method" => "getManufacturerName"
-        ),
-        "name",
-        "price",
-        "prices" => array(
-            "method" => "getPrices"
-        ),
-        "reference",
-        "supplier" => array(
-            "method" => "getSupplierName"
-        ),
-        "features" => array(
-            "method" => "getFeatures"
-        )
+        "available_now"     => null,
+        "category"          => "getCategoryName",
+        "categories"        => "getCategoriesNames",
+        "date_add"          => null,
+        "date_upd"          => null,
+        "description"       => null,
+        "description_short" => null,
+        "ean13"             => null,
+        "image_link_large"  => "generateImageLinkLarge",
+        "image_link_small"  => "generateImageLinkSmall",
+        "link"              => "generateLinkRewrite",
+        "manufacturer"      => "getManufacturerName",
+        "name"              => null,
+        "price"             => null,
+        "price_tax_incl"    => "getPriceTaxIncl",
+        "price_tax_excl"    => "getPriceTaxExcl",
+        "reference"         => null,
+        "supplier"          => "getSupplierName",
+        'ordered_qty'       => 'getOrderedQty',
+        'stock_qty'         => 'getStockQty',
+        'condition'         => null,
+        'weight'            => null
     );
 
     private $product_definition = false;
@@ -44,6 +33,11 @@ class PrestashopFetcher
     public function __construct()
     {
         $this->product_definition = \Product::$definition['fields'];
+    }
+
+    public function getProductObj($id_product, $language)
+    {
+        return (array) $this->initProduct($id_product, $language);
     }
 
     private function try_cast($value)
@@ -57,32 +51,6 @@ class PrestashopFetcher
         return $value;
     }
 
-    public function getProductObj($id_product, $language)
-    {
-        return (array) $this->initProduct($id_product, $language);
-    }
-
-    public function getPrices($product, $ps_product)
-    {
-        $product->price_tax_excl = \Product::getPriceStatic($ps_product->id, false, null, 2);
-        $product->price_tax_incl = \Product::getPriceStatic($ps_product->id, true, null, 2);
-
-        return $product;
-    }
-
-    public function getFeatures($product, $ps_product, $id_lang, $iso_code)
-    {
-        foreach ($ps_product->getFrontFeatures($id_lang) as $feature)
-        {
-            $name   = $feature['name'];
-            $value  = $feature['value'];
-
-            $product->$name = $value;
-        }
-
-        return $product;
-    }
-
     private function initProduct($id_product, $language)
     {
         $product = new \stdClass();
@@ -91,74 +59,124 @@ class PrestashopFetcher
         /* Required by Algolia */
         $product->objectID = $ps_product->id;
 
+        /** Default Attribute **/
         foreach (static::$attributes as $key => $value)
         {
-            if ((is_array($value) == true) && (isset($value["method"]) === true))
+            if ($value != null && method_exists($this, $value))
             {
-                $method = $value["method"];
-                $product = $this->try_cast(self::$method($product, $ps_product, $language['id_lang'], $language['iso_code']));
+                $product->$key = $this->$value($product, $ps_product, $language['id_lang'], $language['iso_code']);
+                continue;
             }
-            elseif (isset($this->product_definition[$value]["lang"]) == true)
-                $product->{$value} = $this->try_cast($ps_product->{$value}[$language['id_lang']]);
+
+            if (isset($this->product_definition[$key]["lang"]) == true)
+                $product->$key = $ps_product->{$key}[$language['id_lang']];
             else
-                $product->{$value} = $this->try_cast($ps_product->{$value});
+                $product->$key = $ps_product->{$key};
         }
+
+        /** Features **/
+        foreach ($ps_product->getFrontFeatures($language['id_lang']) as $feature)
+        {
+            $name   = $feature['name'];
+            $value  = $feature['value'];
+
+            $product->$name = $value;
+        }
+
+        /** Attribute groups **/
+        foreach ($ps_product->getAttributesGroups($language['id_lang']) as $attribute)
+        {
+            if (isset($product->{$attribute['group_name']}) == false)
+                $product->{$attribute['group_name']} = array();
+
+            if (in_array($attribute['attribute_name'], $product->{$attribute['group_name']}) == false)
+                $product->{$attribute['group_name']}[] = $attribute['attribute_name'];
+        }
+
+        /** Casting **/
+        foreach ($product as $key => &$value)
+            $value = $this->try_cast($value);
 
         return $product;
     }
 
-    protected static function generateImageLink($product, $ps_product, $id_lang, $iso_code)
+
+    /**
+     * GETTERS
+     */
+
+    private function getStockQty($product, $ps_product)
+    {
+        return \Product::getQuantity($ps_product->id);
+    }
+
+    private function getOrderedQty($product, $ps_product)
+    {
+        $product_sold = \Db::getInstance()->getRow('SELECT SUM(product_quantity) as total FROM `'._DB_PREFIX_.'order_detail` where product_id = ' . $ps_product->id);
+
+        return $product_sold['total'];
+    }
+
+    private function getPriceTaxExcl($product, $ps_product)
+    {
+        return \Product::getPriceStatic($ps_product->id, false, null, 2);
+    }
+
+    private function getPriceTaxIncl($product, $ps_product)
+    {
+        return \Product::getPriceStatic($ps_product->id, true, null, 2);
+    }
+
+    private function generateImageLinkLarge($product, $ps_product, $id_lang)
     {
         $link = new \Link();
         $cover = \Image::getCover($ps_product->id);
 
-        $product->image_link_small = $link->getImageLink($ps_product->link_rewrite[$id_lang], $cover["id_image"], \ImageType::getFormatedName("small"));
-        $product->image_link_large = $link->getImageLink($ps_product->link_rewrite[$id_lang], $cover["id_image"], \ImageType::getFormatedName("large"));
-
-        return $product;
+        return $link->getImageLink($ps_product->link_rewrite[$id_lang], $cover["id_image"], \ImageType::getFormatedName("large"));
     }
 
-    protected static function generateLinkRewrite($product, $ps_product, $id_lang, $iso_code)
+    private function generateImageLinkSmall($product, $ps_product, $id_lang)
     {
         $link = new \Link();
-        $product->link = $link->getProductLink($ps_product->id, $ps_product->link_rewrite[$id_lang], null, null, $id_lang);
+        $cover = \Image::getCover($ps_product->id);
 
-        return $product;
+        return $link->getImageLink($ps_product->link_rewrite[$id_lang], $cover["id_image"], \ImageType::getFormatedName("small"));
     }
 
-    protected static function getCategoryName($product, $ps_product, $id_lang, $iso_code)
+    private function generateLinkRewrite($product, $ps_product, $id_lang)
+    {
+        $link = new \Link();
+        return $link->getProductLink($ps_product->id, $ps_product->link_rewrite[$id_lang], null, null, $id_lang);
+    }
+
+    private function getCategoryName($product, $ps_product, $id_lang)
     {
         $category = new \Category($ps_product->id_category_default, $id_lang);
-        $product->category = $category->name;
 
-        return $product;
+        return $category->name;
     }
 
-    protected static function getCategoriesNames($product, $ps_product, $id_lang, $iso_code)
+    private function getCategoriesNames($product, $ps_product, $id_lang)
     {
-        $product->categories = array();
+        $categories = array();
         $id_categories = \Product::getProductCategories($ps_product->id);
 
         foreach ($id_categories as $id_category)
         {
             $category = new \Category($id_category, $id_lang);
-            array_push($product->categories, $category->name);
+            array_push($categories, $category->name);
         }
 
-        return $product;
+        return $categories;
     }
 
-    public static function getManufacturerName($product, $ps_product, $id_lang, $iso_code)
+    private function getManufacturerName($product, $ps_product)
     {
-        $product->manufacturer = $ps_product->manufacturer_name;
-
-        return $product;
+        return $ps_product->manufacturer_name;
     }
 
-    public static function getSupplierName($product, $ps_product, $id_lang, $iso_code)
+    private function getSupplierName($product, $ps_product)
     {
-        $product->supplier = $ps_product->supplier_name;
-
-        return $product;
+        return $ps_product->supplier_name;
     }
 }

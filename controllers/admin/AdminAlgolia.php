@@ -8,6 +8,7 @@ class AdminAlgoliaController extends ModuleAdminController
     private $theme_helper;
     private $indexer;
     private $algolia_helper;
+    private $attributes_helper;
 
     public function __construct()
     {
@@ -15,9 +16,10 @@ class AdminAlgoliaController extends ModuleAdminController
 
         $this->bootstrap = true;
 
-        $this->algolia_registry = Algolia\Core\Registry::getInstance();
-        $this->theme_helper     = new \Algolia\Core\ThemeHelper($this->module);
-        $this->indexer          = new \Algolia\Core\Indexer();
+        $this->algolia_registry     = Algolia\Core\Registry::getInstance();
+        $this->theme_helper         = new \Algolia\Core\ThemeHelper($this->module);
+        $this->indexer              = new \Algolia\Core\Indexer();
+        $this->attributes_helper    = new \Algolia\Core\AttributesHelper();
 
         if ($this->algolia_registry->validCredential)
         {
@@ -37,6 +39,7 @@ class AdminAlgoliaController extends ModuleAdminController
         $this->context->smarty->assign('warnings', array());
         $this->context->smarty->assign('algolia_registry', $this->algolia_registry);
         $this->context->smarty->assign('theme_helper', $this->theme_helper);
+        $this->context->smarty->assign('path', $this->module->getPath());
 
         $products_count = \Db::getInstance()->executeS('SELECT count(*) as count FROM `'._DB_PREFIX_.'product` WHERE `active` IS TRUE');
 
@@ -48,13 +51,30 @@ class AdminAlgoliaController extends ModuleAdminController
 
         Media::addJsDef(array('algoliaAdminSettings' => $algoliaAdminSettings));
 
+        $facet_types = array_merge(array("conjunctive" => "Conjunctive", "disjunctive" => "Disjunctive"), $this->theme_helper->get_current_theme()->facet_types);
+
+        $attributes = $this->attributes_helper->getAllAttributes();
+
+        $this->context->smarty->assign(array(
+            'facet_types' => $facet_types,
+            'attributes' => $attributes
+        ));
+
         $content = $this->context->smarty->fetch($this->getTemplatePath() . 'content.tpl');
 
-        $this->context->smarty->assign(array('content' => $content));
+
+        //foreach ($this->algolia_registry->metas as $meta)
+          //  $attributes->
+
+        $this->context->smarty->assign(array(
+            'content' => $content
+        ));
 
         $this->context->controller->addJS($this->module->getPath().'js/admin.js');
         $this->context->controller->addCSS($this->module->getPath().'css/configure.css');
         $this->context->controller->addCSS($this->module->getPath().'css/admin.css');
+        $this->context->controller->addJS($this->module->getPath().'/libraries/jquery/jquery-ui.js');
+        $this->context->controller->addCSS($this->module->getPath().'/libraries/jquery/jquery-ui.min.css');
     }
 
     public function postProcess()
@@ -69,6 +89,30 @@ class AdminAlgoliaController extends ModuleAdminController
                 $this->$action();
         }
 
+    }
+
+    public function admin_post_update_extra_meta()
+    {
+        $metas = array();
+
+        foreach ($_POST['ATTRIBUTE'] as $key => $value)
+        {
+            if (isset($value['INDEXABLE']))
+            {
+                $metas[$key] = array();
+                $metas[$key]["indexable"]            = isset($value["INDEXABLE"]) ? 1 : 0;
+                $metas[$key]["facetable"]            = $metas[$key]["indexable"] && isset($value["FACETABLE"]) ? 1 : 0;
+                $metas[$key]["type"]                 = $value["TYPE"];
+                $metas[$key]["order"]                = $value["ORDER"];
+                $metas[$key]["custom_ranking"]       = isset($value["CUSTOM_RANKING"]) && $value["CUSTOM_RANKING"] ? $value["CUSTOM_RANKING"] : 0;
+                $metas[$key]["custom_ranking_sort"]  = isset($value["CUSTOM_RANKING_SORT"]) && $value["CUSTOM_RANKING_SORT"] ? $value["CUSTOM_RANKING_SORT"] : 10000;
+                $metas[$key]["custom_ranking_order"] = isset($value["CUSTOM_RANKING_ORDER"]) && $value["CUSTOM_RANKING_ORDER"] ? $value["CUSTOM_RANKING_ORDER"] : 'asc';
+            }
+        }
+
+        $this->algolia_registry->metas = $metas;
+
+        //$this->algolia_helper->handleIndexCreation();
     }
 
     public function admin_post_update_account_info()
@@ -144,6 +188,7 @@ class AdminAlgoliaController extends ModuleAdminController
             }
         }
 
+        /** Leave it there since this is a javascript query **/
         die();
     }
 }

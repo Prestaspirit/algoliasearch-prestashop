@@ -107,6 +107,7 @@
 
         {if $algolia_registry->validCredential}
             <li class="active"><a href="#ui_template" role="tab" data-toggle="tab">UI</a></li>
+            <li><a href="#extra-metas" role="tab" data-toggle="tab">Attributes</a></li>
             <li><a href="#sync_template" role="tab" data-toggle="tab">Sync</a></li>
         {/if}
     </ul>
@@ -287,6 +288,125 @@
                 </div>
             </form>
         </div>
+
+        <div class="tab-pane" id="extra-metas">
+            <form id="extra-metas-form" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_extra_meta&token={$token}" method="post">
+                <div class="content-wrapper" id="customization">
+                    <div class="content">
+                        <p class="help-block">
+                            Configure here the additional attributes you want to include in your Algolia records.
+                        </p>
+
+                        <table id="extra-meta-and-taxonomies">
+                            <tr data-order="-1">
+                                <th class="table-col-enabled">Enabled</th>
+                                <th>Name</th>
+                                <th>Facetable</th>
+                                <th>Facet type</th>
+                                <th>Facet label &amp; ordering</th>
+                            </tr>
+                        </table>
+
+                        <div class="sub-tab-content" id="extra-metas-attributes">
+                            <table>
+                                <tr data-order="-1">
+                                    <th class="table-col-enabled">Enabled</th>
+                                    <th>Name</th>
+                                    <th>Facetable</th>
+                                    <th>Facet type</th>
+                                    <th>Facet label &amp; ordering</th>
+                                </tr>
+
+                                {assign var='i' value=0}
+
+                                {foreach from=$attributes key=metakey item=attribute}
+                                    {assign var='order' value=$attribute->order}
+
+                                {*if (isset($algolia_registry->metas[$type]) && in_array($meta_key, array_keys($algolia_registry->metas[$type])))
+                                        $order = $algolia_registry->metas[$type][$meta_key]['order'];
+                                {/if*}
+                                    {if $order ne -1}
+                                    <tr data-type="extra-meta" data-order="{$order}">
+                                    {else}
+                                    <tr data-type="extra-meta" data-order="{(1000 + $i)}">
+                                    {/if}
+                                        {assign var='i' value=$i++}
+                                        <td class="table-col-enabled">
+                                            {if $attribute->id eq 0}
+                                            <i class="dashicons dashicons-yes">-</i>
+                                            <input type="hidden" name="ATTRIBUTE[{$metakey}][INDEXABLE]" value="{$metakey}">
+                                            {else}
+                                            <input type="checkbox"
+                                                   name="ATTRIBUTE[{$metakey}][INDEXABLE]"
+                                                   value="{$metakey}"
+                                                   {if $attribute->checked}
+                                                   checked="checked"
+                                                   {/if}
+                                            >
+                                            {/if}
+                                        </td>
+                                        <td>{$attribute->name}</td>
+                                        <td>
+                                            <input type="checkbox"
+                                                   name="ATTRIBUTE[{$metakey}][FACETABLE]"
+                                                   value="1"
+                                                   {if $attribute->facetable}
+                                                   checked="checked"
+                                                   {/if}
+                                            >
+                                        </td>
+                                        <td>
+                                            <select name="ATTRIBUTE[{$metakey}][TYPE]">
+                                                {foreach from=$facet_types key=key item=value}
+                                                    {if $attribute->facet_type eq key}
+                                                        <option selected="selected" value="{$key}">{$value}</option>
+                                                    {else}
+                                                        <option value="{$key}">{$value}</option>
+                                                    {/if}
+                                                {/foreach}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <img width="10" src="{$path}img/move.png">
+                                        </td>
+                                        {*
+                                        <!-- PREVENT FROM ERASING CUSTOM RANKING -->
+                                        $customs = array('custom_ranking' => 'CUSTOM_RANKING', 'custom_ranking_order' => 'CUSTOM_RANKING_ORDER', 'custom_ranking_sort' => 'CUSTOM_RANKING_SORT'); ?>
+                                        <?php foreach($customs as $custom_key => $custom_value): ?>
+                                        <?php if (isset($algolia_registry->metas[$type])
+                                        && in_array($meta_key, array_keys($algolia_registry->metas[$type]))
+                                        && $algolia_registry->metas[$type][$meta_key][$custom_key]): ?>
+                                        <input type="hidden"
+                                               name="TYPES[<?php echo $type; ?>][METAS][<?php echo $meta_key; ?>][<?php echo $custom_value; ?>]"
+                                               value="<?php echo $algolia_registry->metas[$type][$meta_key][$custom_key]; ?>"
+                                                >
+                                        <?php endif; ?>
+                                        <?php endforeach; ?>
+                                        <!-- /////// PREVENT FROM ERASING CUSTOM RANKING -->
+                                        *}
+                                        <input type="hidden" name="ATTRIBUTE[{$metakey}][ORDER]" class="order" />
+                                    </tr>
+                                {/foreach}
+                            </table>
+                        </div>
+                        <div class="content-item">
+                            <input type="submit" name="submitAlgoliaSettings" id="submit" class="button button-primary" value="Save Changes">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {if $algolia_registry->type_of_search == 'autocomplete'}
+        <style>
+            #algolia-settings #extra-meta-and-taxonomies tr td:nth-child(n+3),
+            #algolia-settings #extra-meta-and-taxonomies tr th:nth-child(n+3)
+            {
+                display: none;
+            }
+        </style>
+        {/if}
+
 
         <div class="tab-pane" id="sync_template">
             <form id="module_form" class="defaultForm form-horizontal" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_reindex&token={$token}" method="post" enctype="multipart/form-data" novalidate="">
