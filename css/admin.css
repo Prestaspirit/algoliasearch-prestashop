@@ -180,7 +180,8 @@
 #algolia-settings #extra-metas tbody,
 #algolia-settings #indexable-types tbody,
 #algolia-settings #custom-ranking tbody,
-#algolia-settings #searchable_attributes tbody
+#algolia-settings #searchable_attributes tbody,
+#algolia-settings #sortable_attributes tbody
 {
     cursor: move;
 }

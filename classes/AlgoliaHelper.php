@@ -4,6 +4,7 @@ class AlgoliaHelper
 {
     private $algolia_client;
     private $algolia_registry;
+    private $attribute_helper;
 
     private $app_id;
     private $search_key;
@@ -13,6 +14,7 @@ class AlgoliaHelper
     {
         $this->algolia_client   = new \AlgoliaSearch\Client($app_id, $admin_key);
         $this->algolia_registry = \Algolia\Core\Registry::getInstance();
+        $this->attribute_helper = new AttributesHelper();
 
         $this->app_id           = $app_id;
         $this->admin_key        = $admin_key;
@@ -90,20 +92,17 @@ class AlgoliaHelper
             $facets = array();
             $customRankingTemp = array();
 
-            //$facets[]           = "type";
-
-            //global $attributesToHighlight;
             //global $attributesToSnippet;
-            $attributesToHighlight = array();
             $attributesToSnippet = array();
 
             $attributesToIndex  = array();
 
-            /*foreach ($this->algolia_registry->searchable as $key => $value)
-                if ($value['ordered'] == 'unordered')
-                    $attributesToIndex[] = $value['ordered'].'('.$key.')';
-                else
-                    $attributesToIndex[] = $key;*/
+            foreach ($this->attribute_helper->getAllAttributes($language['id_lang']) as $key => $value)
+                if (isset($this->algolia_registry->searchable[$key]))
+                    if ($this->algolia_registry->searchable[$key]['ordered'] == 'unordered')
+                        $attributesToIndex[] = 'unordered('.$value->name.')';
+                    else
+                        $attributesToIndex[] = $value->name;
 
             foreach ($attributesToSnippet as &$attribute)
                 if ($attribute == 'content')
@@ -111,7 +110,6 @@ class AlgoliaHelper
 
             $defaultSettings = array(
                 "attributesToIndex"     => $attributesToIndex,
-                "attributesToHighlight" => $attributesToHighlight,
                 "attributesToSnippet"   => $attributesToSnippet
             );
 
@@ -143,57 +141,51 @@ class AlgoliaHelper
              */
             /*foreach (array_keys($this->algolia_registry->indexable_types) as $name)
             {
-                if (in_array($index_name."_".$name, $indexes) == false)
+                if (in_array($index_name . "_" . $name, $indexes) == false)
                 {
-                    if (isset($this->algolia_registry->metas[$name]))
+                    if ($this->algolia_registry->type_of_search == 'autocomplete')
                     {
-                        foreach ($this->algolia_registry->metas[$name] as $key => $value)
-                        {
-                            if ($value['facetable'])
-                                $facets[] = $key;
+                        $mergeSettings = $this->mergeSettings($index_name . $name, $defaultSettings);
 
-                            if ($value['custom_ranking'])
-                                $customRankingTemp[] = array('sort' => $value['custom_ranking_sort'], 'value' => $value['custom_ranking_order'].'('.$key.')');
-                        }
+                        $this->setSettings($index_name . $name, $mergeSettings);
+                        $this->setSettings($index_name . $name . "_temp", $mergeSettings);
                     }
-
-                    $mergeSettings = $this->mergeSettings($index_name.$name, $defaultSettings);
-
-                    $this->setSettings($index_name.$name, $mergeSettings);
-                    $this->setSettings($index_name.$name."_temp", $mergeSettings);
                 }
             }*/
+
+            foreach ($this->attribute_helper->getAllAttributes($language['id_lang']) as $key => $value)
+            {
+                if (isset($this->algolia_registry->metas[$key]) && $this->algolia_registry->metas[$key]['facetable'])
+                    $facets[] = $value->name;
+
+                if (isset($this->algolia_registry->metas[$key]) && $this->algolia_registry->metas[$key]['custom_ranking'])
+                    $customRankingTemp[] = array(
+                        'sort' => $this->algolia_registry->metas[$key]['custom_ranking_sort'],
+                        'value' => $this->algolia_registry->metas[$key]['custom_ranking_order'] . '(' . $value->name . ')'
+                    );
+            }
 
             /**
              * Prepare Settings
              */
 
-            //$date_custom_ranking = $this->algolia_registry->date_custom_ranking;
-
-            //if ($date_custom_ranking['enabled'])
-            //    $customRankingTemp[] = array('sort' => $date_custom_ranking['sort'], 'value' => $date_custom_ranking['order'].'(date)');
-
-            /*usort($customRankingTemp, function ($a, $b) {
+            usort($customRankingTemp, function ($a, $b) {
                 if ($a['sort'] < $b['sort'])
                     return -1;
                 if ($a['sort'] == $b['sort'])
                     return 0;
                 return 1;
-            });*/
+            });
 
-            /*$customRanking = array_map(function ($obj) {
+            $customRanking = array_map(function ($obj) {
                 return $obj['value'];
-            }, $customRankingTemp);*/
-
-            foreach (\Feature::getFeatures($language['id_lang']) as $feature)
-                $facets[] = $feature['name'];
+            }, $customRankingTemp);
 
             $settings = array(
-                //'attributesToIndex'     => $attributesToIndex,
+                'attributesToIndex'     => $attributesToIndex,
                 'attributesForFaceting' => array_values(array_unique($facets)),
-                //'attributesToHighlight' => $attributesToHighlight,
                 //'attributesToSnippet'   => $attributesToSnippet,
-                //'customRanking'         => $customRanking
+                'customRanking'         => $customRanking
             );
 
             /**
@@ -209,14 +201,17 @@ class AlgoliaHelper
              * Handle Slaves
              */
 
-            /*if (count($this->algolia_registry->sortable) > 0)
+
+            if (count($this->algolia_registry->sortable) > 0)
             {
+                $allAttributes = $this->attribute_helper->getAllAttributes($language['id_lang']);
+
                 $slaves = array();
 
                 foreach ($this->algolia_registry->sortable as $values)
-                    $slaves[] = $index_name.'all_'.$values['name'].'_'.$values['sort'];
+                    $slaves[] = $index_name . 'all_' . $language['iso_code'] . '_' . $allAttributes[$values['name']]->name . '_' . $values['sort'];
 
-                $this->setSettings($index_name.'all', array('slaves' => $slaves));
+                $this->setSettings($index_name.'all_'.$language['iso_code'], array('slaves' => $slaves));
 
                 foreach ($this->algolia_registry->sortable as $values)
                 {
@@ -224,9 +219,9 @@ class AlgoliaHelper
                         'ranking' => array($values['sort'].'('.$values['name'].')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom')
                     );
 
-                    $this->setSettings($index_name.'all_'.$values['name'].'_'.$values['sort'], $settings);
+                    $this->setSettings($index_name.'all_'.$language['iso_code'].'_'.$values['sort'], $settings);
                 }
-            }*/
+            }
         }
     }
 

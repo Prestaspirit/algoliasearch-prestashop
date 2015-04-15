@@ -85,6 +85,12 @@ jQuery(document).ready(function($) {
         });
     });
 
+    $('#sortable-form').submit(function (e) {
+        $('#sortable-form tr').each(function (i) {
+            $(this).find('.order').val(i);
+        });
+    });
+
     /**
      * Handle disabling
      */
@@ -102,7 +108,7 @@ jQuery(document).ready(function($) {
         });
     }
 
-    var disabelable = ['#indexable-types', '#taxonomies', '#extra-metas', '#indexable-types'];
+    var disabelable = ['#indexable-types', '#searchable_attributes', '#custom-ranking', '#sortable_attributes'];
 
     for (var i = 0; i < disabelable.length; i++)
     {
@@ -113,8 +119,25 @@ jQuery(document).ready(function($) {
                 disableInput(disabelable[i]);
             });
         })(i);
-
     }
+
+    function disableFacetsInput(div)
+    {
+        $(div + " input, " + div + " select").prop('disabled', false);
+        $(div + " tr:not(:first)").each(function (i) {
+            var tds = $(this).find("td");
+
+            if ($(tds[2]).find('input[type="checkbox"]').prop('checked') == false)
+                $(this).find("td").find("input,select").slice(2).prop('disabled', true);
+        });
+    }
+
+    disableFacetsInput('#extra-meta-and-taxonomies');
+
+    $('#extra-meta-and-taxonomies input[type="checkbox"]').click(function () {
+        disableFacetsInput('#extra-meta-and-taxonomies');
+    });
+
 
     /**
      * Handle Theme chooser
@@ -136,7 +159,7 @@ jQuery(document).ready(function($) {
         return ui;
     };
 
-    $('#extra-metas tr, #indexable-types tr, #custom-ranking tr, #searchable_attributes tr').sort(function (a, b) {
+    $('#extra-metas tr, #indexable-types tr, #custom-ranking tr, #searchable_attributes tr, #sortable_attributes tr').sort(function (a, b) {
         var contentA = parseInt($(a).attr('data-order'));
         var contentB = parseInt($(b).attr('data-order'));
 
@@ -145,7 +168,7 @@ jQuery(document).ready(function($) {
         $(container).parent().append(container);
     });;
 
-    $("#extra-metas tbody, #indexable-types tbody, #custom-ranking tbody, #searchable_attributes tbody").sortable({
+    $("#extra-metas tbody, #indexable-types tbody, #custom-ranking tbody, #searchable_attributes tbody, #sortable_attributes tbody").sortable({
         containment: "parent",
         items: 'tr:not(:first)',
         helper: fixHelper

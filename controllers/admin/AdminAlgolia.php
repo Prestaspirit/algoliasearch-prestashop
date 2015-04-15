@@ -53,11 +53,19 @@ class AdminAlgoliaController extends ModuleAdminController
 
         $facet_types = array_merge(array("conjunctive" => "Conjunctive", "disjunctive" => "Disjunctive"), $this->theme_helper->get_current_theme()->facet_types);
 
-        $attributes = $this->attributes_helper->getAllAttributes();
+        global $cookie;
+
+        $attributes             = $this->attributes_helper->getAllAttributes($cookie->id_lang);
+        $searchableAttributes   = $this->attributes_helper->getSearchableAttributes($cookie->id_lang);
 
         $this->context->smarty->assign(array(
-            'facet_types' => $facet_types,
-            'attributes' => $attributes
+            'facet_types'           => $facet_types,
+            'attributes'            => $attributes,
+            'searchable_attributes' => $searchableAttributes,
+            'ordered_tab'           => array("ordered" => "Ordered", "unordered" => "Unordered"),
+            'ascending_tab'         => array('asc' => 'Ascending', 'desc' => 'Descending'),
+            'customs'               => array('custom_ranking' => 'CUSTOM_RANKING', 'custom_ranking_order' => 'CUSTOM_RANKING_ORDER', 'custom_ranking_sort' => 'CUSTOM_RANKING_SORT'),
+            'sorts'                 => array('asc', 'desc')
         ));
 
         $content = $this->context->smarty->fetch($this->getTemplatePath() . 'content.tpl');
@@ -88,7 +96,6 @@ class AdminAlgoliaController extends ModuleAdminController
             if (method_exists($this, $action))
                 $this->$action();
         }
-
     }
 
     public function admin_post_update_extra_meta()
@@ -102,7 +109,7 @@ class AdminAlgoliaController extends ModuleAdminController
                 $metas[$key] = array();
                 $metas[$key]["indexable"]            = isset($value["INDEXABLE"]) ? 1 : 0;
                 $metas[$key]["facetable"]            = $metas[$key]["indexable"] && isset($value["FACETABLE"]) ? 1 : 0;
-                $metas[$key]["type"]                 = $value["TYPE"];
+                $metas[$key]["type"]                 = isset($value["TYPE"]) ? $value['TYPE'] : 10000;
                 $metas[$key]["order"]                = $value["ORDER"];
                 $metas[$key]["custom_ranking"]       = isset($value["CUSTOM_RANKING"]) && $value["CUSTOM_RANKING"] ? $value["CUSTOM_RANKING"] : 0;
                 $metas[$key]["custom_ranking_sort"]  = isset($value["CUSTOM_RANKING_SORT"]) && $value["CUSTOM_RANKING_SORT"] ? $value["CUSTOM_RANKING_SORT"] : 10000;
@@ -110,9 +117,10 @@ class AdminAlgoliaController extends ModuleAdminController
             }
         }
 
+
         $this->algolia_registry->metas = $metas;
 
-        //$this->algolia_helper->handleIndexCreation();
+        $this->algolia_helper->handleIndexCreation();
     }
 
     public function admin_post_update_account_info()
@@ -130,6 +138,8 @@ class AdminAlgoliaController extends ModuleAdminController
         $this->algolia_registry->index_name = $index_name;
 
         $algolia_helper->checkRights();
+
+        Tools::redirectAdmin('index.php?controller=AdminAlgolia#ui_template');
     }
 
     public function admin_post_update_type_of_search()
@@ -155,8 +165,98 @@ class AdminAlgoliaController extends ModuleAdminController
         $this->algolia_registry->search_input_selector  = str_replace('"', '\'', $search_input_selector);
         $this->algolia_registry->theme                  = $theme;
 
-        //$this->algolia_helper->handleIndexCreation();
+        $this->algolia_helper->handleIndexCreation();
+
+        Tools::redirectAdmin('index.php?controller=AdminAlgolia#ui_template');
     }
+
+    public function admin_post_update_searchable_attributes()
+    {
+        if (isset($_POST['ATTRIBUTES']) && is_array($_POST['ATTRIBUTES']))
+        {
+            $searchable = array();
+
+            $i = 0;
+
+            foreach ($_POST['ATTRIBUTES'] as $key => $value)
+            {
+                if (isset($value['SEARCHABLE']))
+                {
+                    $searchable[$key] = array();
+
+                    $searchable[$key]["ordered"]    = $value['ORDERED'];
+                    $searchable[$key]["order"]      = $i;
+
+                    $i++;
+                }
+            }
+
+            $this->algolia_registry->searchable = $searchable;
+
+            $this->algolia_helper->handleIndexCreation();
+        }
+
+        Tools::redirectAdmin('index.php?controller=AdminAlgolia#searchable_attributes');
+    }
+
+    public function admin_post_custom_ranking()
+    {
+        $metas                  = $this->algolia_registry->metas;
+
+        if (isset($_POST['ATTRIBUTES']) && is_array($_POST['ATTRIBUTES']))
+        {
+            $i = 1; // keep 1 and not 0 to avoid bad condition when saving metas
+
+            foreach ($_POST['ATTRIBUTES'] as $key => $value)
+            {
+                $metas[$key]['custom_ranking']       = isset($value['CUSTOM_RANKING']) ? 1 : 0;
+                $metas[$key]["custom_ranking_order"] = $value["CUSTOM_RANKING_ORDER"];
+
+                if ($metas[$key]['custom_ranking'])
+                    $metas[$key]["custom_ranking_sort"]  = $i;
+                else
+                    $metas[$key]["custom_ranking_sort"]  = 10000;
+
+                $i++;
+            }
+
+            $this->algolia_registry->metas = $metas;
+        }
+
+        $this->algolia_helper->handleIndexCreation();
+
+        Tools::redirectAdmin('index.php?controller=AdminAlgolia#custom-ranking');
+    }
+
+    public function admin_post_update_sortable_attributes()
+    {
+        if (isset($_POST['ATTRIBUTES']) && is_array($_POST['ATTRIBUTES']))
+        {
+            $sortable = array();
+
+            foreach ($_POST['ATTRIBUTES'] as $key => $values)
+            {
+                if (isset($values['asc']))
+                    $sortable[$key.'_asc'] = array('name' => $key, 'sort' => 'asc', 'order' => $values['ORDER_asc']);
+
+                if (isset($values['desc']))
+                    $sortable[$key.'_desc'] = array('name' => $key, 'sort' => 'desc', 'order' => $values['ORDER_asc']);
+            }
+
+            uasort($sortable, function ($a, $b) {
+                if ($a['order'] < $b['order'])
+                    return -1;
+                return 1;
+            });
+
+            $this->algolia_registry->sortable = $sortable;
+
+            $this->algolia_helper->handleIndexCreation();
+        }
+
+        Tools::redirectAdmin('index.php?controller=AdminAlgolia#sortable_attributes');
+    }
+
 
     public function admin_post_reindex()
     {

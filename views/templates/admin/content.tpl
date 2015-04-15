@@ -100,14 +100,17 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
         {if $algolia_registry->validCredential ne true}
-            <li class="active"><a href="#settings_template" role="tab" data-toggle="tab">Credentials</a></li>
+            <li class="active"><a href="#credentials" role="tab" data-toggle="tab">Credentials</a></li>
         {else}
-            <li><a href="#settings_template" role="tab" data-toggle="tab">Credentials</a></li>
+            <li><a href="#credentials" role="tab" data-toggle="tab">Credentials</a></li>
         {/if}
 
         {if $algolia_registry->validCredential}
             <li class="active"><a href="#ui_template" role="tab" data-toggle="tab">UI</a></li>
             <li><a href="#extra-metas" role="tab" data-toggle="tab">Attributes</a></li>
+            <li><a href="#searchable_attributes" role="tab" data-toggle="tab">Searchable Configuration</a></li>
+            <li><a href="#custom-ranking" role="tab" data-toggle="tab">Ranking Configuration</a></li>
+            <li><a href="#sortable_attributes" role="tab" data-toggle="tab">Sorting Configuration</a></li>
             <li><a href="#sync_template" role="tab" data-toggle="tab">Sync</a></li>
         {/if}
     </ul>
@@ -115,9 +118,9 @@
     <!-- Tab panes -->
     <div class="tab-content">
         {if $algolia_registry->validCredential ne true}
-        <div class="tab-pane active" id="settings_template">
+        <div class="tab-pane active" id="credentials">
         {else}
-        <div class="tab-pane" id="settings_template">
+        <div class="tab-pane" id="credentials">
         {/if}
             <form id="module_form" class="defaultForm form-horizontal" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_account_info&token={$token}" method="post" enctype="multipart/form-data" novalidate="">
                 <div class="panel" id="fieldset_0">
@@ -303,7 +306,7 @@
                                 <th>Name</th>
                                 <th>Facetable</th>
                                 <th>Facet type</th>
-                                <th>Facet label &amp; ordering</th>
+                                <th>Ordering</th>
                             </tr>
                         </table>
 
@@ -322,9 +325,6 @@
                                 {foreach from=$attributes key=metakey item=attribute}
                                     {assign var='order' value=$attribute->order}
 
-                                {*if (isset($algolia_registry->metas[$type]) && in_array($meta_key, array_keys($algolia_registry->metas[$type])))
-                                        $order = $algolia_registry->metas[$type][$meta_key]['order'];
-                                {/if*}
                                     {if $order ne -1}
                                     <tr data-type="extra-meta" data-order="{$order}">
                                     {else}
@@ -358,7 +358,7 @@
                                         <td>
                                             <select name="ATTRIBUTE[{$metakey}][TYPE]">
                                                 {foreach from=$facet_types key=key item=value}
-                                                    {if $attribute->facet_type eq key}
+                                                    {if $attribute->facet_type eq $key}
                                                         <option selected="selected" value="{$key}">{$value}</option>
                                                     {else}
                                                         <option value="{$key}">{$value}</option>
@@ -369,21 +369,17 @@
                                         <td>
                                             <img width="10" src="{$path}img/move.png">
                                         </td>
-                                        {*
+
                                         <!-- PREVENT FROM ERASING CUSTOM RANKING -->
-                                        $customs = array('custom_ranking' => 'CUSTOM_RANKING', 'custom_ranking_order' => 'CUSTOM_RANKING_ORDER', 'custom_ranking_sort' => 'CUSTOM_RANKING_SORT'); ?>
-                                        <?php foreach($customs as $custom_key => $custom_value): ?>
-                                        <?php if (isset($algolia_registry->metas[$type])
-                                        && in_array($meta_key, array_keys($algolia_registry->metas[$type]))
-                                        && $algolia_registry->metas[$type][$meta_key][$custom_key]): ?>
-                                        <input type="hidden"
-                                               name="TYPES[<?php echo $type; ?>][METAS][<?php echo $meta_key; ?>][<?php echo $custom_value; ?>]"
-                                               value="<?php echo $algolia_registry->metas[$type][$meta_key][$custom_key]; ?>"
-                                                >
-                                        <?php endif; ?>
-                                        <?php endforeach; ?>
+                                        {foreach from=$customs key=custom_key item=custom_value}
+                                            {if isset($algolia_registry->metas[$metakey])}
+                                            <input type="hidden"
+                                                   name="ATTRIBUTE[{$metakey}][{$custom_value}]"
+                                                   value="{$algolia_registry->metas[$metakey][$custom_key]}">
+                                            {/if}
+                                        {/foreach}
                                         <!-- /////// PREVENT FROM ERASING CUSTOM RANKING -->
-                                        *}
+
                                         <input type="hidden" name="ATTRIBUTE[{$metakey}][ORDER]" class="order" />
                                     </tr>
                                 {/foreach}
@@ -407,12 +403,194 @@
         </style>
         {/if}
 
+        <div class="tab-pane" id="searchable_attributes">
+            <form action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_searchable_attributes&token={$token}" method="post">
+                <div class="content-wrapper" id="customization">
+                    <div class="content">
+                        <p class="help-block">Configure here the attributes you want to be able to search in. The order of this setting matters as those at the top of the list are considered more important.</p>
+                        <table>
+                            <tr data-order="-1">
+                                <th class="table-col-enabled">Enabled</th>
+                                <th>Name</th>
+                                <th>Attribute ordering</th>
+                                <th></th>
+                            </tr>
 
-        <div class="tab-pane" id="sync_template">
-            <form id="module_form" class="defaultForm form-horizontal" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_reindex&token={$token}" method="post" enctype="multipart/form-data" novalidate="">
-                <button type="submit" value="1" id="module_form_submit_btn" name="submitAlgoliaSettings" class="btn btn-default pull-right">
-                    <i class="process-icon-save"></i> Save changes
-                </button>
+                            {assign var=i value=0}
+
+                            {foreach from=$searchable_attributes key=key item=searchItem}
+                                {assign var=order value=-1}
+
+                                {if isset($algolia_registry->searchable[$key])}
+                                    {assign var=order value=$algolia_registry->searchable[$key]['order']}
+                                {/if}
+
+                                {if ($order != -1)}
+                                <tr data-order="{$order}">
+                                {else}
+                                <tr data-order="{(10000 + $i)}">
+                                    {assign var=i value=($i + 1)}
+                                {/if}
+                                    <td class="table-col-enabled">
+                                        {if (isset($algolia_registry->searchable[$key]))}
+                                            <input checked="checked" type="checkbox" name="ATTRIBUTES[{$key}][SEARCHABLE]">
+                                        {else}
+                                            <input type="checkbox" name="ATTRIBUTES[{$key}][SEARCHABLE]">
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        {$searchItem}
+                                    </td>
+                                    <td style="white-space: nowrap;">
+                                        <select name="ATTRIBUTES[{$key}][ORDERED]">
+                                            {foreach from=$ordered_tab key=key2 item=value2}
+                                                {if isset($algolia_registry->searchable[$key]) && $algolia_registry->searchable[$key]['ordered'] == $key2}
+                                                <option selected value="{$key2}">{$value2}</option>
+                                                {else}
+                                                <option value="{$key2}">{$value2}</option>
+                                                {/if}
+                                            {/foreach}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <img width="10" src="{$path}img/move.png">
+                                    </td>
+                                </tr>
+                            {/foreach}
+                        </table>
+                        <div class="content-item">
+                            <input type="submit" name="submitAlgoliaSettings" id="submit" class="button button-primary" value="Save Changes">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="tab-pane" id="custom-ranking">
+            <form action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_custom_ranking&token={$token}" method="post">
+                <div class="content-wrapper" id="customization">
+                    <div class="content">
+                        <p class="help-block">Configure here the attributes used to reflect the popularity of your records (number of likes, number of views, number of sales...).</p>
+                        <table>
+                            <tr data-order="-1">
+                                <th class="table-col-enabled">Enabled</th>
+                                <th>Meta key</th>
+                                <th>Sort order</th>
+                                <th></th>
+                            </tr>
+
+                            {assign var=i value=0}
+                            {assign var=n value=0}
+
+                            {foreach from=$searchable_attributes key=key item=item}
+                                {assign var=order value=(-1)}
+                                {assign var=n value=($n+1)}
+
+                                {if isset($algolia_registry->metas[$key]['custom_ranking'])}
+                                    {assign var=order value=$algolia_registry->metas[$key]['custom_ranking_sort']}
+                                {/if}
+
+                                {if $order ne -1}
+                                <tr data-order="{$order}">
+                                {else}
+                                <tr data-order="{(10000 + $i)}">
+                                    {assign var=i value=($i + 1)}
+                                {/if}
+                                    <td>
+                                        {if isset($algolia_registry->metas[$key]) && $algolia_registry->metas[$key]['custom_ranking']}
+                                            <input checked="checked" type="checkbox" name="ATTRIBUTES[{$key}][CUSTOM_RANKING]"/>
+                                        {else}
+                                            <input type="checkbox" name="ATTRIBUTES[{$key}][CUSTOM_RANKING]"/>
+                                        {/if}
+                                    </td>
+                                    <td>{$item}</td>
+                                    <td style="white-space: nowrap;">
+                                        <select name="ATTRIBUTES[{$key}][CUSTOM_RANKING_ORDER]">
+                                            {foreach from=$ascending_tab key=key2 item=value2}
+                                                {if isset($algolia_registry->metas[$key]) && $algolia_registry->metas[$key]['custom_ranking_order'] eq $key2}
+                                                    <option selected value="{$key2}">{$value2}</option>
+                                                {else}
+                                                    <option value="{$key2}">{$value2}</option>
+                                                {/if}
+                                            {/foreach}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <img width="10" src="{$path}img/move.png">
+                                    </td>
+                                </tr>
+                            {/foreach}
+                        </table>
+                        <div class="_content-item">
+                            <input type="submit" name="submitAlgoliaSettings" id="submit" class="button button-primary" value="Save Changes">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="tab-pane" id="sortable_attributes">
+            <form id="sortable-form" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_sortable_attributes&token={$token}" method="post">
+                <div class="content-wrapper" id="customization">
+                    <div class="content">
+                        <p class="help-block">By default results are sorted by text relevance &amp; your ranking criteria. Configure here the attributes you want to use for the additional sorts (by price, by date, etc...).</p>
+                        <table>
+                            <tr data-order="-1">
+                                <th class="table-col-enabled">Enabled</th>
+                                <th>Name</th>
+                                <th>Sort</th>
+                                <th></th>
+                            </tr>
+
+                            {assign var=i value=0}
+                            {foreach from=$searchable_attributes key=key item=sortItem}
+                                {foreach from=$sorts item=sort}
+                                    {assign var=order value=(-1)}
+                                    {if isset($algolia_registry->sortable[{"`$key`_`$sort`"}])}
+                                        {assign var=order value=$algolia_registry->sortable[{"`$key`_`$sort`"}]['order']}
+                                    {/if}
+                                    {if $order ne -1}
+                                    <tr data-order="{$order}">
+                                    {else}
+                                    <tr data-order="{(10000 + $i)}">
+                                        {assign var=i value=($i + 1)}
+                                    {/if}
+                                    <td class="table-col-enabled">
+                                        {if isset($algolia_registry->sortable[{"`$key`_`$sort`"}])}
+                                            <input checked="checked" type="checkbox" name="ATTRIBUTES[{$key}][{$sort}]">
+                                        {else}
+                                            <input type="checkbox" name="ATTRIBUTES[{$key}][{$sort}]">
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        {$sortItem}
+                                    </td>
+                                    <td>
+                                        {if $sort eq 'asc'}
+                                        <span class="dashicons dashicons-arrow-up-alt"></span>
+                                        {else}
+                                        <span class="dashicons dashicons-arrow-down-alt"></span>
+                                        {/if}
+
+                                        {if $sort eq 'asc'}
+                                            Ascending
+                                        {else}
+                                            Descending
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        <img width="10" src="{$path}img/move.png">
+                                    </td>
+                                    <input type="hidden" name="ATTRIBUTES[{$key}][ORDER_{$sort}]" class="order" />
+                                </tr>
+                                {/foreach}
+                            {/foreach}
+                        </table>
+                        <div class="content-item">
+                            <input type="submit" name="submitAlgoliaSettings" id="submit" class="button button-primary" value="Save Changes">
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
         {/if}
