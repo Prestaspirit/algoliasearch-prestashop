@@ -8,7 +8,9 @@ This plugin replaces the default search of Wordpress with an Algolia realtime se
 
 1. Create an Algolia account with [https://www.algolia.com/users/sign_up](https://www.algolia.com/users/sign_up)
 2. Once logged in, go to the "Credential" section and get your Application ID & API keys
-3. Install Algolia Prestashop Plugin in your Prestashop dashboard
+3. Install Algolia Prestashop Plugin:
+  	- cd modules/
+	- git clone https://github.com/algolia/algoliasearch-prestashop.git algolia
 4. Activate the plugin through the Module menu in Prestashop
 5. Go to the "Algolia Search" left menu configuration page and fill the your API keys
 6. Configure the way Algolia is indexing your products, categories
