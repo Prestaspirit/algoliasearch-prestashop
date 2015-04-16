@@ -196,9 +196,14 @@
                             </div>
                             <div class="show-hide" style="display: none;">
                                 <div>
-                                    <label for="instant_radio_autocomplete_nb_results">Results by section</label>
-                                    <input type="number" min="0" value="{$algolia_registry->number_by_type}" name="NUMBER_BY_TYPE" id="instant_radio_autocomplete_nb_results">
-                                    <p class="description">The number of results per section in the dropdown menu.</p>
+                                    <label for="instant_radio_autocomplete_nb_products">Results for product section</label>
+                                    <input type="number" min="0" value="{$algolia_registry->number_products}" name="NUMBER_PRODUCTS" id="instant_radio_autocomplete_nb_products">
+                                    <p class="description">The number of results for the product section in the dropdown menu.</p>
+                                </div>
+                                <div>
+                                    <label for="instant_radio_autocomplete_nb_categories">Results for categories section</label>
+                                    <input type="number" min="0" value="{$algolia_registry->number_categories}" name="NUMBER_CATEGORIES" id="instant_radio_autocomplete_nb_categories">
+                                    <p class="description">The number of results for the categories section in the dropdown menu.</p>
                                 </div>
                             </div>
                         </div>

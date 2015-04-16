@@ -22,22 +22,6 @@ class Indexer
         $this->prestashop_fetcher  = new PrestashopFetcher();
     }
 
-    public function indexAllProducts()
-    {
-        /*global $wpdb;
-
-        foreach (array_keys($this->algolia_registry->indexable_types) as $type)
-        {
-            $query = "SELECT COUNT(*) as count FROM " . $wpdb->posts . " WHERE post_status IN ('publish') AND post_type = '".$type."'";
-            $result = $wpdb->get_results($query);
-            $count = $result[0]->count;
-            $max = 10000;
-
-            for ($i = 0; $i < ceil($count / $max); $i++)
-                $this->indexPostsTypePart($type, $max, $i * $max);
-        }*/
-    }
-
     public function moveTempIndexes()
     {
         foreach (\Language::getLanguages() as $language)

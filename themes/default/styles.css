@@ -112,6 +112,11 @@
     margin: 10px;
 }
 
+#algolia_instant_selector div.checker
+{
+    display: inline;
+}
+
 #algolia_instant_selector:after
 {
     content: ' ';

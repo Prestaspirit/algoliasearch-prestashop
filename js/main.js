@@ -200,7 +200,13 @@ if (algoliaSettings.type_of_search == "instant")
                                 sub_facets.push(params);
                             }
                         }
-                        facets.push({count: sub_facets.length, tax: algoliaSettings.facets[i].tax, facet_categorie_name: algoliaSettings.facets[i].name, sub_facets: sub_facets });
+
+                        var category_title = window.traductions != undefined && window.traductions[algoliaSettings.facets[i].name] != undefined
+                                                && window.traductions[algoliaSettings.facets[i].name][algoliaSettings.language] != undefined ?
+                                                window.traductions[algoliaSettings.facets[i].name][algoliaSettings.language]
+                                                : algoliaSettings.facets[i].name;
+
+                        facets.push({count: sub_facets.length, tax: algoliaSettings.facets[i].tax, facet_categorie_name: category_title, sub_facets: sub_facets });
                     }
 
                     return facets;
@@ -250,7 +256,7 @@ if (algoliaSettings.type_of_search == "instant")
                     var results_html = resultsTemplate.render({
                         facets_count: facets.length,
                         getDate: this.getDate,
-                        relevance_index_name: algoliaSettings.index_name + 'all',
+                        relevance_index_name: algoliaSettings.index_name + 'all_' + algoliaSettings.language,
                         sorting_indices: algoliaSettings.sorting_indices,
                         sortSelected: this.sortSelected,
                         hits: content.hits,
@@ -271,7 +277,7 @@ if (algoliaSettings.type_of_search == "instant")
                         facets: facets,
                         count: facets.length,
                         getDate: this.getDate,
-                        relevance_index_name: algoliaSettings.index_name + 'all',
+                        relevance_index_name: algoliaSettings.index_name + 'all_' + algoliaSettings.language,
                         sorting_indices: algoliaSettings.sorting_indices,
                         sortSelected: this.sortSelected
                     });

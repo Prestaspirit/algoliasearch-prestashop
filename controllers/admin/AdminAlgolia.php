@@ -70,10 +70,6 @@ class AdminAlgoliaController extends ModuleAdminController
 
         $content = $this->context->smarty->fetch($this->getTemplatePath() . 'content.tpl');
 
-
-        //foreach ($this->algolia_registry->metas as $meta)
-          //  $attributes->
-
         $this->context->smarty->assign(array(
             'content' => $content
         ));
@@ -106,7 +102,7 @@ class AdminAlgoliaController extends ModuleAdminController
                 $metas[$key] = array();
                 $metas[$key]["indexable"]            = isset($value["INDEXABLE"]) ? 1 : 0;
                 $metas[$key]["facetable"]            = $metas[$key]["indexable"] && isset($value["FACETABLE"]) ? 1 : 0;
-                $metas[$key]["type"]                 = isset($value["TYPE"]) ? $value['TYPE'] : 10000;
+                $metas[$key]["type"]                 = isset($value["TYPE"]) ? $value['TYPE'] : 'conjunctive';
                 $metas[$key]["order"]                = $value["ORDER"];
                 $metas[$key]["custom_ranking"]       = isset($value["CUSTOM_RANKING"]) && $value["CUSTOM_RANKING"] ? $value["CUSTOM_RANKING"] : 0;
                 $metas[$key]["custom_ranking_sort"]  = isset($value["CUSTOM_RANKING_SORT"]) && $value["CUSTOM_RANKING_SORT"] ? $value["CUSTOM_RANKING_SORT"] : 10000;
@@ -114,10 +110,11 @@ class AdminAlgoliaController extends ModuleAdminController
             }
         }
 
-
         $this->algolia_registry->metas = $metas;
 
         $this->algolia_helper->handleIndexCreation();
+
+        Tools::redirectAdmin('index.php?controller=AdminAlgolia#extra-metas');
     }
 
     public function admin_post_update_account_info()
@@ -153,8 +150,14 @@ class AdminAlgoliaController extends ModuleAdminController
         if (isset($_POST['NUMBER_OF_WORD_FOR_CONTENT']) && is_numeric($_POST['NUMBER_OF_WORD_FOR_CONTENT']))
             $this->algolia_registry->number_of_word_for_content = $_POST['NUMBER_OF_WORD_FOR_CONTENT'];
 
-        if (isset($_POST['NUMBER_BY_TYPE']) && is_numeric($_POST['NUMBER_BY_TYPE']))
-            $this->algolia_registry->number_by_type = $_POST['NUMBER_BY_TYPE'];
+        if (isset($_POST['NUMBER_PRODUCTS']) && is_numeric($_POST['NUMBER_PRODUCTS']))
+            $this->algolia_registry->number_products = $_POST['NUMBER_PRODUCTS'];
+
+        if (isset($_POST['NUMBER_CATEGORIES']) && is_numeric($_POST['NUMBER_CATEGORIES']))
+            $this->algolia_registry->number_categories = $_POST['NUMBER_CATEGORIES'];
+
+
+
 
         $search_input_selector  = !empty($_POST['SEARCH_INPUT_SELECTOR']) ? $_POST['SEARCH_INPUT_SELECTOR'] : '';
         $theme                  = !empty($_POST['THEME']) ? $_POST['THEME'] : 'default';

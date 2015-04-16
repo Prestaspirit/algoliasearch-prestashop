@@ -8,11 +8,18 @@
             {{/image_link_small}}
             <div class="info{{^image_link_small}}-without-thumb{{/image_link_small}}">
             {{#_highlightResult.path}}
-                {{{_highlightResult.path.value}}}
+                {{{_highlightResult.path.value}}} ({{product_count}})
             {{/_highlightResult.path}}
             {{^_highlightResult.path}}
                 {{{ _highlightResult.name.value }}}
             {{/_highlightResult.path}}
+
+            {{#price_tax_incl}}
+                <div class="algoliasearch-autocomplete-price">${{price_tax_incl}}</div>
+            {{/price_tax_incl}}
+            {{#_highlightResult.category}}
+                <div class="algoliasearch-autocomplete-price">{{{_highlightResult.category.value}}}</div>
+            {{/_highlightResult.category}}
             </div>
             <div style="clear: both;"></div>
         </div>

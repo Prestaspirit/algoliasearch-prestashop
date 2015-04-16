@@ -86,14 +86,9 @@ class AlgoliaHelper
     {
         foreach (\Language::getLanguages() as $language)
         {
-            $created_indexes = $this->algolia_client->listIndexes();
             $index_name = $this->algolia_registry->index_name;
-            $indexes = array();
             $facets = array();
             $customRankingTemp = array();
-
-            //global $attributesToSnippet;
-            $attributesToSnippet = array();
 
             $attributesToIndex  = array();
 
@@ -104,54 +99,9 @@ class AlgoliaHelper
                     else
                         $attributesToIndex[] = $value->name;
 
-            foreach ($attributesToSnippet as &$attribute)
-                if ($attribute == 'content')
-                    $attribute = $attribute.':'.$this->algolia_registry->number_of_word_for_content;
-
             $defaultSettings = array(
-                "attributesToIndex"     => $attributesToIndex,
-                "attributesToSnippet"   => $attributesToSnippet
+                "attributesToIndex"     => $attributesToIndex
             );
-
-            if (isset($indexes["items"]))
-            {
-                $indexes = array_map(function ($obj) {
-                    return $obj["name"];
-                }, $created_indexes["items"]);
-            }
-
-            /**
-             * Handle Autocomplete Taxonomies
-             */
-            /*foreach (array_keys($this->algolia_registry->indexable_tax) as $name)
-            {
-                if (in_array($index_name.$name, $indexes) == false)
-                {
-                    $mergeSettings = $this->mergeSettings($index_name.$name, $defaultSettings);
-
-                    $this->setSettings($index_name.$name, $mergeSettings);
-                    $this->setSettings($index_name.$name."_temp", $mergeSettings);
-
-                    $facets[] = $name;
-                }
-            }*/
-
-            /**
-             * Handle Autocomplete Types
-             */
-            /*foreach (array_keys($this->algolia_registry->indexable_types) as $name)
-            {
-                if (in_array($index_name . "_" . $name, $indexes) == false)
-                {
-                    if ($this->algolia_registry->type_of_search == 'autocomplete')
-                    {
-                        $mergeSettings = $this->mergeSettings($index_name . $name, $defaultSettings);
-
-                        $this->setSettings($index_name . $name, $mergeSettings);
-                        $this->setSettings($index_name . $name . "_temp", $mergeSettings);
-                    }
-                }
-            }*/
 
             foreach ($this->attribute_helper->getAllAttributes($language['id_lang']) as $key => $value)
             {
@@ -184,7 +134,6 @@ class AlgoliaHelper
             $settings = array(
                 'attributesToIndex'     => $attributesToIndex,
                 'attributesForFaceting' => array_values(array_unique($facets)),
-                //'attributesToSnippet'   => $attributesToSnippet,
                 'customRanking'         => $customRanking
             );
 
@@ -215,11 +164,9 @@ class AlgoliaHelper
 
                 foreach ($this->algolia_registry->sortable as $values)
                 {
-                    $settings = array(
-                        'ranking' => array($values['sort'].'('.$values['name'].')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom')
-                    );
+                    $mergeSettings['ranking'] = array($values['sort'].'('.$values['name'].')', 'typo', 'geo', 'words', 'proximity', 'attribute', 'exact', 'custom');
 
-                    $this->setSettings($index_name.'all_'.$language['iso_code'].'_'.$values['sort'], $settings);
+                    $this->setSettings($index_name . 'all_' . $language['iso_code'] . '_' . $allAttributes[$values['name']]->name . '_' . $values['sort'], $mergeSettings);
                 }
             }
         }

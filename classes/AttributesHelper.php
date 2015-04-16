@@ -26,7 +26,7 @@ class AttributesHelper
             $attributes[$id]->type           = $type;
             $attributes[$id]->name           = $defaultAttribute;
             $attributes[$id]->checked        = true;
-            $attributes[$id]->order          = isset($metas[$id]) ? $metas[$id]['order']: 10000;
+            $attributes[$id]->order          = isset($metas[$id]) ? $metas[$id]['order'] : 10000;
             $attributes[$id]->facetable      = isset($metas[$id]) ? $metas[$id]['facetable'] : false;
             $attributes[$id]->facet_type     = isset($metas[$id]) ? $metas[$id]['type'] : 'conjunctive';
         }

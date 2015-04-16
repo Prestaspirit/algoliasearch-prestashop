@@ -6,16 +6,18 @@ class FrontAlgoliaController
     private $algolia_registry;
     private $theme_helper;
     private $indexer;
+    private $attribute_helper;
 
     private $module;
 
     public function __construct(&$module)
     {
-        $this->module  = $module;
+        $this->module           = $module;
 
         $this->algolia_registry = \Algolia\Core\Registry::getInstance();
-        $this->theme_helper = new \Algolia\Core\ThemeHelper($this->module);
-        $this->indexer = new \Algolia\Core\Indexer();
+        $this->theme_helper     = new \Algolia\Core\ThemeHelper($this->module);
+        $this->indexer          = new \Algolia\Core\Indexer();
+        $this->attribute_helper = new \Algolia\Core\AttributesHelper();
 
         if ($this->algolia_registry->validCredential)
         {
@@ -53,25 +55,40 @@ class FrontAlgoliaController
         $current_language = \Language::getIsoById($cookie->id_lang);
 
         $indices = array();
-        $indices[] = array('index_name' => $this->algolia_registry->index_name.'all_'.$current_language, 'name' => 'Products', 'order1' => 1, 'order2' => 0);
-        $indices[] = array('index_name' => $this->algolia_registry->index_name.'categories_'.$current_language, 'name' => 'Categories', 'order1' => 0, 'order2' => 0);
+
+        if ($this->algolia_registry->number_products > 0)
+            $indices[] = array('index_name' => $this->algolia_registry->index_name.'all_'.$current_language, 'name' => 'products', 'order1' => 1, 'order2' => 0, 'nbHits' => $this->algolia_registry->number_products);
+
+        if ($this->algolia_registry->number_categories > 0)
+            $indices[] = array('index_name' => $this->algolia_registry->index_name.'categories_'.$current_language, 'name' => 'categories', 'order1' => 0, 'order2' => 0, 'nbHits' => $this->algolia_registry->number_categories);
 
         $facets = array();
+        $sorting_indices = array();
 
-        foreach (\Feature::getFeatures($cookie->id_lang) as $feature)
-            $facets[] = array('tax' => $feature['name'], 'name' => $feature['name'], 'order1' => 0,'order2' => 0, 'type' => 'conjunctive');
+        $attributes = $this->attribute_helper->getAllAttributes($cookie->id_lang);
+
+        foreach ($this->algolia_registry->sortable as $sortable)
+            $sorting_indices[] = array(
+                'index_name' => $this->algolia_registry->index_name . 'all_' . $current_language . '_' . $sortable['name'] . '_' . $sortable['sort'],
+                'label' => $sortable['name'] . '_' . $sortable['sort']
+            );
+
+        foreach ($attributes as $key => $value)
+        {
+            if (isset($this->algolia_registry->metas[$key]) && $this->algolia_registry->metas[$key]['facetable'])
+                $facets[] = array('tax' => $value->name, 'name' => $value->name, 'order1' => $value->order, 'order2' => 0, 'type' => $value->facet_type);
+        }
 
         $algoliaSettings = array(
             'app_id'                    => $this->algolia_registry->app_id,
             'search_key'                => $this->algolia_registry->search_key,
             'indices'                   => $indices,
-            'sorting_indices'           => array(),//$sorting_indices,
+            'sorting_indices'           => $sorting_indices,
             'index_name'                => $this->algolia_registry->index_name,
             'type_of_search'            => $this->algolia_registry->type_of_search,
             'instant_jquery_selector'   => str_replace("\\", "", $this->algolia_registry->instant_jquery_selector),
             'facets'                    => $facets,
             'facetsLabels'              => array(),//$facetsLabels,
-            'number_by_type'            => $this->algolia_registry->number_by_type,
             'number_by_page'            => $this->algolia_registry->number_by_page,
             'search_input_selector'     => str_replace("\\", "", $this->algolia_registry->search_input_selector),
             "plugin_url"                => $this->module->getPath(),

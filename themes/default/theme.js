@@ -1,5 +1,24 @@
 jQuery(document).ready(function ($) {
 
+    window.traductions = {
+        'price': {
+            'fr': 'Prix',
+            'en': 'Price'
+        },
+        'categories': {
+            'fr': 'Categories',
+            'en': 'Categories'
+        },
+        'products': {
+            'fr': 'Produits',
+            'en': 'Products'
+        },
+        'price_asc': {
+            'fr': 'Moins cher',
+            'en': 'Lowest price first'
+        }
+    };
+
     if (algoliaSettings.type_of_search == "autocomplete")
     {
         var $autocompleteTemplate = Hogan.compile($('#autocomplete-template').text());
@@ -13,11 +32,15 @@ jQuery(document).ready(function ($) {
 
         for (var i = 0; i < algoliaSettings.indices.length; i++)
         {
+            var category_title = traductions[algoliaSettings.indices[i].name] != undefined
+                                    && traductions[algoliaSettings.indices[i].name][algoliaSettings.language] != undefined ?
+                                    traductions[algoliaSettings.indices[i].name][algoliaSettings.language]
+                                    : algoliaSettings.indices[i].name;
             hogan_objs.push({
-                source: indices[i].ttAdapter({hitsPerPage: algoliaSettings.number_by_type}),
-                displayKey: 'title',
+                source: indices[i].ttAdapter({hitsPerPage: algoliaSettings.indices[i].nbHits}),
+                displayKey: 'name',
                 templates: {
-                    header: '<div class="category">' + algoliaSettings.indices[i].name + '</div>',
+                    header: '<div class="category">' + category_title + '</div>',
                     suggestion: function (hit) {
                         return $autocompleteTemplate.render(hit);
                     }
@@ -28,7 +51,7 @@ jQuery(document).ready(function ($) {
 
         hogan_objs.push({
             source: getBrandingHits(),
-            displayKey: 'title',
+            displayKey: 'name',
             templates: {
                 suggestion: function (hit) {
                     return '<div class="footer">powered by <img width="45" src="' + algoliaSettings.plugin_url + '/img/algolia-logo.png"></div>';
@@ -40,13 +63,24 @@ jQuery(document).ready(function ($) {
             $(this).typeahead({hint: false}, hogan_objs);
 
             $(this).on('typeahead:selected', function (e, item) {
-                window.location.href = item.url;
+                window.location.href = item.link ? item.link : item.url;
             });
         });
     }
 
     if (algoliaSettings.type_of_search == "instant")
     {
+
+        for (var i = 0; i < algoliaSettings.sorting_indices.length; i++)
+        {
+            var label = window.traductions != undefined && window.traductions[algoliaSettings.sorting_indices[i].label] != undefined
+            && window.traductions[algoliaSettings.sorting_indices[i].label][algoliaSettings.language] != undefined ?
+                window.traductions[algoliaSettings.sorting_indices[i].label][algoliaSettings.language]
+                : algoliaSettings.sorting_indices[i].label;
+
+            algoliaSettings.sorting_indices[i].label = label;
+        }
+
         /**
          * Variables Initialization
          */
@@ -148,11 +182,11 @@ jQuery(document).ready(function ($) {
 
                 var params = {
                     type: {},
-                    current_min: current_min,
-                    current_max: current_max,
+                    current_min: Math.floor(current_min),
+                    current_max: Math.ceil(current_max),
                     count: min == max ? 0 : 1,
-                    min: min,
-                    max: max
+                    min: Math.floor(min),
+                    max: Math.ceil(max)
                 };
 
                 params.type[facet.type] = true;
