@@ -5,8 +5,11 @@ jQuery(document).ready(function ($) {
         var $autocompleteTemplate = Hogan.compile($('#autocomplete-template').text());
 
         var hogan_objs = [];
-
         algoliaSettings.indices.sort(indicesCompare);
+
+        var indices = [];
+        for (var i = 0; i < algoliaSettings.indices.length; i++)
+            indices.push(algolia_client.initIndex(algoliaSettings.indices[i].index_name));
 
         for (var i = 0; i < algoliaSettings.indices.length; i++)
         {
@@ -37,7 +40,7 @@ jQuery(document).ready(function ($) {
             $(this).typeahead({hint: false}, hogan_objs);
 
             $(this).on('typeahead:selected', function (e, item) {
-                window.location.href = item.link;
+                window.location.href = item.url;
             });
         });
     }

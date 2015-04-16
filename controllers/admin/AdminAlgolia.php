@@ -89,13 +89,10 @@ class AdminAlgoliaController extends ModuleAdminController
     {
         parent::postProcess();
 
-        if (Tools::isSubmit('submitAlgoliaSettings'))
-        {
-            $action = Tools::getValue('action');
+        $action = Tools::getValue('action');
 
-            if (method_exists($this, $action))
-                $this->$action();
-        }
+        if (method_exists($this, $action))
+            $this->$action();
     }
 
     public function admin_post_update_extra_meta()
@@ -230,6 +227,8 @@ class AdminAlgoliaController extends ModuleAdminController
 
     public function admin_post_update_sortable_attributes()
     {
+        $this->indexer->indexCategories();
+
         if (isset($_POST['ATTRIBUTES']) && is_array($_POST['ATTRIBUTES']))
         {
             $sortable = array();
@@ -271,9 +270,9 @@ class AdminAlgoliaController extends ModuleAdminController
                     $this->algolia_helper->handleIndexCreation();
                 }
 
-                if ($subaction[0] == 'index_taxonomies')
+                if ($subaction[0] == 'index_categories')
                 {
-                    //$this->indexer->indexTaxonomies();
+                    $this->indexer->indexCategories();
 
                 }
                 if ($subaction[0] == 'move_indexes')
@@ -282,9 +281,9 @@ class AdminAlgoliaController extends ModuleAdminController
                 }
             }
 
-            if (count($subaction) == 2)
+            if (count($subaction) == 3)
             {
-                $this->indexer->indexProductsPart($this->module->batch_count, $subaction[1]);
+                $this->indexer->indexProductsPart($this->module->batch_count, $subaction[2]);
             }
         }
 

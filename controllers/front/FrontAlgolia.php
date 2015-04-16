@@ -53,7 +53,8 @@ class FrontAlgoliaController
         $current_language = \Language::getIsoById($cookie->id_lang);
 
         $indices = array();
-        $indices[] = array('index_name' => $this->algolia_registry->index_name.'all_'.$current_language, 'name' => 'Products', 'order1' => 0, 'order2' => 0);
+        $indices[] = array('index_name' => $this->algolia_registry->index_name.'all_'.$current_language, 'name' => 'Products', 'order1' => 1, 'order2' => 0);
+        $indices[] = array('index_name' => $this->algolia_registry->index_name.'categories_'.$current_language, 'name' => 'Categories', 'order1' => 0, 'order2' => 0);
 
         $facets = array();
 

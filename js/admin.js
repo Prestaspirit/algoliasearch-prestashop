@@ -188,9 +188,9 @@ jQuery(document).ready(function($) {
                 "<div style='float: left; margin-left: 20px'>" + percent + "%</div>"
         }
 
-        function render(actions, i)
+        function render(action, i, n)
         {
-            var percentage = Math.ceil(i * 100 / actions.length);
+            var percentage = Math.ceil(i * 100 / n);
             if (i == -1)
                 percentage = 0;
 
@@ -201,7 +201,7 @@ jQuery(document).ready(function($) {
 
             $("#reindex-log").append(
                 "<tr>" +
-                "<td>" + actions[i].name + " " + actions[i].sup + "<td>" +
+                "<td>" + action.name + " " + action.sup + "<td>" +
                 "<td>[OK]</td>" +
                 "</tr>");
         }
@@ -222,55 +222,57 @@ jQuery(document).ready(function($) {
 
             $(this).hide();
 
-            console.log(algoliaAdminSettings)
-
-            actions.push({ subaction: "handle_index_creation", name: "Handle index creation", sup: "" });
+            actions.push({ subaction: "handle_index_creation", name: "Setup indices", sup: "" });
 
             for (value in algoliaAdminSettings.types)
             {
                 var number = Math.ceil(algoliaAdminSettings.types[value].count / batch_count);
-
                 for (var i = 0; i < number; i++)
                 {
                     actions.push({
-                        name: algoliaAdminSettings.types[value].name,
-                        subaction: algoliaAdminSettings.types[value].type + "__" + i,
-                        sup: (i + 1) + "/" + number
+                        name: "Upload " + algoliaAdminSettings.types[value].name,
+                        subaction: "type__" + algoliaAdminSettings.types[value].type + "__" + i,
+                        sup: (i === number - 1 ? algoliaAdminSettings.types[value].count : (i + 1) * algoliaAdminSettings.batch_count) + "/" + algoliaAdminSettings.types[value].count
                     });
                 }
             }
 
-            actions.push({ subaction: "index_taxonomies", name: "Index taxonomies", sup: "" });
+            actions.push({ subaction: "index_categories", name: "Upload Categories", sup: "" });
 
-            actions.push({ subaction: "move_indexes", name: "Move all temp indexes", sup: "" });
+            actions.push({ subaction: "move_indexes", name: "Move indices to production", sup: "" });
 
-            var i = 0;
-            var call = function () {
-
+            var call = function (i, n) {
                 $.ajax({
                     method: "POST",
                     url: base_url,
-                    data: { submitAlgoliaSettings: true, subaction: actions[i].subaction },
+                    data: { subaction: actions[0].subaction },
                     success: function (result) {
-                        render(actions, i);
-                    },
-                    async: false
-                });
+                        render(actions[0], i + 1, n);
 
-                if (i < actions.length - 1)
-                {
-                    i = i + 1;
-                    setTimeout(call, 1);
-                }
-                else
-                {
-                    $("#reindex-percentage").html(renderPercentage(100));
-                    $(".close-results").show();
-                }
+                        actions = actions.slice(1);
+
+                        if (actions.length > 0)
+                            call(i + 1, n);
+                        else
+                        {
+                            $("#reindex-percentage").html(renderPercentage(100));
+                            var date    = new Date();
+                            var year    = date.getFullYear();
+                            var month   = (date.getMonth() + 1);
+                            var day     = date.getDate();
+                            var hours   = date.getHours()   < 10 ? '0' + date.getHours()   : date.getHours();
+                            var minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+                            var seconds = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
+
+                            $("#last-update").html("Last update : " + year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds);
+                            $(".close-results").show();
+                        }
+                    }
+                });
             };
 
-            render(actions, -1);
-            setTimeout(call, 1);
+            render(null, -1, actions.length);
+            call(0, actions.length);
         });
     });
 });

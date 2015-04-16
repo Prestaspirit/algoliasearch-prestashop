@@ -111,7 +111,6 @@
             <li><a href="#searchable_attributes" role="tab" data-toggle="tab">Searchable Configuration</a></li>
             <li><a href="#custom-ranking" role="tab" data-toggle="tab">Ranking Configuration</a></li>
             <li><a href="#sortable_attributes" role="tab" data-toggle="tab">Sorting Configuration</a></li>
-            <li><a href="#sync_template" role="tab" data-toggle="tab">Sync</a></li>
         {/if}
     </ul>
 
@@ -169,8 +168,8 @@
 
         {if $algolia_registry->validCredential}
         <div class="tab-pane active" id="ui_template">
-            <form action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_type_of_search&token={$token}" method="post">
-                <div class="content-wrapper" id="type_of_search">
+            <form class="defaultForm form-horizontal" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_type_of_search&token={$token}" method="post">
+                <div class="panel" id="type_of_search">
                     <div class="content">
                         <h3>Search bar</h3>
                         <p class="help-block">Configure here your search input field.</p>
@@ -294,7 +293,7 @@
 
         <div class="tab-pane" id="extra-metas">
             <form id="extra-metas-form" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_extra_meta&token={$token}" method="post">
-                <div class="content-wrapper" id="customization">
+                <div class="panel" id="customization">
                     <div class="content">
                         <p class="help-block">
                             Configure here the additional attributes you want to include in your Algolia records.
@@ -385,8 +384,10 @@
                                 {/foreach}
                             </table>
                         </div>
-                        <div class="content-item">
-                            <input type="submit" name="submitAlgoliaSettings" id="submit" class="button button-primary" value="Save Changes">
+                        <div class="panel-footer">
+                            <button type="submit" value="1" id="module_form_submit_btn" name="submitAlgoliaSettings" class="btn btn-default pull-right">
+                                <i class="process-icon-save"></i> Save changes
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -405,7 +406,7 @@
 
         <div class="tab-pane" id="searchable_attributes">
             <form action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_searchable_attributes&token={$token}" method="post">
-                <div class="content-wrapper" id="customization">
+                <div class="panel" id="customization">
                     <div class="content">
                         <p class="help-block">Configure here the attributes you want to be able to search in. The order of this setting matters as those at the top of the list are considered more important.</p>
                         <table>
@@ -458,8 +459,10 @@
                                 </tr>
                             {/foreach}
                         </table>
-                        <div class="content-item">
-                            <input type="submit" name="submitAlgoliaSettings" id="submit" class="button button-primary" value="Save Changes">
+                        <div class="panel-footer">
+                            <button type="submit" value="1" id="module_form_submit_btn" name="submitAlgoliaSettings" class="btn btn-default pull-right">
+                                <i class="process-icon-save"></i> Save changes
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -468,7 +471,7 @@
 
         <div class="tab-pane" id="custom-ranking">
             <form action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_custom_ranking&token={$token}" method="post">
-                <div class="content-wrapper" id="customization">
+                <div class="panel" id="customization">
                     <div class="content">
                         <p class="help-block">Configure here the attributes used to reflect the popularity of your records (number of likes, number of views, number of sales...).</p>
                         <table>
@@ -521,8 +524,10 @@
                                 </tr>
                             {/foreach}
                         </table>
-                        <div class="_content-item">
-                            <input type="submit" name="submitAlgoliaSettings" id="submit" class="button button-primary" value="Save Changes">
+                        <div class="panel-footer">
+                            <button type="submit" value="1" id="module_form_submit_btn" name="submitAlgoliaSettings" class="btn btn-default pull-right">
+                                <i class="process-icon-save"></i> Save changes
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -531,7 +536,7 @@
 
         <div class="tab-pane" id="sortable_attributes">
             <form id="sortable-form" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_sortable_attributes&token={$token}" method="post">
-                <div class="content-wrapper" id="customization">
+                <div class="panel" id="customization">
                     <div class="content">
                         <p class="help-block">By default results are sorted by text relevance &amp; your ranking criteria. Configure here the attributes you want to use for the additional sorts (by price, by date, etc...).</p>
                         <table>
@@ -586,8 +591,10 @@
                                 {/foreach}
                             {/foreach}
                         </table>
-                        <div class="content-item">
-                            <input type="submit" name="submitAlgoliaSettings" id="submit" class="button button-primary" value="Save Changes">
+                        <div class="panel-footer">
+                            <button type="submit" value="1" id="module_form_submit_btn" name="submitAlgoliaSettings" class="btn btn-default pull-right">
+                                <i class="process-icon-save"></i> Save changes
+                            </button>
                         </div>
                     </div>
                 </div>

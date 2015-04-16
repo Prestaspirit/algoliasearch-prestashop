@@ -75,6 +75,63 @@ class Indexer
         }
     }
 
+    private function getNestedCats($cats, $names, &$results, $id_lang)
+    {
+        foreach ($cats as $cat)
+        {
+            if (isset($cat['children']) && is_array($cat['children']) && count($cat['children']) > 0)
+            {
+                if ($cat['is_root_category'] == 0)
+                    $names[] = $cat['name'];
+
+                $this->getNestedCats($cat['children'], $names, $results, $id_lang);
+            }
+            else
+            {
+                if ($cat['is_root_category'] == 0)
+                {
+                    $category = new \Category($cat['id_category']);
+                    $product_count = $category->getProducts($id_lang, 1, 10000, null, null, true);
+                    $link = new \Link();
+                    $link = $link->getCategoryLink($cat['id_category'], null, $id_lang);
+
+                    $names[] = array('name' => $cat['name'], 'objectID' => $cat['id_category'], 'product_count' => $product_count, 'url' => $link);
+                }
+
+                $results[] = $names;
+                array_pop($names);
+            }
+        }
+    }
+
+    private function getCategories($id_lang)
+    {
+        $cats = \Category::getNestedCategories(null, $id_lang);
+
+        $results = array();
+        $this->getNestedCats($cats, array(), $results, $id_lang);
+
+        $results = array_map(function ($cat) {
+            $new_cat = $cat[count($cat) - 1];
+            $path = $cat;
+            array_pop($path);
+
+            $path[] = $new_cat['name'];
+            $new_cat['path'] = implode(' / ', $path);
+
+            return $new_cat;
+        }, $results);
+
+        return $results;
+    }
+
+    public function indexCategories()
+    {
+        foreach (\Language::getLanguages() as $language)
+            $this->algolia_helper->pushObjects($this->algolia_registry->index_name.'categories_' . $language['iso_code'], $this->getCategories($language['id_lang']));
+
+    }
+
     public function deleteProduct($product_id)
     {
         foreach (\Language::getLanguages() as $language)

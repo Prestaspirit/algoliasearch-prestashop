@@ -9,26 +9,24 @@
     margin: 20px;
 }
 
-#algolia-settings .content-wrapper .content
+#algolia-settings .panel .content
 {
     background-color: white;
-    padding: 20px 5px;
-    border: solid 1px #DDDDDD;
     border-top: none;
 }
-#algolia-settings .content-wrapper .content h3
+#algolia-settings .panel .content h3
 {
     border-bottom: 1px solid #DDD;
     padding-left: 5px;
 }
-#algolia-settings .content-wrapper .content .help-block {
+#algolia-settings .panel .content .help-block {
     border-left: 5px solid #DDD;
     background-color: #F1F1F1;
     padding: 10px;
     margin-left: 5px;
 }
 
-#algolia-settings .content-wrapper .content .warning {
+#algolia-settings .panel .content .warning {
     border-left: 5px solid #DDD;
     background-color: #f1cc6d;
     padding: 10px;
@@ -36,63 +34,63 @@
     margin-right: 0px;
 }
 
-#algolia-settings .content-wrapper .content .help-block a {
+#algolia-settings .panel .content .help-block a {
     text-decoration: none;
     font-weight: bold;
     color: black;
 }
-#algolia-settings .content-wrapper .content label
+#algolia-settings .panel .content label
 {
     font-weight: bold;
 }
-#algolia-settings .content-wrapper .content p.description
+#algolia-settings .panel .content p.description
 {
     margin-left: 10px;
     color: rgb(102, 102, 102);
 }
-#algolia-settings .content-wrapper .content input
+#algolia-settings .panel .content input
 {
 }
 
-#algolia-settings .content-wrapper .content input[type="text"], #algolia-settings .content-wrapper .content input[type="password"]
+#algolia-settings .panel .content input[type="text"], #algolia-settings .panel .content input[type="password"]
 {
     padding: 5px;
     border-radius: 5px;
     width: 200px;
 }
-#algolia-settings .content-wrapper .content table {
+#algolia-settings .panel .content table {
     width: 100%;
     border-spacing: 0;
 }
-#algolia-settings .content-wrapper .content table th, #algolia-settings .content-wrapper .content table td {
+#algolia-settings .panel .content table th, #algolia-settings .panel .content table td {
     text-align: left;
     padding: 5px;
     border-bottom: 1px solid #ddd;
 }
-#algolia-settings .content-wrapper .content table th {
+#algolia-settings .panel .content table th {
     background: #EFEFEF;
     border-top: 1px solid #AAA;
     border-bottom: 1px solid #AAA;
 }
 
-#algolia-settings .content-wrapper .content table .no-border {
+#algolia-settings .panel .content table .no-border {
     border: 0;
     background: none;
 }
 
-#algolia-settings .content-wrapper .content .content-item
+#algolia-settings .panel .content .content-item
 {
     padding: 10px 5px;
 }
 
-#algolia-settings .content-wrapper .title
+#algolia-settings .panel .title
 {
     text-align: center;
     padding: 5px;
     border-bottom: solid 1px #DDDDDD;
 }
 
-#algolia-settings .content-wrapper .show-hide
+#algolia-settings .panel .show-hide
 {
     margin-left: 50px;
 }

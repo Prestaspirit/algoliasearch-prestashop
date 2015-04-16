@@ -7,7 +7,12 @@
             </div>
             {{/image_link_small}}
             <div class="info{{^image_link_small}}-without-thumb{{/image_link_small}}">
-            {{{ _highlightResult.name.value }}}
+            {{#_highlightResult.path}}
+                {{{_highlightResult.path.value}}}
+            {{/_highlightResult.path}}
+            {{^_highlightResult.path}}
+                {{{ _highlightResult.name.value }}}
+            {{/_highlightResult.path}}
             </div>
             <div style="clear: both;"></div>
         </div>
