@@ -101,7 +101,7 @@ class Algolia extends Module
         $tab = new Tab();
 
         foreach(Language::getLanguages(false) as $lang)
-            $tab->name[(int) $lang['id_lang']] = 'Algolia';
+            $tab->name[(int) $lang['id_lang']] = 'Algolia Search';
 
         $tab->class_name = 'AdminAlgolia';
         $tab->module = $this->name;
