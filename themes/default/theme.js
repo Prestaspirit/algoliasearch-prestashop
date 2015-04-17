@@ -210,7 +210,7 @@ jQuery(document).ready(function ($) {
 
                 all_unchecked = all_unchecked && !checked;
 
-                var name = algoliaSettings.facetsLabels[key] != undefined ? algoliaSettings.facetsLabels[key] : key;
+                var name = key;
                 var nameattr = key;
 
                 var params = {

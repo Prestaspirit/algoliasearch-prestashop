@@ -88,7 +88,6 @@ class FrontAlgoliaController
             'type_of_search'            => $this->algolia_registry->type_of_search,
             'instant_jquery_selector'   => str_replace("\\", "", $this->algolia_registry->instant_jquery_selector),
             'facets'                    => $facets,
-            'facetsLabels'              => array(),//$facetsLabels,
             'number_by_page'            => $this->algolia_registry->number_by_page,
             'search_input_selector'     => str_replace("\\", "", $this->algolia_registry->search_input_selector),
             "plugin_url"                => $this->module->getPath(),
