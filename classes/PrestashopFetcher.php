@@ -42,7 +42,7 @@ class PrestashopFetcher
 
     private function try_cast($value)
     {
-        if (is_numeric($value) && floatval($value) == intval($value))
+        if (is_numeric($value) && floatval($value) == floatval(intval($value)))
             return intval($value);
 
         if (is_numeric($value))
