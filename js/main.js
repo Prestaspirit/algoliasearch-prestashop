@@ -1,7 +1,7 @@
 /**
  * Common variables and function for autocomplete and instant search
  */
-var algolia_client = new AlgoliaSearch(algoliaSettings.app_id, algoliaSettings.search_key);
+var algolia_client = algoliasearch(algoliaSettings.app_id, algoliaSettings.search_key);
 var custom_facets_types = algoliaSettings.theme.facet_types;
 
 window.indicesCompare = function (a, b) {
@@ -53,14 +53,13 @@ if (algoliaSettings.type_of_search == "instant")
 
             engine = new function () {
 
-                this.query = "";
-
                 var $this = this;
 
                 this.helper = undefined;
 
                 this.setHelper = function (helper) {
                     this.helper = helper;
+                    this.helper.setQuery('');
                 };
 
                 this.updateUrl = function (push_state)
@@ -68,36 +67,32 @@ if (algoliaSettings.type_of_search == "instant")
                     var refinements = [];
 
                     /** Get refinements for conjunctive facets **/
-                    for (var refine in this.helper.refinements)
+                    for (var refine in this.helper.state.facetsRefinements)
                     {
-                        if (this.helper.refinements[refine])
+                        if (this.helper.state.facetsRefinements[refine])
                         {
-                            var i = refine.indexOf(':');
                             var r = {};
 
-                            r[refine.slice(0, i)] = refine.slice(i + 1);
+                            r[refine] = this.helper.state.facetsRefinements[refine];
 
                             refinements.push(r);
                         }
                     }
 
                     /** Get refinements for disjunctive facets **/
-                    for (var refine in this.helper.disjunctiveRefinements)
+                    for (var refine in this.helper.state.disjunctiveFacetsRefinements)
                     {
-                        for (var value in this.helper.disjunctiveRefinements[refine])
+                        for (var i = 0; i < this.helper.state.disjunctiveFacetsRefinements[refine].length; i++)
                         {
-                            if (this.helper.disjunctiveRefinements[refine][value])
-                            {
-                                var r = {};
+                            var r = {};
 
-                                r[refine] = value;
+                            r[refine] = this.helper.state.disjunctiveFacetsRefinements[refine][i];
 
-                                refinements.push(r);
-                            }
+                            refinements.push(r);
                         }
                     }
 
-                    var url = '#q=' + encodeURIComponent(this.query) + '&page=' + this.helper.page + '&refinements=' + encodeURIComponent(JSON.stringify(refinements)) + '&numerics_refinements=' + encodeURIComponent(JSON.stringify(this.helper.numericsRefinements)) + '&index_name=' + encodeURIComponent(JSON.stringify(this.helper.getIndex()));
+                    var url = '#q=' + encodeURIComponent(this.helper.state.query) + '&page=' + this.helper.getCurrentPage() + '&refinements=' + encodeURIComponent(JSON.stringify(refinements)) + '&numerics_refinements=' + encodeURIComponent(JSON.stringify(this.helper.state.numericRefinements)) + '&index_name=' + encodeURIComponent(JSON.stringify(this.helper.getIndex()));
 
                     /** If push_state is false wait for one second to push the state in history **/
                     if (push_state)
@@ -127,7 +122,7 @@ if (algoliaSettings.type_of_search == "instant")
                         var numericsRefinements             = JSON.parse(decodeURIComponent(params.substring(numericsRefinementsParamOffset + '&numerics_refinements='.length, indexNameOffset)));
                         var indexName                       = JSON.parse(decodeURIComponent(params.substring(indexNameOffset + '&index_name='.length)));
 
-                        this.query = q;
+                        this.query = this.helper.setQuery(q);
 
                         this.helper.clearRefinements();
 
@@ -138,14 +133,16 @@ if (algoliaSettings.type_of_search == "instant")
                             }
                         }
 
-                        this.helper.numericsRefinements = numericsRefinements;
+                        for (var key in numericsRefinements)
+                            for (var operator in numericsRefinements[key])
+                                this.helper.addNumericRefinement(key, operator, numericsRefinements[key][operator]);
 
-                        this.helper.setPage(page);
+                        this.helper.setCurrentPage(page);
                         this.helper.setIndex(indexName);
 
-                        $(algoliaSettings.search_input_selector).val(this.query);
+                        $(algoliaSettings.search_input_selector).val(this.helper.state.query);
 
-                        this.helper.search(this.query, searchCallback);
+                        this.helper.search();
 
                     }
                 };
@@ -162,7 +159,7 @@ if (algoliaSettings.type_of_search == "instant")
                         {
                             try
                             {
-                                var params = custom_facets_types[algoliaSettings.facets[i].type]($this, content, algoliaSettings.facets[i]);
+                                var params = custom_facets_types[algoliaSettings.facets[i].type](this, content, algoliaSettings.facets[i]);
 
                                 if (params)
                                     for (var k = 0; k < params.length; k++)
@@ -176,14 +173,17 @@ if (algoliaSettings.type_of_search == "instant")
                         }
                         else
                         {
-                            var content_facets = content.facets;
+                            var content_facets = content.getFacetByName(algoliaSettings.facets[i].tax);
+
+                            if (content_facets == undefined)
+                                continue;
 
                             if (algoliaSettings.facets[i].type == 'disjunctive')
                                 content_facets = content.disjunctiveFacets;
 
-                            for (var key in content_facets[algoliaSettings.facets[i].tax])
+                            for (var key in content_facets.data)
                             {
-                                var checked = $this.helper.isRefined(algoliaSettings.facets[i].tax, key);
+                                var checked = this.helper.isRefined(algoliaSettings.facets[i].tax, key);
 
                                 var name = key;
                                 var nameattr = key;
@@ -193,7 +193,7 @@ if (algoliaSettings.type_of_search == "instant")
                                     checked: checked,
                                     nameattr: nameattr,
                                     name: name,
-                                    count: content_facets[algoliaSettings.facets[i].tax][key]
+                                    count: content_facets.data[key]
                                 };
                                 params.type[algoliaSettings.facets[i].type] = true;
 
@@ -264,7 +264,7 @@ if (algoliaSettings.type_of_search == "instant")
                         nbHits_zero: (content.nbHits === 0),
                         nbHits_one: (content.nbHits === 1),
                         nbHits_many: (content.nbHits > 1),
-                        query: $this.query,
+                        query: this.helper.state.query,
                         processingTimeMS: content.processingTimeMS
                     });
 
@@ -309,7 +309,7 @@ if (algoliaSettings.type_of_search == "instant")
                 };
 
                 this.gotoPage = function(page) {
-                    this.helper.gotoPage(+page - 1);
+                    this.helper.setCurrentPage(+page - 1);
                 };
 
                 this.getDate = function () {
