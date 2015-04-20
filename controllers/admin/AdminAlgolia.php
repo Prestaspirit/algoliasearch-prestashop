@@ -259,6 +259,11 @@ class AdminAlgoliaController extends ModuleAdminController
         Tools::redirectAdmin('index.php?controller=AdminAlgolia#sortable_attributes');
     }
 
+    public function admin_post_reset_config_to_default()
+    {
+        $this->algolia_registry->reset_config_to_default();
+    }
+
 
     public function admin_post_reindex()
     {

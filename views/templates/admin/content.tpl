@@ -157,6 +157,22 @@
                             </div>
                         </div>
                     </div><!-- /.form-wrapper -->
+                    <div style="clear: both;"></div>
+
+                    <div style="float: left;">
+                        <div style="padding: 0px 10px;">
+                            <h3>Reset configuration to default</h3>
+                            <p class="help-block">
+                                This will set the config back to default except api keys
+                            </p>
+                            <div class="content-item">
+                                <div data-form="?controller=AdminAlgolia&configure=algolia&action=admin_post_reset_config_to_default&token={$token}" data-value="admin_post_reset_config_to_default" id="reset-config" class="btn btn-default">Reset</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="clear: both;"></div>
+
                     <div class="panel-footer">
                         <button type="submit" value="1" id="module_form_submit_btn" name="submitAlgoliaSettings" class="btn btn-default pull-right">
                             <i class="process-icon-save"></i> Save changes

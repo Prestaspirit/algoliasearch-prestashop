@@ -81,4 +81,13 @@ class Registry
 
         \Configuration::updateValue(static::$setting_key, $options);
     }
+
+    public function reset_config_to_default()
+    {
+        foreach ($this->attributes as $key => $value)
+            if (in_array($key, array('validCredential', 'app_id', 'search_key', 'admin_key', 'index_name')) == false)
+                $this->options[$key] = $value;
+
+        $this->save();
+    }
 }

@@ -175,6 +175,29 @@ jQuery(document).ready(function($) {
     });
 
     /**
+      * Handle Reset config to default
+      */
+
+    $('#reset-config').click(function (e) {
+        var url = $(this).attr('data-form');
+        var value = $(this).attr('data-value');
+
+        url = window.location.origin + window.location.pathname + url;
+
+        if (window.confirm('Are you sure ? This will reset your config to default'))
+        {
+            $.ajax({
+                method: "POST",
+                url: url,
+                data: { action: value },
+                success: function () {
+                    window.location.reload();
+                }
+            });
+        }
+    });
+
+    /**
      * Handle Async Indexation
      */
 
