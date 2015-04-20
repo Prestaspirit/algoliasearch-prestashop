@@ -134,7 +134,7 @@
                         </div>
                         <div class="form-group">
                             <label class="control-label col-lg-3">
-                                API Key
+                                Search-Only API Key
                             </label>
                             <div class="col-lg-6 ">
                                 <input type="text" name="SEARCH_KEY" id="SEARCH_KEY" value="{$algolia_registry->search_key}" class="">
@@ -142,7 +142,7 @@
                         </div>
                         <div class="form-group">
                             <label class="control-label col-lg-3">
-                                Search-Only API Key
+                                Admin Key
                             </label>
                             <div class="col-lg-6 ">
                                 <input type="text" name="ADMIN_KEY" id="ADMIN_KEY" value="{$algolia_registry->admin_key}" class="">
