@@ -289,6 +289,12 @@
     padding: 10px;
 }
 
+#algolia_instant_selector .result .result-sub-content .description p
+{
+    height: 70px;
+    overflow: hidden;
+}
+
 #algolia_instant_selector .result .result-thumbnail
 {
     text-align: center;

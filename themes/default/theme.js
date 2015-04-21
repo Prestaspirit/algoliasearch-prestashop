@@ -9,7 +9,7 @@ jQuery(document).ready(function ($) {
             'fr': 'Prix',
             'en': 'Price'
         },
-        'categories': {
+        'category': {
             'fr': 'Categories',
             'en': 'Categories'
         },
