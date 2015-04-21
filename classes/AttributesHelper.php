@@ -28,6 +28,7 @@ class AttributesHelper
             $attributes[$id]->checked        = true;
             $attributes[$id]->order          = isset($metas[$id]) && isset($metas[$id]['order']) ? $metas[$id]['order'] : 10000;
             $attributes[$id]->facetable      = isset($metas[$id]) && isset($metas[$id]['facetable']) ? $metas[$id]['facetable'] : false;
+            $attributes[$id]->retrievable    = isset($metas[$id]) && isset($metas[$id]['retrievable']) ? $metas[$id]['retrievable'] : true;
             $attributes[$id]->facet_type     = isset($metas[$id]) && isset($metas[$id]['type']) ? $metas[$id]['type'] : 'conjunctive';
         }
 
@@ -44,6 +45,7 @@ class AttributesHelper
             $attributes[$id]->order          = isset($metas[$id]) && isset($metas[$id]['order']) ? $metas[$id]['order']: 10000;
             $attributes[$id]->checked        = isset($metas[$id]) && isset($metas[$id]['indexable']) ? $metas[$id]['indexable'] : false;
             $attributes[$id]->facetable      = isset($metas[$id]) && isset($metas[$id]['facetable']) ? $metas[$id]['facetable'] : false;
+            $attributes[$id]->retrievable    = isset($metas[$id]) && isset($metas[$id]['retrievable']) ? $metas[$id]['retrievable'] : true;
             $attributes[$id]->facet_type     = isset($metas[$id]) && isset($metas[$id]['type']) ? $metas[$id]['type'] : 'conjunctive';
         }
 
@@ -60,6 +62,7 @@ class AttributesHelper
             $attributes[$id]->order          = isset($metas[$id]) && isset($metas[$id]['order']) ? $metas[$id]['order']: 10000;
             $attributes[$id]->checked        = isset($metas[$id]) && isset($metas[$id]['indexable']) ? $metas[$id]['indexable'] : false;
             $attributes[$id]->facetable      = isset($metas[$id]) && isset($metas[$id]['facetable']) ? $metas[$id]['facetable'] : false;
+            $attributes[$id]->retrievable    = isset($metas[$id]) && isset($metas[$id]['retrievable']) ? $metas[$id]['retrievable'] : true;
             $attributes[$id]->facet_type     = isset($metas[$id]) && isset($metas[$id]['type']) ? $metas[$id]['type'] : 'conjunctive';
         }
 

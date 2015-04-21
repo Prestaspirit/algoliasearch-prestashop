@@ -86,11 +86,11 @@ class AlgoliaHelper
     {
         foreach (\Language::getLanguages() as $language)
         {
-            $index_name = $this->algolia_registry->index_name;
-            $facets = array();
-            $customRankingTemp = array();
-
-            $attributesToIndex  = array();
+            $index_name                 = $this->algolia_registry->index_name;
+            $facets                     = array();
+            $customRankingTemp          = array();
+            $attributesToIndex          = array();
+            $unretrievableAttributes    = array();
 
             foreach ($this->attribute_helper->getAllAttributes($language['id_lang']) as $key => $value)
                 if (isset($this->algolia_registry->searchable[$key]))
@@ -103,6 +103,9 @@ class AlgoliaHelper
             {
                 if (isset($this->algolia_registry->metas[$key]) && $this->algolia_registry->metas[$key]['facetable'])
                     $facets[] = $value->name;
+
+                if (isset($this->algolia_registry->metas[$key]) && $this->algolia_registry->metas[$key]['retrievable'] == false)
+                    $unretrievableAttributes[] = $value->name;
 
                 if (isset($this->algolia_registry->metas[$key]) && $this->algolia_registry->metas[$key]['custom_ranking'])
                     $customRankingTemp[] = array(
@@ -128,9 +131,10 @@ class AlgoliaHelper
             }, $customRankingTemp);
 
             $settings = array(
-                'attributesToIndex'     => $attributesToIndex,
-                'attributesForFaceting' => array_values(array_unique($facets)),
-                'customRanking'         => $customRanking
+                'attributesToIndex'         => $attributesToIndex,
+                'attributesForFaceting'     => array_values(array_unique($facets)),
+                'unretrievableAttributes'   => $unretrievableAttributes,
+                'customRanking'             => $customRanking
             );
 
             /**

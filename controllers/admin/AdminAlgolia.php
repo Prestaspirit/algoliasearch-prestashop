@@ -102,6 +102,7 @@ class AdminAlgoliaController extends ModuleAdminController
                 $metas[$key] = array();
                 $metas[$key]["indexable"]            = isset($value["INDEXABLE"]) ? 1 : 0;
                 $metas[$key]["facetable"]            = $metas[$key]["indexable"] && isset($value["FACETABLE"]) ? 1 : 0;
+                $metas[$key]["retrievable"]          = isset($value["RETRIEVABLE"]) ? 1 : 0;
                 $metas[$key]["type"]                 = isset($value["TYPE"]) ? $value['TYPE'] : 'conjunctive';
                 $metas[$key]["order"]                = $value["ORDER"];
                 $metas[$key]["custom_ranking"]       = isset($value["CUSTOM_RANKING"]) && $value["CUSTOM_RANKING"] ? $value["CUSTOM_RANKING"] : 0;

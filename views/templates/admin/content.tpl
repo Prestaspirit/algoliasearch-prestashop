@@ -319,6 +319,7 @@
                             <tr data-order="-1">
                                 <th class="table-col-enabled">Enabled</th>
                                 <th>Name</th>
+                                <th>Retrievable</th>
                                 <th>Facetable</th>
                                 <th>Facet type</th>
                                 <th>Ordering</th>
@@ -330,6 +331,7 @@
                                 <tr data-order="-1">
                                     <th class="table-col-enabled">Enabled</th>
                                     <th>Name</th>
+                                    <th>Retrievable</th>
                                     <th>Facetable</th>
                                     <th>Facet type</th>
                                     <th>Facet label &amp; ordering</th>
@@ -361,6 +363,15 @@
                                             {/if}
                                         </td>
                                         <td>{$attribute->name}</td>
+                                        <td>
+                                            <input type="checkbox"
+                                                   name="ATTRIBUTE[{$metakey}][RETRIEVABLE]"
+                                                   value="1"
+                                                    {if $attribute->retrievable}
+                                                        checked="checked"
+                                                    {/if}
+                                                    >
+                                        </td>
                                         <td>
                                             <input type="checkbox"
                                                    name="ATTRIBUTE[{$metakey}][FACETABLE]"

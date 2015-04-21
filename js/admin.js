@@ -127,7 +127,7 @@ jQuery(document).ready(function($) {
         $(div + " tr:not(:first)").each(function (i) {
             var tds = $(this).find("td");
 
-            if ($(tds[2]).find('input[type="checkbox"]').prop('checked') == false)
+            if ($(tds[3]).find('input[type="checkbox"]').prop('checked') == false)
                 $(this).find("td").find("input,select").slice(2).prop('disabled', true);
         });
     }
