@@ -99,10 +99,6 @@ class AlgoliaHelper
                     else
                         $attributesToIndex[] = $value->name;
 
-            $defaultSettings = array(
-                "attributesToIndex"     => $attributesToIndex
-            );
-
             foreach ($this->attribute_helper->getAllAttributes($language['id_lang']) as $key => $value)
             {
                 if (isset($this->algolia_registry->metas[$key]) && $this->algolia_registry->metas[$key]['facetable'])

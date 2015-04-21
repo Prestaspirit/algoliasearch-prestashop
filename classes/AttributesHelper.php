@@ -26,9 +26,9 @@ class AttributesHelper
             $attributes[$id]->type           = $type;
             $attributes[$id]->name           = $defaultAttribute;
             $attributes[$id]->checked        = true;
-            $attributes[$id]->order          = isset($metas[$id]) ? $metas[$id]['order'] : 10000;
-            $attributes[$id]->facetable      = isset($metas[$id]) ? $metas[$id]['facetable'] : false;
-            $attributes[$id]->facet_type     = isset($metas[$id]) ? $metas[$id]['type'] : 'conjunctive';
+            $attributes[$id]->order          = isset($metas[$id]) && isset($metas[$id]['order']) ? $metas[$id]['order'] : 10000;
+            $attributes[$id]->facetable      = isset($metas[$id]) && isset($metas[$id]['facetable']) ? $metas[$id]['facetable'] : false;
+            $attributes[$id]->facet_type     = isset($metas[$id]) && isset($metas[$id]['type']) ? $metas[$id]['type'] : 'conjunctive';
         }
 
         $type = 'feature';
@@ -41,10 +41,10 @@ class AttributesHelper
             $attributes[$id]->id             = $feature['id_feature'];
             $attributes[$id]->type           = $type;
             $attributes[$id]->name           = $feature['name'];
-            $attributes[$id]->order          = isset($metas[$id]) ? $metas[$id]['order']: 10000;
-            $attributes[$id]->checked        = isset($metas[$id]) ? $metas[$id]['indexable'] : false;
-            $attributes[$id]->facetable      = isset($metas[$id]) ? $metas[$id]['facetable'] : false;
-            $attributes[$id]->facet_type     = isset($metas[$id]) ? $metas[$id]['type'] : 'conjunctive';
+            $attributes[$id]->order          = isset($metas[$id]) && isset($metas[$id]['order']) ? $metas[$id]['order']: 10000;
+            $attributes[$id]->checked        = isset($metas[$id]) && isset($metas[$id]['indexable']) ? $metas[$id]['indexable'] : false;
+            $attributes[$id]->facetable      = isset($metas[$id]) && isset($metas[$id]['facetable']) ? $metas[$id]['facetable'] : false;
+            $attributes[$id]->facet_type     = isset($metas[$id]) && isset($metas[$id]['type']) ? $metas[$id]['type'] : 'conjunctive';
         }
 
         $type = 'group';
@@ -57,10 +57,10 @@ class AttributesHelper
             $attributes[$id]->id             = $attribute['id'];
             $attributes[$id]->type           = $type;
             $attributes[$id]->name           = $attribute['attribute_group'];
-            $attributes[$id]->order          = isset($metas[$id]) ? $metas[$id]['order']: 10000;
-            $attributes[$id]->checked        = isset($metas[$id]) ? $metas[$id]['indexable'] : false;
-            $attributes[$id]->facetable      = isset($metas[$id]) ? $metas[$id]['facetable'] : false;
-            $attributes[$id]->facet_type     = isset($metas[$id]) ? $metas[$id]['type'] : 'conjunctive';
+            $attributes[$id]->order          = isset($metas[$id]) && isset($metas[$id]['order']) ? $metas[$id]['order']: 10000;
+            $attributes[$id]->checked        = isset($metas[$id]) && isset($metas[$id]['indexable']) ? $metas[$id]['indexable'] : false;
+            $attributes[$id]->facetable      = isset($metas[$id]) && isset($metas[$id]['facetable']) ? $metas[$id]['facetable'] : false;
+            $attributes[$id]->facet_type     = isset($metas[$id]) && isset($metas[$id]['type']) ? $metas[$id]['type'] : 'conjunctive';
         }
 
         return $attributes;

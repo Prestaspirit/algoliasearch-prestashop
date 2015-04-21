@@ -5,6 +5,10 @@ jQuery(document).ready(function ($) {
             'fr': 'Prix',
             'en': 'Price'
         },
+        'price_tax_incl': {
+            'fr': 'Prix',
+            'en': 'Price'
+        },
         'categories': {
             'fr': 'Categories',
             'en': 'Categories'

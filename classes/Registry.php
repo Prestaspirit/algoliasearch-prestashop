@@ -12,23 +12,20 @@ class Registry
         'search_key'                    => '',
         'admin_key'                     => '',
         'index_name'                    => '',
-        'indexable_types'               => array('post' => array('name' => 'Articles','order' => 0),'page' => array('name' => 'Pages','order' => 1)),
-        'indexable_tax'                 => array(),
-        'searchable'                    => array(),
+        'searchable'                    => array('name' => array('ordered' => 'ordered', 'order' => 0), 'description' => array('ordered' => 'unordered', 'order' => 1)),
         'sortable'                      => array(),
         'type_of_search'                => 'autocomplete',
         'conjunctive_facets'            => array(),
         'disjunctive_facets'            => array(),
-        'instant_jquery_selector'       => '#content',
+        'instant_jquery_selector'       => '#columns',
         'extras'                        => array(),
         'metas'                         => array(),
         'number_by_page'                => 10,
         'number_products'               => 3,
         'number_categories'             => 5,
         'number_of_word_for_content'    => 30,
-        'search_input_selector'         => "[name='s']",
-        'theme'                         => 'default',
-        'date_custom_ranking'           => array('order' => 10000, 'enabled' => true, 'sort' => 'desc')
+        'search_input_selector'         => "[name='search_query']",
+        'theme'                         => 'default'
     );
 
     public static function getInstance()
