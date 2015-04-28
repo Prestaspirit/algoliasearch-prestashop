@@ -23,7 +23,10 @@ jQuery(document).ready(function ($) {
         }
     };
 
-    if (algoliaSettings.type_of_search == "autocomplete")
+    var autocomplete = true;
+    var instant = true;
+
+    if (algoliaSettings.type_of_search.indexOf("autocomplete") !== -1)
     {
         var $autocompleteTemplate = Hogan.compile($('#autocomplete-template').text());
 
@@ -63,16 +66,30 @@ jQuery(document).ready(function ($) {
             }
         });
 
-        $(algoliaSettings.search_input_selector).each(function (i) {
-            $(this).typeahead({hint: false}, hogan_objs);
+        function activateAutocomplete()
+        {
+            $(algoliaSettings.search_input_selector).each(function (i) {
+                $(this).typeahead({hint: false}, hogan_objs);
 
-            $(this).on('typeahead:selected', function (e, item) {
-                window.location.href = item.link ? item.link : item.url;
+                $(this).on('typeahead:selected', function (e, item) {
+                    autocomplete = false;
+                    instant = false;
+                    window.location.href = item.link ? item.link : item.url;
+                });
             });
-        });
+        }
+
+        activateAutocomplete();
+
+        function desactivateAutocomplete()
+        {
+            $(algoliaSettings.search_input_selector).each(function (i) {
+                $(this).typeahead('destroy');
+            });
+        }
     }
 
-    if (algoliaSettings.type_of_search == "instant")
+    if (algoliaSettings.type_of_search.indexOf("instant") !== -1)
     {
 
         for (var i = 0; i < algoliaSettings.sorting_indices.length; i++)
@@ -123,7 +140,21 @@ jQuery(document).ready(function ($) {
 
         engine.setHelper(helper);
 
-        helper.on('result', searchCallback);
+        function activateInstant()
+        {
+            helper.on('result', searchCallback);
+        }
+
+        activateInstant();
+
+        function desactivateInstant()
+        {
+            helper.removeAllListeners();
+
+            location.replace('#');
+
+            $(algoliaSettings.instant_jquery_selector).html(old_content);
+        }
 
         /**
          * Functions
@@ -332,8 +363,16 @@ jQuery(document).ready(function ($) {
             return false;
         });
 
+        $(algoliaSettings.search_input_selector).keydown(function (e) {
+            $(algoliaSettings.search_input_selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
+        });
+
         $(algoliaSettings.search_input_selector).keyup(function (e) {
             e.preventDefault();
+
+            if (instant === false)
+                return;
+
 
             var $this = $(this);
 
@@ -401,13 +440,26 @@ jQuery(document).ready(function ($) {
         /**
          * Initialization
          */
-
-        $(algoliaSettings.search_input_selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
-
+        
         engine.getRefinementsFromUrl(searchCallback);
 
         window.addEventListener("popstate", function(e) {
             engine.getRefinementsFromUrl(searchCallback);
         });
+
+        if (algoliaSettings.type_of_search.indexOf("autocomplete") !== -1)
+        {
+            if (location.hash.length <= 1)
+            {
+                desactivateInstant();
+                instant = false;
+            }
+            else
+            {
+                autocomplete = false;
+                desactivateAutocomplete();
+                $(algoliaSettings.search_input_selector+':first').focus();
+            }
+        }
     }
 });

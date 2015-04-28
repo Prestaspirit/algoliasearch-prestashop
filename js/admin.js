@@ -4,7 +4,7 @@ jQuery(document).ready(function($) {
     /**
      * Handle display/hide of subcontent
      */
-    $(".has-extra-content input[type='radio']").each(function () {
+    $(".has-extra-content input[type='checkbox']").each(function () {
         if ($(this).is(':checked'))
             $(this).closest(".has-extra-content").find(".show-hide").show();
     });
@@ -34,8 +34,8 @@ jQuery(document).ready(function($) {
 
     handleScreenshot();
 
-    $(".has-extra-content input[type='radio']").change(function (e) {
-        $(".has-extra-content input[type='radio']").each(function () {
+    $(".has-extra-content input[type='checkbox']").change(function (e) {
+        $(".has-extra-content input[type='checkbox']").each(function () {
             if ($(this).is(':checked'))
                 $(this).closest(".has-extra-content").find(".show-hide").show();
             else
@@ -128,7 +128,7 @@ jQuery(document).ready(function($) {
             var tds = $(this).find("td");
 
             if ($(tds[3]).find('input[type="checkbox"]').prop('checked') == false)
-                $(this).find("td").find("input,select").slice(2).prop('disabled', true);
+                $(this).find("td").find("input,select").slice(3).prop('disabled', true);
         });
     }
 

@@ -98,6 +98,23 @@ class FrontAlgoliaController
         Media::addJsDef(array('algoliaSettings' => $algoliaSettings));
     }
 
+    public function hookActionSearch($params)
+    {
+        if (in_array('instant', $this->algolia_registry->type_of_search))
+        {
+            global $cookie;
+
+            $current_language = \Language::getIsoById($cookie->id_lang);
+
+            $url = '/index.php#q='.$params['expr'].'&page=0&refinements=%5B%5D&numerics_refinements=%7B%7D&index_name=%22'.$this->algolia_registry->index_name.'all_'.$current_language.'%22';
+
+            header('Location: '.$url);
+
+            die();
+        }
+
+    }
+
     public function hookActionProductAdd($params)
     {
         $this->indexer->indexProduct($params['product']);

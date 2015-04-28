@@ -139,7 +139,7 @@ class AdminAlgoliaController extends ModuleAdminController
 
     public function admin_post_update_type_of_search()
     {
-        if (isset($_POST['TYPE_OF_SEARCH']) && in_array($_POST['TYPE_OF_SEARCH'], array('instant', 'autocomplete')))
+        if (isset($_POST['TYPE_OF_SEARCH']) && is_array($_POST['TYPE_OF_SEARCH']))
             $this->algolia_registry->type_of_search = $_POST['TYPE_OF_SEARCH'];
 
         if (isset($_POST['JQUERY_SELECTOR']))

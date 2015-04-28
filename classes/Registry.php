@@ -14,7 +14,7 @@ class Registry
         'index_name'                    => '',
         'searchable'                    => array('name' => array('ordered' => 'ordered', 'order' => 0), 'description' => array('ordered' => 'unordered', 'order' => 1)),
         'sortable'                      => array(),
-        'type_of_search'                => 'autocomplete',
+        'type_of_search'                => array('autocomplete', 'instant'),
         'conjunctive_facets'            => array(),
         'disjunctive_facets'            => array(),
         'instant_jquery_selector'       => '#columns',

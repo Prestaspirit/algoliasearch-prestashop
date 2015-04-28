@@ -199,12 +199,12 @@
                         <div class="has-extra-content content-item">
                             <label>Search experience</label>
                             <div>
-                                <input type="radio"
-                                {if $algolia_registry->type_of_search eq 'autocomplete'}
+                                <input type="checkbox"
+                                {if in_array('autocomplete', $algolia_registry->type_of_search)}
                                     checked="checked"
                                 {/if}
                                 class="instant_radio"
-                                name="TYPE_OF_SEARCH"
+                                name="TYPE_OF_SEARCH[]"
                                 value="autocomplete"
                                 id="instant_radio_autocomplete" />
                                 <label for="instant_radio_autocomplete">Autocomplete</label>
@@ -225,12 +225,12 @@
                         </div>
                         <div class="has-extra-content content-item">
                             <div>
-                                <input type="radio"
-                                {if $algolia_registry->type_of_search eq 'instant'}
+                                <input type="checkbox"
+                                {if in_array('instant', $algolia_registry->type_of_search)}
                                     checked="checked"
                                 {/if}
                                 class="instant_radio"
-                                name="TYPE_OF_SEARCH"
+                                name="TYPE_OF_SEARCH[]"
                                 value="instant"
                                 id="instant_radio_instant" />
                                 <label for="instant_radio_instant">Instant-search results page</label>
@@ -320,8 +320,15 @@
                                 <th class="table-col-enabled">Enabled</th>
                                 <th>Name</th>
                                 <th>Retrievable</th>
-                                <th>Facetable</th>
-                                <th>Facet type</th>
+                                <th>
+                                    {if in_array('instant', $algolia_registry->type_of_search)}
+                                        Facetable
+                                    {/if}
+                                </th>
+                                <th>{if in_array('instant', $algolia_registry->type_of_search)}
+                                        Facet type
+                                    {/if}
+                                </th>
                                 <th>Ordering</th>
                             </tr>
                         </table>
@@ -373,6 +380,7 @@
                                                     >
                                         </td>
                                         <td>
+                                            {if in_array('instant', $algolia_registry->type_of_search)}
                                             <input type="checkbox"
                                                    name="ATTRIBUTE[{$metakey}][FACETABLE]"
                                                    value="1"
@@ -380,8 +388,10 @@
                                                    checked="checked"
                                                    {/if}
                                             >
+                                            {/if}
                                         </td>
                                         <td>
+                                            {if in_array('instant', $algolia_registry->type_of_search)}
                                             <select name="ATTRIBUTE[{$metakey}][TYPE]">
                                                 {foreach from=$facet_types key=key item=value}
                                                     {if $attribute->facet_type eq $key}
@@ -391,6 +401,7 @@
                                                     {/if}
                                                 {/foreach}
                                             </select>
+                                            {/if}
                                         </td>
                                         <td>
                                             <img width="10" src="{$path}img/move.png">
@@ -420,16 +431,6 @@
                 </div>
             </form>
         </div>
-
-        {if $algolia_registry->type_of_search == 'autocomplete'}
-        <style>
-            #algolia-settings #extra-meta-and-taxonomies tr td:nth-child(n+3),
-            #algolia-settings #extra-meta-and-taxonomies tr th:nth-child(n+3)
-            {
-                display: none;
-            }
-        </style>
-        {/if}
 
         <div class="tab-pane" id="searchable_attributes">
             <form action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_searchable_attributes&token={$token}" method="post">
