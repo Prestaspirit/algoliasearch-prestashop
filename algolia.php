@@ -59,6 +59,8 @@ class Algolia extends Module
 		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
 		$this->init();
 
+        \AlgoliaSearch\Version::$custom_value = ' Prestashop';
+
         $this->front_controller = new FrontAlgoliaController($this);
 	}
 
