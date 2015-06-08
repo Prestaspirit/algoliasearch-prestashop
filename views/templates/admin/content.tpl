@@ -184,7 +184,7 @@
                     <div class="content">
                         <h3>Search bar</h3>
 
-                        <div class="form-goup">
+                        <div class="form-group">
                             <label class="col-lg-3 control-label" for="search-input-selector">DOM selector</label>
                             <div class="col-lg-9">
                                 <input type="text" value="{$algolia_registry->search_input_selector}" name="SEARCH_INPUT_SELECTOR" id="search-input-selector">
@@ -198,9 +198,9 @@
                                 <label class="col-lg-3 control-label" for="instant_radio_autocomplete">Autocomplete</label>
                                 <div class="col-lg-9">
                                     <span class="switch prestashop-switch fixed-width-lg">
-                                        <input type="radio" name="TYPE_OF_SEARCH[]" id="instant_radio_autocomplete_on" value="autocomplete" checked="checked">
+                                        <input type="radio" name="instant_radio_autocomplete" id="instant_radio_autocomplete_on" value="autocomplete" checked="checked">
                                         <label for="instant_radio_autocomplete_on">Yes</label>
-                                        <input type="radio" name="TYPE_OF_SEARCH[]" id="instant_radio_autocomplete_off" value="0">
+                                        <input type="radio" name="instant_radio_autocomplete" id="instant_radio_autocomplete_off" value="0">
                                         <label for="instant_radio_autocomplete_off">No</label>
                                         <a class="slide-button btn"></a>
                                     </span>
@@ -224,14 +224,14 @@
                                 <div class="form-group">
                                     <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_products">Results for product section</label>
                                     <div class="col-lg-9">
-                                        <input class="form-control" type="number" min="0" value="{$algolia_registry->number_products}" name="NUMBER_PRODUCTS" id="instant_radio_autocomplete_nb_products">
+                                        <input class="form-control fixed-width-sm" type="number" min="0" value="{$algolia_registry->number_products}" name="NUMBER_PRODUCTS" id="instant_radio_autocomplete_nb_products">
                                         <p class="help-block">The number of results for the product section in the dropdown menu.</p>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_categories">Results for categories section</label>
                                     <div class="col-lg-9">
-                                        <input class="form-control" type="number" min="0" value="{$algolia_registry->number_categories}" name="NUMBER_CATEGORIES" id="instant_radio_autocomplete_nb_categories">
+                                        <input class="form-control fixed-width-sm" type="number" min="0" value="{$algolia_registry->number_categories}" name="NUMBER_CATEGORIES" id="instant_radio_autocomplete_nb_categories">
                                         <p class="help-block">The number of results for the categories section in the dropdown menu.</p>
                                     </div>
                                 </div>
@@ -243,15 +243,15 @@
                                 <label class="col-lg-3 control-label" for="instant_radio">Instant-search results page</label>
                                 <div class="col-lg-9">
                                     <span class="switch prestashop-switch fixed-width-lg">
-                                        <input type="radio" name="TYPE_OF_SEARCH[]" id="instant_radio_on" value="instant" checked="checked">
+                                        <input type="radio" name="instant_radio" id="instant_radio_on" value="instant" checked="checked">
                                         <label for="instant_radio_on">Yes</label>
-                                        <input type="radio" name="TYPE_OF_SEARCH[]" id="instant_radio_off" value="0">
+                                        <input type="radio" name="instant_radio" id="instant_radio_off" value="0">
                                         <label for="instant_radio_off">No</label>
                                         <a class="slide-button btn"></a>
                                     </span>
                                 </div>
                             </div>
-<!--                        <div class="form-group">
+                            <!-- <div class="form-group">
                                 <input type="checkbox"
                                 {if in_array('instant', $algolia_registry->type_of_search)}
                                     checked="checked"
@@ -279,7 +279,7 @@
                                 <div class="form-group" >
                                     <label class="control-label col-lg-3" for="instant_radio_instant_nb_results">Number of results by page</label>
                                     <div class="col-lg-9">
-                                        <input type="number" min="0" value="{$algolia_registry->number_by_page}" name="NUMBER_BY_PAGE" id="instant_radio_instant_nb_results">
+                                        <input class="fixed-width-sm" type="number" min="0" value="{$algolia_registry->number_by_page}" name="NUMBER_BY_PAGE" id="instant_radio_instant_nb_results">
                                         <p class="help-block">The number of results to display on a results page.</p>
                                     </div>
                                 </div>
@@ -325,6 +325,7 @@
                                     </div>
                                     {/foreach}
                                 </div>
+                                <div style="clear: both"></div>
                             </div>
                         </div>
                         <div class="panel-footer">
