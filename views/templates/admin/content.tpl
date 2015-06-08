@@ -159,7 +159,7 @@
                     </div><!-- /.form-wrapper -->
 
                     <div class="alert alert-warning">
-                        <h4>Reset configuration to default</h4>
+                        <h3>Reset configuration to default</h3>
                         <p class="help-block">
                             This will set the config back to default except api keys
                         </p>
@@ -182,7 +182,7 @@
             <form class="defaultForm form-horizontal" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_type_of_search&token={$token}" method="post">
                 <div class="panel" id="type_of_search">
                     <div class="content">
-                        <h4>Search bar</h4>
+                        <h3>Search bar</h3>
 
                         <div class="form-group">
                             <label class="col-lg-3 control-label" for="search-input-selector">DOM selector</label>
@@ -193,7 +193,7 @@
                         </div>
 
                         <div class="has-extra-content content-item clearfix">
-                            <h4>Search experience</h4>
+                            <h3>Search experience</h3>
                             <div class="form-group">
                                 <label class="col-lg-3 control-label" for="instant_radio_autocomplete">Autocomplete</label>
                                 <div class="col-lg-9">
@@ -286,7 +286,7 @@
                             </div>
                         </div>
 
-                        <h4>Theme</h4>
+                        <h3>Theme</h3>
                         <p class="help-block">Configure here the theme of your search results.</p>
                         <div class="content-item">
                             <div class="theme-browser">

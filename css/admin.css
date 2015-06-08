@@ -1,10 +1,10 @@
 #algolia-settings h2{
     margin-bottom: 50px;
 }
-#algolia-settings h4{
+#algolia-settings h3{
     border-bottom: solid 1px #eee;
-    margin-top: 20px;
-    font-size: 2em;
+    margin: 20px 0 10px;
+    font-size: 1.6em;
 }
 
 #algolia-settings .panel .content table {
