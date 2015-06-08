@@ -57,8 +57,8 @@
     {if $algolia_registry->validCredential}
     <h2>
         Algolia Search
-        <button data-formurl="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_reindex&token={$token}" type="button" class="button button-primary " id="algolia_reindex" name="algolia_reindex">
-            <i class="dashicons dashicons-upload"></i>
+        <button data-formurl="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_reindex&token={$token}" type="button" class="btn btn-primary " id="algolia_reindex" name="algolia_reindex">
+            <i class="icon-upload"></i>
             Reindex data
         </button>
     </h2>
@@ -158,8 +158,8 @@
                         </div>
                     </div><!-- /.form-wrapper -->
 
-                    <div class="panel panel-warning">
-                        <h3>Reset configuration to default</h3>
+                    <div class="alert alert-infos">
+                        <h4>Reset configuration to default</h4>
                         <p class="help-block">
                             This will set the config back to default except api keys
                         </p>
@@ -182,7 +182,7 @@
             <form class="defaultForm form-horizontal" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_type_of_search&token={$token}" method="post">
                 <div class="panel" id="type_of_search">
                     <div class="content">
-                        <h3>Search bar</h3>
+                        <h4>Search bar</h4>
 
                         <div class="form-group">
                             <label class="col-lg-3 control-label" for="search-input-selector">DOM selector</label>
@@ -193,7 +193,7 @@
                         </div>
 
                         <div class="has-extra-content content-item clearfix">
-                            <h3>Search experience</h3>
+                            <h4>Search experience</h4>
                             <div class="form-group">
                                 <label class="col-lg-3 control-label" for="instant_radio_autocomplete">Autocomplete</label>
                                 <div class="col-lg-9">
@@ -286,7 +286,7 @@
                             </div>
                         </div>
 
-                        <h3>Theme</h3>
+                        <h4>Theme</h4>
                         <p class="help-block">Configure here the theme of your search results.</p>
                         <div class="content-item">
                             <div class="theme-browser">
