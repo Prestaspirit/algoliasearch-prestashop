@@ -221,18 +221,19 @@
                             </div> -->
 
                             <div class="show-hide" style="display: none;">
-                            <div class="form-group">
-                                <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_products">Results for product section</label>
-                                <div class="col-lg-9">
-                                    <input class="form-control" type="number" min="0" value="{$algolia_registry->number_products}" name="NUMBER_PRODUCTS" id="instant_radio_autocomplete_nb_products">
-                                    <p class="help-block">The number of results for the product section in the dropdown menu.</p>
+                                <div class="form-group">
+                                    <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_products">Results for product section</label>
+                                    <div class="col-lg-9">
+                                        <input class="form-control" type="number" min="0" value="{$algolia_registry->number_products}" name="NUMBER_PRODUCTS" id="instant_radio_autocomplete_nb_products">
+                                        <p class="help-block">The number of results for the product section in the dropdown menu.</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_categories">Results for categories section</label>
-                                <div class="col-lg-9">
-                                    <input class="form-control" type="number" min="0" value="{$algolia_registry->number_categories}" name="NUMBER_CATEGORIES" id="instant_radio_autocomplete_nb_categories">
-                                    <p class="help-block">The number of results for the categories section in the dropdown menu.</p>
+                                <div class="form-group">
+                                    <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_categories">Results for categories section</label>
+                                    <div class="col-lg-9">
+                                        <input class="form-control" type="number" min="0" value="{$algolia_registry->number_categories}" name="NUMBER_CATEGORIES" id="instant_radio_autocomplete_nb_categories">
+                                        <p class="help-block">The number of results for the categories section in the dropdown menu.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -284,6 +285,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <h3>Theme</h3>
                         <p class="help-block">Configure here the theme of your search results.</p>
                         <div class="content-item">
@@ -311,7 +313,7 @@
                                             <div class="theme-name">
                                                 {$theme->name}
                                                 <input type="radio"
-                                                       id="{$theme->dir}"
+                                                    id="{$theme->dir}"
                                                 {if $theme->dir eq $algolia_registry->theme}
                                                 checked="checked"
                                                 {/if}
