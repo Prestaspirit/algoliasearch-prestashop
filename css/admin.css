@@ -3,7 +3,7 @@
 }
 #algolia-settings h3{
     border-bottom: solid 1px #eee;
-    margin: 20px 0 10px;
+    margin: 20px 0 10px !important;
     font-size: 1.6em;
 }
 
@@ -11,7 +11,8 @@
     width: 100%;
     border-spacing: 0;
 }
-#algolia-settings .panel .content table th, #algolia-settings .panel .content table td {
+#algolia-settings .panel .content table th,
+#algolia-settings .panel .content table td {
     text-align: left;
     padding: 5px;
     border-bottom: 1px solid #ddd;
@@ -127,6 +128,10 @@
 #algolia-settings #sortable_attributes tbody
 {
     cursor: move;
+}
+
+#algolia-settings ui-sortable-helper{
+    background: white;
 }
 
 #algolia-settings .no-screenshot

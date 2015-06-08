@@ -187,7 +187,7 @@
                         <div class="form-group">
                             <label class="col-lg-3 control-label" for="search-input-selector">DOM selector</label>
                             <div class="col-lg-9">
-                                <input type="text" value="{$algolia_registry->search_input_selector}" name="SEARCH_INPUT_SELECTOR" id="search-input-selector">
+                                <input class="fixed-width-lg" type="text" value="{$algolia_registry->search_input_selector}" name="SEARCH_INPUT_SELECTOR" id="search-input-selector">
                                 <p class="help-block">The jQuery selector used to select your search bar.</p>
                             </div>
                         </div>
@@ -267,12 +267,12 @@
                                 <div class="form-group" >
                                     <label class="control-label col-lg-3" for="instant_radio_instant_jquery_selector">DOM selector</label>
                                     <div class="col-lg-9">
-                                        <input type="text"
-                                               id="instant_radio_instant_jquery_selector"
-                                               value="{$algolia_registry->instant_jquery_selector}"
-                                        placeholder="#content"
-                                        name="JQUERY_SELECTOR"
-                                        value="" />
+                                        <input type="text" class="fixed-width-lg"
+                                            id="instant_radio_instant_jquery_selector"
+                                            value="{$algolia_registry->instant_jquery_selector}"
+                                            placeholder="#content"
+                                            name="JQUERY_SELECTOR"
+                                            value="" />
                                         <p class="help-block">The jQuery selector used to inject the search results.</p>
                                     </div>
                                 </div>
