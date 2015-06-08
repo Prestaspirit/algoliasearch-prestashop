@@ -183,17 +183,31 @@
                 <div class="panel" id="type_of_search">
                     <div class="content">
                         <h3>Search bar</h3>
-                        <p class="help-block">Configure here your search input field.</p>
-                        <div class="content-item">
-                            <label for="search-input-selector">DOM selector</label>
-                            <div>
+
+                        <div class="form-goup">
+                            <label class="col-lg-3 control-label" for="search-input-selector">DOM selector</label>
+                            <div class="col-lg-9">
                                 <input type="text" value="{$algolia_registry->search_input_selector}" name="SEARCH_INPUT_SELECTOR" id="search-input-selector">
-                                <p class="description">The jQuery selector used to select your search bar.</p>
+                                <p class="help-block">The jQuery selector used to select your search bar.</p>
                             </div>
                         </div>
-                        <div class="has-extra-content content-item">
-                            <label>Search experience</label>
-                            <div>
+
+                        <div class="has-extra-content content-item clearfix">
+                            <h3>Search experience</h3>
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label" for="instant_radio_autocomplete">Autocomplete</label>
+                                <div class="col-lg-9">
+                                    <span class="switch prestashop-switch fixed-width-lg">
+                                        <input type="radio" name="TYPE_OF_SEARCH[]" id="instant_radio_autocomplete_on" value="1" checked="checked">
+                                        <label for="instant_radio_autocomplete_on">Yes</label>
+                                        <input type="radio" name="TYPE_OF_SEARCH[]" id="instant_radio_autocomplete_off" value="0">
+                                        <label for="instant_radio_autocomplete_off">No</label>
+                                        <a class="slide-button btn"></a>
+                                    </span>
+                                </div>
+                            </div>
+
+<!--                             <div class="form-group">
                                 <input type="checkbox"
                                 {if in_array('autocomplete', $algolia_registry->type_of_search)}
                                     checked="checked"
@@ -203,22 +217,27 @@
                                 value="autocomplete"
                                 id="instant_radio_autocomplete" />
                                 <label for="instant_radio_autocomplete">Autocomplete</label>
-                                <p class="description">Add an auto-completion menu to your search bar.</p>
-                            </div>
+                                <p class="help-block">Add an auto-completion menu to your search bar.</p>
+                            </div> -->
+
                             <div class="show-hide" style="display: none;">
                                 <div>
-                                    <label for="instant_radio_autocomplete_nb_products">Results for product section</label>
-                                    <input type="number" min="0" value="{$algolia_registry->number_products}" name="NUMBER_PRODUCTS" id="instant_radio_autocomplete_nb_products">
-                                    <p class="description">The number of results for the product section in the dropdown menu.</p>
+                                    <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_products">Results for product section</label>
+                                    <div class="col-lg-9">
+                                        <input class="form-control" type="number" min="0" value="{$algolia_registry->number_products}" name="NUMBER_PRODUCTS" id="instant_radio_autocomplete_nb_products">
+                                        <p class="help-block">The number of results for the product section in the dropdown menu.</p>
+                                    </div>
                                 </div>
                                 <div>
-                                    <label for="instant_radio_autocomplete_nb_categories">Results for categories section</label>
-                                    <input type="number" min="0" value="{$algolia_registry->number_categories}" name="NUMBER_CATEGORIES" id="instant_radio_autocomplete_nb_categories">
-                                    <p class="description">The number of results for the categories section in the dropdown menu.</p>
+                                    <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_categories">Results for categories section</label>
+                                    <div class="col-lg-9">
+                                        <input class="form-control" type="number" min="0" value="{$algolia_registry->number_categories}" name="NUMBER_CATEGORIES" id="instant_radio_autocomplete_nb_categories">
+                                        <p class="help-block">The number of results for the categories section in the dropdown menu.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="has-extra-content content-item">
+                        <div class="has-extra-content content-item clearfix">
                             <div>
                                 <input type="checkbox"
                                 {if in_array('instant', $algolia_registry->type_of_search)}
