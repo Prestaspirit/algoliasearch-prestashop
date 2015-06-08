@@ -134,7 +134,7 @@ jQuery(document).ready(function($) {
 
     disableFacetsInput('#extra-meta-and-taxonomies');
 
-    $('#extra-meta-and-taxonomies input[type="checkbox"]').click(function () {
+    $(document).on('click', '#extra-meta-and-taxonomies input[type="checkbox"]', function () {
         disableFacetsInput('#extra-meta-and-taxonomies');
     });
 

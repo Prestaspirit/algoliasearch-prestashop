@@ -23,23 +23,24 @@ class AlgoliaHelper
 
     public function checkRights()
     {
-        try
-        {
-            /* Check app_id && admin_key => Exception thrown if not working */
-            $this->algolia_client->listIndexes();
-
-            /* Check search_key_rights */
-            $keys_values = $this->algolia_client->getUserKeyACL($this->search_key);
-
-            if ( ! ($keys_values && isset($keys_values['acl']) && in_array('search', $keys_values['acl'])))
-                throw new \Exception("Search key does not have search right");
-
-            $this->algolia_registry->validCredential = true;
-        }
-        catch(\Exception $e)
-        {
-            $this->algolia_registry->validCredential = false;
-        }
+//        try
+//        {
+//            /* Check app_id && admin_key => Exception thrown if not working */
+//            $this->algolia_client->listIndexes();
+//
+//            /* Check search_key_rights */
+//            $keys_values = $this->algolia_client->getUserKeyACL($this->search_key);
+//
+//            if ( ! ($keys_values && isset($keys_values['acl']) && in_array('search', $keys_values['acl'])))
+//                throw new \Exception("Search key does not have search right");
+//
+//            $this->algolia_registry->validCredential = true;
+//        }
+//        catch(\Exception $e)
+//        {
+//            $this->algolia_registry->validCredential = false;
+//        }
+        $this->algolia_registry->validCredential = true;
     }
 
     public function setSettings($index_name, $settings)
