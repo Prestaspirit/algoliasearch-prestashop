@@ -140,22 +140,6 @@ jQuery(document).ready(function ($) {
 
         engine.setHelper(helper);
 
-        function activateInstant()
-        {
-            helper.on('result', searchCallback);
-        }
-
-        activateInstant();
-
-        function desactivateInstant()
-        {
-            helper.removeAllListeners();
-
-            location.replace('#');
-
-            $(algoliaSettings.instant_jquery_selector).html(old_content);
-        }
-
         /**
          * Functions
          */
@@ -194,6 +178,22 @@ jQuery(document).ready(function ($) {
             $(algoliaSettings.instant_jquery_selector).html(html_content);
 
             updateSliderValues();
+        }
+
+        function activateInstant()
+        {
+            helper.on('result', searchCallback);
+        }
+
+        activateInstant();
+
+        function desactivateInstant()
+        {
+            helper.removeAllListeners();
+
+            location.replace('#');
+
+            $(algoliaSettings.instant_jquery_selector).html(old_content);
         }
 
         /**
@@ -443,7 +443,7 @@ jQuery(document).ready(function ($) {
         /**
          * Initialization
          */
-        
+
         engine.getRefinementsFromUrl(searchCallback);
 
         window.addEventListener("popstate", function(e) {
