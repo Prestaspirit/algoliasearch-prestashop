@@ -198,7 +198,7 @@
                                 <label class="col-lg-3 control-label" for="instant_radio_autocomplete">Autocomplete</label>
                                 <div class="col-lg-9">
                                     <span class="switch prestashop-switch fixed-width-lg">
-                                        <input type="radio" name="TYPE_OF_SEARCH[]" id="instant_radio_autocomplete_on" value="1" checked="checked">
+                                        <input type="radio" name="TYPE_OF_SEARCH[]" id="instant_radio_autocomplete_on" value="autocomplete" checked="checked">
                                         <label for="instant_radio_autocomplete_on">Yes</label>
                                         <input type="radio" name="TYPE_OF_SEARCH[]" id="instant_radio_autocomplete_off" value="0">
                                         <label for="instant_radio_autocomplete_off">No</label>
@@ -207,7 +207,7 @@
                                 </div>
                             </div>
 
-<!--                             <div class="form-group">
+                            <!-- <div class="form-group">
                                 <input type="checkbox"
                                 {if in_array('autocomplete', $algolia_registry->type_of_search)}
                                     checked="checked"
@@ -221,24 +221,36 @@
                             </div> -->
 
                             <div class="show-hide" style="display: none;">
-                                <div>
-                                    <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_products">Results for product section</label>
-                                    <div class="col-lg-9">
-                                        <input class="form-control" type="number" min="0" value="{$algolia_registry->number_products}" name="NUMBER_PRODUCTS" id="instant_radio_autocomplete_nb_products">
-                                        <p class="help-block">The number of results for the product section in the dropdown menu.</p>
-                                    </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_products">Results for product section</label>
+                                <div class="col-lg-9">
+                                    <input class="form-control" type="number" min="0" value="{$algolia_registry->number_products}" name="NUMBER_PRODUCTS" id="instant_radio_autocomplete_nb_products">
+                                    <p class="help-block">The number of results for the product section in the dropdown menu.</p>
                                 </div>
-                                <div>
-                                    <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_categories">Results for categories section</label>
-                                    <div class="col-lg-9">
-                                        <input class="form-control" type="number" min="0" value="{$algolia_registry->number_categories}" name="NUMBER_CATEGORIES" id="instant_radio_autocomplete_nb_categories">
-                                        <p class="help-block">The number of results for the categories section in the dropdown menu.</p>
-                                    </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_categories">Results for categories section</label>
+                                <div class="col-lg-9">
+                                    <input class="form-control" type="number" min="0" value="{$algolia_registry->number_categories}" name="NUMBER_CATEGORIES" id="instant_radio_autocomplete_nb_categories">
+                                    <p class="help-block">The number of results for the categories section in the dropdown menu.</p>
                                 </div>
                             </div>
                         </div>
+
                         <div class="has-extra-content content-item clearfix">
-                            <div>
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label" for="instant_radio">Instant-search results page</label>
+                                <div class="col-lg-9">
+                                    <span class="switch prestashop-switch fixed-width-lg">
+                                        <input type="radio" name="TYPE_OF_SEARCH[]" id="instant_radio_on" value="instant" checked="checked">
+                                        <label for="instant_radio_on">Yes</label>
+                                        <input type="radio" name="TYPE_OF_SEARCH[]" id="instant_radio_off" value="0">
+                                        <label for="instant_radio_off">No</label>
+                                        <a class="slide-button btn"></a>
+                                    </span>
+                                </div>
+                            </div>
+<!--                        <div class="form-group">
                                 <input type="checkbox"
                                 {if in_array('instant', $algolia_registry->type_of_search)}
                                     checked="checked"
@@ -249,22 +261,26 @@
                                 id="instant_radio_instant" />
                                 <label for="instant_radio_instant">Instant-search results page</label>
                                 <p class="description">Refresh the whole results page as you type.</p>
-                            </div>
+                            </div> -->
                             <div class="show-hide" style="display: none;">
-                                <div>
-                                    <label for="instant_radio_instant_jquery_selector">DOM selector</label>
-                                    <input type="text"
-                                           id="instant_radio_instant_jquery_selector"
-                                           value="{$algolia_registry->instant_jquery_selector}"
-                                    placeholder="#content"
-                                    name="JQUERY_SELECTOR"
-                                    value="" />
-                                    <p class="description">The jQuery selector used to inject the search results.</p>
+                                <div class="form-group" >
+                                    <label class="control-label col-lg-3" for="instant_radio_instant_jquery_selector">DOM selector</label>
+                                    <div class="col-lg-9">
+                                        <input type="text"
+                                               id="instant_radio_instant_jquery_selector"
+                                               value="{$algolia_registry->instant_jquery_selector}"
+                                        placeholder="#content"
+                                        name="JQUERY_SELECTOR"
+                                        value="" />
+                                        <p class="help-block">The jQuery selector used to inject the search results.</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label for="instant_radio_instant_nb_results">Number of results by page</label>
-                                    <input type="number" min="0" value="{$algolia_registry->number_by_page}" name="NUMBER_BY_PAGE" id="instant_radio_instant_nb_results">
-                                    <p class="description">The number of results to display on a results page.</p>
+                                <div class="form-group" >
+                                    <label class="control-label col-lg-3" for="instant_radio_instant_nb_results">Number of results by page</label>
+                                    <div class="col-lg-9">
+                                        <input type="number" min="0" value="{$algolia_registry->number_by_page}" name="NUMBER_BY_PAGE" id="instant_radio_instant_nb_results">
+                                        <p class="help-block">The number of results to display on a results page.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -308,7 +324,6 @@
                                     {/foreach}
                                 </div>
                             </div>
-                            <div style="clear: both"></div>
                         </div>
                         <div class="panel-footer">
                             <button type="submit" value="1" id="module_form_submit_btn" name="submitAlgoliaSettings" class="btn btn-default pull-right">
