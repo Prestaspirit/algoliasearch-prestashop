@@ -57,8 +57,8 @@
     {if $algolia_registry->validCredential}
     <h2>
         Algolia Search
-        <button data-formurl="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_reindex&token={$token}" type="button" class="btn btn-primary " id="algolia_reindex" name="algolia_reindex">
-            <i class="icon-upload"></i>
+        <button data-formurl="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_reindex&token={$token}" type="button" class="btn btn-primary pull-right" id="algolia_reindex" name="algolia_reindex">
+            <i class="icon-refresh"></i>
             Reindex data
         </button>
     </h2>
@@ -158,7 +158,7 @@
                         </div>
                     </div><!-- /.form-wrapper -->
 
-                    <div class="alert alert-infos">
+                    <div class="alert alert-warning">
                         <h4>Reset configuration to default</h4>
                         <p class="help-block">
                             This will set the config back to default except api keys
