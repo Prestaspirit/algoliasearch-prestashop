@@ -7,28 +7,8 @@
     font-size: 1.7em;
 }
 
-#algolia-settings .panel .title
-{
-    text-align: center;
-    padding: 5px;
-    border-bottom: solid 1px #DDDDDD;
-}
-
 #algolia-settings .table-col-enabled {
     width: 75px;
-}
-
-#algolia-settings .tabs .title
-{
-    float: left;
-    display: inline;
-    padding: 10px 20px;
-    border-radius: 5px 5px 0 0;
-    background-color: transparent;
-    border: solid 1px #DDDDDD;
-    border-bottom: none;
-    margin-right: 2px;
-    cursor: pointer;
 }
 
 #algolia-settings #extra-metas-attributes tr td:nth-child(n+3),
@@ -42,56 +22,6 @@
 #algolia-settings #extra-meta-and-taxonomies
 {
     margin-bottom: 20px;
-}
-
-#algolia-settings #_extra-metas .title.selected
-{
-    background-color: white;
-    border-bottom: solid 1px #f5f5f5;
-    margin-bottom: -1px;
-    padding-bottom: 11px;
-    cursor: auto;
-}
-
-#algolia-settings #_extra-metas .title
-{
-    float: left;
-    display: inline;
-    padding: 10px 20px;
-    border-radius: 5px 5px 0 0;
-    background-color: rgba(241, 241, 241, 1);
-    border: solid 1px #DDDDDD;
-    border-bottom: none;
-    margin-right: 2px;
-    cursor: pointer;
-}
-
-#algolia-settings .tabs .title.selected
-{
-    background-color: white;
-    border-bottom: solid 1px #f5f5f5;
-    margin-bottom: -1px;
-    padding-bottom: 11px;
-    cursor: auto;
-}
-
-#algolia-settings .tabs
-{
-    border-bottom: solid 1px #DDDDDD;
-}
-
-#algolia-settings #results-wrapper .content-item
-{
-    padding: 5px;
-}
-
-#algolia-settings #results-wrapper
-{
-    border-radius: 5px;
-    margin-bottom: 40px;
-    padding: 10px 5px;
-    border: solid 1px #DDDDDD;
-    background-color: white;
 }
 
 #algolia-settings #taxonomies tbody,
@@ -117,31 +47,6 @@
     top: 50%;
 }
 
-#algolia-settings .warning
-{
-    background-color: #c7deec;
-    padding: 10px;
-    margin-top: -20px;
-    margin-left: -5px;
-    margin-right: -5px;
-    margin-bottom: 10px;
-}
-
-.header-button
-{
-    float: right;
-    margin-right: 20px !important;
-}
-
-#algolia_reindex i
-{
-    vertical-align: middle;
-}
-
-#dashboard-link {
-    display: block;
-    margin-top: 0.5em;
-}
 
 #algolia-settings .theme-browser .theme
 {
