@@ -64,28 +64,22 @@
     </h2>
 
     <div class="wrapper">
-        <div style="clear: both;"</div>
-
         <div id="results-wrapper" style="display: none;">
             <div class="content">
-                <div class="show-hide">
-
-                    <div class="content-item">
+                <div class="row show-hide">
+                    <div class="col-lg-6">
                         <h3>Progression</h3>
                         <div id="reindex-percentage"></div>
                     </div>
 
-                    <div class="content-item">
+                    <div class="col-lg-6">
                         <h3>Logs</h3>
-                        <table class="table" id="reindex-log"></table>
+                        <table id="reindex-log" class="table"></table>
                     </div>
-
-                    <div class="content-item">
-                        <button style="display: none;" type="submit" name="submit" id="submit" class="close-results btn btn-default">
-                            <i class="icon-times"></i>
-                            Close
-                        </button>
-                    </div>
+                    <button style="display: none;" type="submit" name="submit" id="submit" class="close-results btn btn-default">
+                        <i class="icon-times"></i>
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
