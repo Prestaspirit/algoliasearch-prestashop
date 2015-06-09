@@ -65,17 +65,18 @@
 
     <div class="wrapper">
         <div id="results-wrapper" style="display: none;">
-            <div class="content">
-                <div class="row show-hide">
+            <div class="panel panel-default how-hide">
+                <div class="panel-body">
                     <div class="col-lg-6">
                         <h3>Progression</h3>
                         <div id="reindex-percentage"></div>
                     </div>
-
                     <div class="col-lg-6">
                         <h3>Logs</h3>
                         <table id="reindex-log" class="table"></table>
                     </div>
+                </div>
+                <div class="panel-footer">
                     <button style="display: none;" type="submit" name="submit" id="submit" class="close-results btn btn-default">
                         <i class="icon-times"></i>
                         Close

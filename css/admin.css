@@ -7,39 +7,12 @@
     font-size: 1.7em;
 }
 
-#algolia-settings .panel .content table {
-    width: 100%;
-    border-spacing: 0;
-}
-#algolia-settings .panel .content table th,
-#algolia-settings .panel .content table td {
-    text-align: left;
-    padding: 5px;
-    border-bottom: 1px solid #ddd;
-}
-#algolia-settings .panel .content table th {
-    background: #EFEFEF;
-    border-top: 1px solid #AAA;
-    border-bottom: 1px solid #AAA;
-}
-
-#algolia-settings .panel .content table .no-border {
-    border: 0;
-    background: none;
-}
-
-#algolia-settings .panel .content .content-item
-{
-    clear: both;
-}
-
 #algolia-settings .panel .title
 {
     text-align: center;
     padding: 5px;
     border-bottom: solid 1px #DDDDDD;
 }
-
 
 #algolia-settings .table-col-enabled {
     width: 75px;
