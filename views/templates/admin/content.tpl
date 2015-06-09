@@ -136,7 +136,7 @@
                             <label class="control-label col-lg-3">
                                 Search-Only API Key
                             </label>
-                            <div class="col-lg-6 ">
+                            <div class="col-lg-4 ">
                                 <input type="text" name="SEARCH_KEY" id="SEARCH_KEY" value="{$algolia_registry->search_key}" class="">
                             </div>
                         </div>
@@ -144,7 +144,7 @@
                             <label class="control-label col-lg-3">
                                 Admin Key
                             </label>
-                            <div class="col-lg-6 ">
+                            <div class="col-lg-4 ">
                                 <input type="text" name="ADMIN_KEY" id="ADMIN_KEY" value="{$algolia_registry->admin_key}" class="">
                             </div>
                         </div>
@@ -152,14 +152,14 @@
                             <label for="algolia_index_name" class="control-label col-lg-3">
                                 Index names prefix
                             </label>
-                            <div class="col-lg-6 ">
+                            <div class="col-lg-4 ">
                                 <input type="text" value="{$algolia_registry->index_name}" name="INDEX_NAME" id="algolia_index_name" placeholder="prestashop_">
                             </div>
                         </div>
                     </div><!-- /.form-wrapper -->
-
+                    <br>
                     <div class="alert alert-warning">
-                        <h3>Reset configuration to default</h3>
+                        <h4>Reset configuration to default</h4>
                         <p class="help-block">
                             This will set the config back to default except api keys
                         </p>
@@ -186,8 +186,8 @@
 
                         <div class="form-group">
                             <label class="col-lg-3 control-label" for="search-input-selector">DOM selector</label>
-                            <div class="col-lg-9">
-                                <input class="fixed-width-lg" type="text" value="{$algolia_registry->search_input_selector}" name="SEARCH_INPUT_SELECTOR" id="search-input-selector">
+                            <div class="col-lg-5">
+                                <input type="text" value="{$algolia_registry->search_input_selector}" name="SEARCH_INPUT_SELECTOR" id="search-input-selector">
                                 <p class="help-block">The jQuery selector used to select your search bar.</p>
                             </div>
                         </div>
@@ -266,8 +266,8 @@
                             <div class="show-hide" style="display: none;">
                                 <div class="form-group" >
                                     <label class="control-label col-lg-3" for="instant_radio_instant_jquery_selector">DOM selector</label>
-                                    <div class="col-lg-9">
-                                        <input type="text" class="fixed-width-lg"
+                                    <div class="col-lg-5">
+                                        <input type="text"
                                             id="instant_radio_instant_jquery_selector"
                                             value="{$algolia_registry->instant_jquery_selector}"
                                             placeholder="#content"
