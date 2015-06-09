@@ -287,7 +287,7 @@
                         </div>
 
                         <h3>Theme</h3>
-                        <p class="help-block">Configure here the theme of your search results.</p>
+                        <p class="alert alert-info">Configure here the theme of your search results.</p>
                         <div class="content-item">
                             <div class="theme-browser">
                                 <div class="themes">
@@ -343,7 +343,7 @@
             <form id="extra-metas-form" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_extra_meta&token={$token}" method="post">
                 <div class="panel" id="customization">
                     <div class="content">
-                        <p class="help-block">
+                        <p class="alert alert-info">
                             Configure here the additional attributes you want to include in your Algolia records.
                         </p>
 
@@ -468,7 +468,9 @@
             <form action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_searchable_attributes&token={$token}" method="post">
                 <div class="panel" id="customization">
                     <div class="content">
-                        <p class="help-block">Configure here the attributes you want to be able to search in. The order of this setting matters as those at the top of the list are considered more important.</p>
+                        <p class="alert alert-info">
+                            Configure here the attributes you want to be able to search in. The order of this setting matters as those at the top of the list are considered more important.
+                        </p>
                         <table>
                             <tr data-order="-1">
                                 <th class="table-col-enabled">Enabled</th>
@@ -533,7 +535,9 @@
             <form action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_custom_ranking&token={$token}" method="post">
                 <div class="panel" id="customization">
                     <div class="content">
-                        <p class="help-block">Configure here the attributes used to reflect the popularity of your records (number of likes, number of views, number of sales...).</p>
+                        <p class="alert alert-info">
+                            Configure here the attributes used to reflect the popularity of your records (number of likes, number of views, number of sales...).
+                        </p>
                         <table>
                             <tr data-order="-1">
                                 <th class="table-col-enabled">Enabled</th>
@@ -598,7 +602,9 @@
             <form id="sortable-form" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_sortable_attributes&token={$token}" method="post">
                 <div class="panel" id="customization">
                     <div class="content">
-                        <p class="help-block">By default results are sorted by text relevance &amp; your ranking criteria. Configure here the attributes you want to use for the additional sorts (by price, by date, etc...).</p>
+                        <p class="alert alert-info">
+                            By default results are sorted by text relevance &amp; your ranking criteria. Configure here the attributes you want to use for the additional sorts (by price, by date, etc...).
+                        </p>
                         <table>
                             <tr data-order="-1">
                                 <th class="table-col-enabled">Enabled</th>
