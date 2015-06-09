@@ -3,8 +3,8 @@
 }
 #algolia-settings h3{
     border-bottom: solid 1px #eee;
-    margin: 20px 0 10px !important;
-    font-size: 1.6em;
+    margin: 10px 0 !important;
+    font-size: 1.7em;
 }
 
 #algolia-settings .panel .content table {
@@ -130,7 +130,7 @@
     cursor: move;
 }
 
-#algolia-settings ui-sortable-helper{
+#algolia-settings .ui-sortable-helper{
     background: white;
 }
 
