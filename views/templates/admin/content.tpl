@@ -65,8 +65,8 @@
 
     <div class="wrapper">
         <div id="results-wrapper" style="display: none;">
-            <div class="panel panel-default how-hide">
-                <div class="panel-body">
+            <div class="panel panel-default show-hide">
+                <div class="row">
                     <div class="col-lg-6">
                         <h3>Progression</h3>
                         <div id="reindex-percentage"></div>
@@ -76,13 +76,10 @@
                         <table id="reindex-log" class="table"></table>
                     </div>
                 </div>
-                <div class="panel-footer">
-                    <button style="display: none;" type="submit" name="submit" id="submit" class="close-results btn btn-default">
-                        <i class="icon-times"></i>
-                        Close
-                    </button>
-                </div>
-            </div>
+                <button style="display: none;" type="submit" name="submit" id="submit" class="close-results btn btn-default">
+                    <i class="icon-times"></i>
+                    Close
+                </button>
         </div>
     </div>
     {/if}
@@ -153,8 +150,9 @@
                         <p class="help-block">
                             This will set the config back to default except api keys
                         </p>
-                        <div class="content-item">
-                            <div data-form="?controller=AdminAlgolia&configure=algolia&action=admin_post_reset_config_to_default&token={$token}" data-value="admin_post_reset_config_to_default" id="reset-config" class="btn btn-default">Reset</div>
+                        <div data-form="?controller=AdminAlgolia&configure=algolia&action=admin_post_reset_config_to_default&token={$token}" data-value="admin_post_reset_config_to_default" id="reset-config" class="btn btn-default">
+                            <i class="icon-refresh"></i>
+                            Reset
                         </div>
                     </div>
 
@@ -337,7 +335,7 @@
                             Configure here the additional attributes you want to include in your Algolia records.
                         </p>
 
-                        <table id="extra-meta-and-taxonomies">
+                        <table class="table" id="extra-meta-and-taxonomies">
                             <tr data-order="-1">
                                 <th class="table-col-enabled">Enabled</th>
                                 <th>Name</th>
@@ -356,7 +354,7 @@
                         </table>
 
                         <div class="sub-tab-content" id="extra-metas-attributes">
-                            <table>
+                            <table class="table">
                                 <tr data-order="-1">
                                     <th class="table-col-enabled">Enabled</th>
                                     <th>Name</th>
@@ -461,7 +459,7 @@
                         <p class="alert alert-info">
                             Configure here the attributes you want to be able to search in. The order of this setting matters as those at the top of the list are considered more important.
                         </p>
-                        <table>
+                        <table class="table">
                             <tr data-order="-1">
                                 <th class="table-col-enabled">Enabled</th>
                                 <th>Name</th>
@@ -528,7 +526,7 @@
                         <p class="alert alert-info">
                             Configure here the attributes used to reflect the popularity of your records (number of likes, number of views, number of sales...).
                         </p>
-                        <table>
+                        <table class="table">
                             <tr data-order="-1">
                                 <th class="table-col-enabled">Enabled</th>
                                 <th>Meta key</th>
@@ -595,7 +593,7 @@
                         <p class="alert alert-info">
                             By default results are sorted by text relevance &amp; your ranking criteria. Configure here the attributes you want to use for the additional sorts (by price, by date, etc...).
                         </p>
-                        <table>
+                        <table class="table">
                             <tr data-order="-1">
                                 <th class="table-col-enabled">Enabled</th>
                                 <th>Name</th>
