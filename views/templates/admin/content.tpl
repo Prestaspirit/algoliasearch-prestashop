@@ -147,13 +147,11 @@
                     <br>
                     <div class="alert alert-warning">
                         <h4>Reset configuration to default</h4>
-                        <p class="help-block">
-                            This will set the config back to default except api keys
-                        </p>
-                        <div data-form="?controller=AdminAlgolia&configure=algolia&action=admin_post_reset_config_to_default&token={$token}" data-value="admin_post_reset_config_to_default" id="reset-config" class="btn btn-default">
+                        <span data-form="?controller=AdminAlgolia&configure=algolia&action=admin_post_reset_config_to_default&token={$token}" data-value="admin_post_reset_config_to_default" id="reset-config" class="btn btn-default">
                             <i class="icon-refresh"></i>
                             Reset
-                        </div>
+                        </span>
+                        <span> This will set the config back to default except api keys</span>
                     </div>
 
                     <div class="panel-footer">
@@ -313,14 +311,14 @@
                                     </div>
                                     {/foreach}
                                 </div>
-                                <div style="clear: both"></div>
+                                <div class="clearfix"></div>
                             </div>
                         </div>
                         <div class="panel-footer">
                             <button type="submit" value="1" id="module_form_submit_btn" name="submitAlgoliaSettings" class="btn btn-default pull-right">
                                 <i class="process-icon-save"></i> Save changes
                             </button>
-                            <div style="clear: both"></div>
+                            <div class="clearfix"></div>
                         </div>
                     </div>
                 </div>
