@@ -71,23 +71,18 @@
                 <div class="show-hide">
 
                     <div class="content-item">
-                        <div>Progression</div>
-                        <div style='padding: 5px;'>
-                            <div id="reindex-percentage">
-                            </div>
-                            <div style='clear: both'></div>
-                        </div>
+                        <h3>Progression</h3>
+                        <div id="reindex-percentage"></div>
                     </div>
 
                     <div class="content-item">
-                        <div>Logs</div>
-                        <div style='padding: 5px;'>
-                            <table id="reindex-log"></table>
-                        </div>
+                        <h3>Logs</h3>
+                        <table class="table" id="reindex-log"></table>
                     </div>
 
                     <div class="content-item">
-                        <button style="display: none;" type="submit" name="submit" id="submit" class="close-results button button-primary">
+                        <button style="display: none;" type="submit" name="submit" id="submit" class="close-results btn btn-default">
+                            <i class="icon-times"></i>
                             Close
                         </button>
                     </div>

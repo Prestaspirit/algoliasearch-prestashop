@@ -114,10 +114,11 @@
 
 #algolia-settings #results-wrapper
 {
+    border-radius: 5px;
+    margin-bottom: 40px;
     padding: 10px 5px;
     border: solid 1px #DDDDDD;
     background-color: white;
-    margin-top: 20px;
 }
 
 #algolia-settings #taxonomies tbody,
