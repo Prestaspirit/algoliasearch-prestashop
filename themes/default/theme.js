@@ -9,7 +9,7 @@ jQuery(document).ready(function ($) {
             'fr': 'Prix',
             'en': 'Price'
         },
-        'category': {
+        'categories': {
             'fr': 'Categories',
             'en': 'Categories'
         },
@@ -49,6 +49,8 @@ jQuery(document).ready(function ($) {
                 templates: {
                     header: '<div class="category">' + category_title + '</div>',
                     suggestion: function (hit) {
+                        hit.currency = algoliaSettings.currency;
+
                         return $autocompleteTemplate.render(hit);
                     }
                 }
@@ -74,6 +76,7 @@ jQuery(document).ready(function ($) {
                 $(this).on('typeahead:selected', function (e, item) {
                     autocomplete = false;
                     instant = false;
+
                     window.location.href = item.link ? item.link : item.url;
                 });
             });
@@ -251,8 +254,9 @@ jQuery(document).ready(function ($) {
 
                 all_unchecked = all_unchecked && !checked;
 
-                var name = key;
                 var nameattr = key;
+                var explode = nameattr.split(' /// ');
+                var name = explode[explode.length - 1];
 
                 var params = {
                     type: {},
@@ -366,6 +370,11 @@ jQuery(document).ready(function ($) {
             return false;
         });
 
+        $('body').on('click', '.clear', function () {
+            engine.helper.clearRefinements();
+            $(algoliaSettings.search_input_selector).val('').keyup();
+        });
+
         $(algoliaSettings.search_input_selector).keydown(function (e) {
             $(algoliaSettings.search_input_selector).attr('autocomplete', 'off').attr('autocorrect', 'off').attr('spellcheck', 'false').attr('autocapitalize', 'off');
         });
@@ -386,7 +395,7 @@ jQuery(document).ready(function ($) {
                     $(this).val(engine.helper.state.query);
             });
 
-            if ($(this).val().length == 0) {
+            if (e.keyCode === 27) {
 
                 clearTimeout(history_timeout);
 

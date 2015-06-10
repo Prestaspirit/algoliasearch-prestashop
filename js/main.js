@@ -32,7 +32,7 @@ if (algoliaSettings.type_of_search.indexOf("autocomplete") !== -1)
 {
     window.getBrandingHits = function () {
         return function findMatches(q, cb) {
-            return cb(["algolia-branding"]);
+            return cb([{name : "algolia-branding", link: 'https://algolia.com'}]);
         }
     };
 }
@@ -186,8 +186,9 @@ if (algoliaSettings.type_of_search.indexOf("instant") !== -1)
                         {
                             var checked = this.helper.isRefined(algoliaSettings.facets[i].tax, key);
 
-                            var name = key;
                             var nameattr = key;
+                            var explode = nameattr.split(' /// ');
+                            var name = explode[explode.length - 1];
 
                             var params = {
                                 type: {},
@@ -266,7 +267,8 @@ if (algoliaSettings.type_of_search.indexOf("instant") !== -1)
                     nbHits_one: (content.nbHits === 1),
                     nbHits_many: (content.nbHits > 1),
                     query: this.helper.state.query,
-                    processingTimeMS: content.processingTimeMS
+                    processingTimeMS: content.processingTimeMS,
+                    currency: algoliaSettings.currency
                 });
 
                 return results_html;
@@ -280,7 +282,8 @@ if (algoliaSettings.type_of_search.indexOf("instant") !== -1)
                     getDate: this.getDate,
                     relevance_index_name: algoliaSettings.index_name + 'all_' + algoliaSettings.language,
                     sorting_indices: algoliaSettings.sorting_indices,
-                    sortSelected: this.sortSelected
+                    sortSelected: this.sortSelected,
+                    currency: algoliaSettings.currency
                 });
 
                 return facets_html;

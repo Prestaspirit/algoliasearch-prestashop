@@ -325,3 +325,16 @@
 #algolia_instant_selector .ui-widget-header {
     background-color: #bcbcbc;
 }
+
+#algolia_instant_selector .hits .infos .clear
+{
+    cursor: pointer;
+    background-color: #F0F0F0;
+    border: solid 1px #DDDDDD;
+    padding: 5px;
+    margin-left: 20px;
+}
+#algolia_instant_selector .hits .infos .clear:hover
+{
+    background-color: #DDDDDD;
+}

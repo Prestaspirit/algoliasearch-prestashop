@@ -86,6 +86,7 @@ class Algolia extends Module
             $this->registerHook('actionProductDelete') &&
             $this->registerHook('actionProductAdd') &&
             $this->registerHook('actionSearch') &&
+            $this->registerHook('actionProductListOverride') &&
             $this->addAdminTab();
 	}
 
@@ -133,6 +134,11 @@ class Algolia extends Module
     /**
      * HOOKS
      */
+
+    public function hookActionProductListOverride($params)
+    {
+        $this->front_controller->hookActionProductListOverride($params);
+    }
 
     public function hookActionSearch($params)
     {

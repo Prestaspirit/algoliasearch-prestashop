@@ -79,6 +79,9 @@ class FrontAlgoliaController
                 $facets[] = array('tax' => $value->name, 'name' => $value->name, 'order1' => $value->order, 'order2' => 0, 'type' => $value->facet_type);
         }
 
+        $currency = new CurrencyCore($cookie->id_currency);
+        $currency = $currency->sign;
+
         $algoliaSettings = array(
             'app_id'                    => $this->algolia_registry->app_id,
             'search_key'                => $this->algolia_registry->search_key,
@@ -92,8 +95,9 @@ class FrontAlgoliaController
             'search_input_selector'     => str_replace("\\", "", $this->algolia_registry->search_input_selector),
             "plugin_url"                => $this->module->getPath(),
             "language"                  => $current_language,
-            'theme'                     => $this->theme_helper->get_current_theme()
-        );
+            'theme'                     => $this->theme_helper->get_current_theme(),
+            'currency'                  => $currency
+    );
 
         Media::addJsDef(array('algoliaSettings' => $algoliaSettings));
     }
@@ -113,6 +117,60 @@ class FrontAlgoliaController
             die();
         }
 
+    }
+
+    public function hookActionProductListOverride($params)
+    {
+        if (in_array('instant', $this->algolia_registry->type_of_search) == false)
+            return;
+
+        /** @TODO check replace categories */
+
+        if (isset($_GET['id_category']) == false || is_numeric($_GET['id_category']) == false)
+            return;
+
+        $category_id = $_GET['id_category'];
+
+        $path = array();
+        $context = Context::getContext();
+        $interval = Category::getInterval($category_id);
+        $id_root_category = $context->shop->getCategory();
+        $interval_root = Category::getInterval($id_root_category);
+
+        if ($interval)
+        {
+            $sql = 'SELECT c.id_category, cl.name, cl.link_rewrite
+						FROM '._DB_PREFIX_.'category c
+						LEFT JOIN '._DB_PREFIX_.'category_lang cl ON (cl.id_category = c.id_category'.Shop::addSqlRestrictionOnLang('cl').')
+						'.Shop::addSqlAssociation('category', 'c').'
+						WHERE c.nleft <= '.$interval['nleft'].'
+							AND c.nright >= '.$interval['nright'].'
+							AND c.nleft >= '.$interval_root['nleft'].'
+							AND c.nright <= '.$interval_root['nright'].'
+							AND cl.id_lang = '.(int)$context->language->id.'
+							AND c.active = 1
+							AND c.level_depth > '.(int)$interval_root['level_depth'].'
+						ORDER BY c.level_depth ASC';
+
+            $categories = Db::getInstance()->executeS($sql);
+
+            foreach ($categories as $category)
+            {
+                $path[] = $category['name'];
+            }
+        }
+
+        $path = implode(' /// ', $path);
+
+        global $cookie;
+
+        $current_language = \Language::getIsoById($cookie->id_lang);
+
+        $url = '/index.php?category=1#q=&page=0&refinements=%5B%7B%22categories%22%3A%22'.$path.'%22%7D%5D&numerics_refinements=%7B%7D&index_name=%22'.$this->algolia_registry->index_name.'all_'.$current_language.'%22';
+
+        header('Location: '.$url);
+
+        die();
     }
 
     public function hookActionProductAdd($params)

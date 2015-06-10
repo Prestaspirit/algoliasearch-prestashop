@@ -15,7 +15,7 @@
             {{/_highlightResult.path}}
 
             {{#price_tax_incl}}
-                <div class="algoliasearch-autocomplete-price">${{price_tax_incl}}</div>
+                <div class="algoliasearch-autocomplete-price">{{price_tax_incl}}{{currency}}</div>
             {{/price_tax_incl}}
             {{#_highlightResult.category}}
                 <div class="algoliasearch-autocomplete-price">{{{_highlightResult.category.value}}}</div>
@@ -31,7 +31,7 @@
         {{#hits.length}}
         <div class="infos">
             <div style="float: left">
-                {{nbHits}} result{{^nbHits_one}}s{{/nbHits_one}} found matching "<strong>{{query}}</strong>" in {{processingTimeMS}} ms
+                {{nbHits}} result{{^nbHits_one}}s{{/nbHits_one}} {{#query}}found matching "<strong>{{query}}</strong>"{{/query}} in {{processingTimeMS}} ms
             </div>
             <div class="logo" style="float: right;">
                 by <img src="<?php echo $path ?>/img/algolia-logo.png">
@@ -71,7 +71,7 @@
                             {{/image_link_large}}
                             </div>
                             <div class="result-excerpt">
-                                <div class="price">Price : {{price_tax_incl}}€</div>
+                                <div class="price">Price : {{price_tax_incl}}{{currency}}</div>
                                 <div class="description">{{{description_short}}}</div>
                             </div>
                         </div>
@@ -82,7 +82,7 @@
         {{/hits}}
         {{^hits.length}}
         <div class="infos">
-            No results found matching "<strong>{{query}}</strong>".
+            No results found matching "<strong>{{query}}</strong>". <span class="clear">Clear query and filters</span>
         </div>
         {{/hits.length}}
         <div style="clear: both;"></div>

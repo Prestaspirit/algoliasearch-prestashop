@@ -4,28 +4,29 @@
 class PrestashopFetcher
 {
     static $attributes = array(
-        "available_now"     => null,
-        "category"          => "getCategoryName",
-        "categories"        => "getCategoriesNames",
-        "date_add"          => null,
-        "date_upd"          => null,
-        "description"       => null,
-        "description_short" => null,
-        "ean13"             => null,
-        "image_link_large"  => "generateImageLinkLarge",
-        "image_link_small"  => "generateImageLinkSmall",
-        "link"              => "generateLinkRewrite",
-        "manufacturer"      => "getManufacturerName",
-        "name"              => null,
-        "price"             => null,
-        "price_tax_incl"    => "getPriceTaxIncl",
-        "price_tax_excl"    => "getPriceTaxExcl",
-        "reference"         => null,
-        "supplier"          => "getSupplierName",
-        'ordered_qty'       => 'getOrderedQty',
-        'stock_qty'         => 'getStockQty',
-        'condition'         => null,
-        'weight'            => null
+        "available_now"             => null,
+        "category"                  => "getCategoryName",
+        "categories"                => "getCategoriesNames",
+        "categories_without_path"   => "getCategoriesNamesWithoutPath",
+        "date_add"                  => null,
+        "date_upd"                  => null,
+        "description"               => null,
+        "description_short"         => null,
+        "ean13"                     => null,
+        "image_link_large"          => "generateImageLinkLarge",
+        "image_link_small"          => "generateImageLinkSmall",
+        "link"                      => "generateLinkRewrite",
+        "manufacturer"              => "getManufacturerName",
+        "name"                      => null,
+        "price"                     => null,
+        "price_tax_incl"            => "getPriceTaxIncl",
+        "price_tax_excl"            => "getPriceTaxExcl",
+        "reference"                 => null,
+        "supplier"                  => "getSupplierName",
+        'ordered_qty'               => 'getOrderedQty',
+        'stock_qty'                 => 'getStockQty',
+        'condition'                 => null,
+        'weight'                    => null
     );
 
     private $product_definition = false;
@@ -156,18 +157,110 @@ class PrestashopFetcher
         return $category->name;
     }
 
-    private function getCategoriesNames($product, $ps_product, $id_lang)
+    private function getNestedCats($cats, $names, &$results, $id_lang)
     {
-        $categories = array();
-        $id_categories = \Product::getProductCategories($ps_product->id);
-
-        foreach ($id_categories as $id_category)
+        foreach ($cats as $cat)
         {
-            $category = new \Category($id_category, $id_lang);
-            array_push($categories, $category->name);
+            if (isset($cat['children']) && is_array($cat['children']) && count($cat['children']) > 0)
+            {
+                if ($cat['is_root_category'] == 0)
+                    $names[] = $cat['name'];
+
+                $this->getNestedCats($cat['children'], $names, $results, $id_lang);
+            }
+            else
+            {
+                if ($cat['is_root_category'] == 0)
+                {
+                    $names[] = $cat['name'];
+                }
+
+                $results[] = $names;
+                array_pop($names);
+            }
+        }
+    }
+
+    private function getNestedCatsWithoutPath($cats, &$results, $id_lang)
+    {
+        foreach ($cats as $cat)
+        {
+            if (isset($cat['children']) && is_array($cat['children']) && count($cat['children']) > 0)
+            {
+                $this->getNestedCatsWithoutPath($cat['children'], $results, $id_lang);
+            }
+            else
+            {
+                if ($cat['is_root_category'] == 0)
+                    $results[] = $cat['name'];
+            }
+        }
+    }
+
+    private function getNestedCategoriesData($id_lang, $ps_product)
+    {
+        $cats = \Db::getInstance()->executeS('
+				SELECT c.*, cl.*
+				FROM `'._DB_PREFIX_.'category` c
+				'.\Shop::addSqlAssociation('category', 'c').'
+				LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON c.`id_category` = cl.`id_category`'.\Shop::addSqlRestrictionOnLang('cl').'
+				LEFT JOIN `'._DB_PREFIX_.'category_product` cp ON cp.`id_product` = '.$ps_product->id.'
+				WHERE 1 AND `id_lang` = '.(int)$id_lang.' AND c.`active` = 1
+				AND cp.`id_category` = c.id_category
+				ORDER BY c.`level_depth` ASC, category_shop.`position` ASC'
+        );
+
+        $categories = array();
+        $buff = array();
+
+        if (!isset($root_category))
+            $root_category = \Category::getRootCategory()->id;
+
+        foreach ($cats as $row)
+        {
+            $current = &$buff[$row['id_category']];
+            $current = $row;
+
+            if ($row['id_category'] == $root_category)
+                $categories[$row['id_category']] = &$current;
+            else
+                $buff[$row['id_parent']]['children'][$row['id_category']] = &$current;
         }
 
         return $categories;
+    }
+
+    private function getCategoriesNamesWithoutPath($product, $ps_product, $id_lang)
+    {
+        $categories = $this->getNestedCategoriesData($id_lang, $ps_product);
+
+        $results = array();
+        $this->getNestedCatsWithoutPath($categories, $results, $id_lang);
+
+        return $results;
+    }
+
+    private function getCategoriesNames($product, $ps_product, $id_lang)
+    {
+        $categories = $this->getNestedCategoriesData($id_lang, $ps_product);
+
+        $results = array();
+        $this->getNestedCats($categories, array(), $results, $id_lang);
+
+        foreach ($results as $result)
+        {
+            for ($i = count($result) - 1; $i > 0; $i--)
+            {
+                $results[] = array_slice($result, 0, $i);
+            }
+        }
+
+        $results = array_intersect_key($results, array_unique(array_map('serialize', $results)));
+        
+        foreach ($results as &$result)
+            $result = implode(' /// ', $result);
+
+        return $results;
     }
 
     private function getManufacturerName($product, $ps_product)
