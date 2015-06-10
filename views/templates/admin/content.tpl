@@ -230,9 +230,9 @@
 											<label for="instant_radio_off">No</label>
 											<a class="slide-button btn"></a>
 										{else}
-											<input class="on" type="radio" name="INSTANT" id="instant_radio_on" value="instant" checked="checked">
+											<input class="on" type="radio" name="INSTANT" id="instant_radio_on" value="instant">
 											<label for="instant_radio_on">Yes</label>
-											<input type="radio" name="INSTANT" id="instant_radio_off" value="0">
+											<input type="radio" name="INSTANT" id="instant_radio_off" value="0" checked="checked">
 											<label for="instant_radio_off">No</label>
 										{/if}
 										<a class="slide-button btn"></a>
