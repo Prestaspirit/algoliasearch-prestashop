@@ -261,7 +261,7 @@
                                     </div>
                                 </div>
 								<div class="form-group">
-									<label class="col-lg-3 control-label" for="REPLACE_CATEGORIES">Replace category</label>
+									<label class="col-lg-3 control-label" for="REPLACE_CATEGORIES">Replace categories</label>
 									<div class="col-lg-9">
 										<span class="switch prestashop-switch fixed-width-lg">
 											{if $algolia_registry->replace_categories eq true}
@@ -276,9 +276,9 @@
 												<input type="radio" name="REPLACE_CATEGORIES" id="replace_categories_off" value="0" checked="checked">
 												<label for="replace_categories_off">No</label>
 											{/if}
-											<a class="slide-button btn"></a>
-										</span>
-										<p>Replace category pages by an instant search result page</p>
+                                            <a class="slide-button btn"></a>
+                                        </span>
+										<p class="help-block">Replace category pages by an instant search result page</p>
 									</div>
 								</div>
                             </div>
