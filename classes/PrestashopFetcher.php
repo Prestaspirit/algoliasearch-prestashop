@@ -197,6 +197,36 @@ class PrestashopFetcher
         }
     }
 
+    private function getCategoryPath($category_id)
+    {
+        $cats = array();
+        $context = \Context::getContext();
+        $interval = \Category::getInterval($category_id);
+        $id_root_category = $context->shop->getCategory();
+
+        if ($interval)
+        {
+            $sql = 'SELECT c.*, cl.*
+						FROM '._DB_PREFIX_.'category c
+						LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON c.`id_category` = cl.`id_category`'.\Shop::addSqlRestrictionOnLang('cl').'
+						'.\Shop::addSqlAssociation('category', 'c').'
+						WHERE c.nleft <= '.$interval['nleft'].'
+							AND c.nright >= '.$interval['nright'].'
+							AND cl.id_lang = '.(int)$context->language->id.'
+							AND c.active = 1
+						ORDER BY c.level_depth ASC';
+
+            $categories = \Db::getInstance()->executeS($sql);
+
+            foreach ($categories as $category)
+            {
+                $cats[] = $category;
+            }
+        }
+
+        return $cats;
+    }
+
     private function getNestedCategoriesData($id_lang, $ps_product)
     {
         $cats = \Db::getInstance()->executeS('
@@ -215,6 +245,20 @@ class PrestashopFetcher
 
         if (!isset($root_category))
             $root_category = \Category::getRootCategory()->id;
+
+        foreach ($cats as $row)
+            foreach ($this->getCategoryPath($row['id_category']) as $other)
+                $cats[] = $other;
+
+        $cats = array_intersect_key($cats, array_unique(array_map('serialize', $cats)));
+
+        usort($cats, function ($a, $b) {
+            if ($a['level_depth'] < $b['level_depth'])
+                return -1;
+            if ($a['level_depth'] > $b['level_depth'])
+                return 1;
+            return 0;
+        });
 
         foreach ($cats as $row)
         {
