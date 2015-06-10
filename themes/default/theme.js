@@ -1,5 +1,8 @@
 jQuery(document).ready(function ($) {
 
+    //unbind default search module
+    $('#search_query_top').unbind();
+
     window.traductions = {
         'price': {
             'fr': 'Prix',

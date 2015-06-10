@@ -57,42 +57,29 @@
     {if $algolia_registry->validCredential}
     <h2>
         Algolia Search
-        <button data-formurl="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_reindex&token={$token}" type="button" class="button button-primary " id="algolia_reindex" name="algolia_reindex">
-            <i class="dashicons dashicons-upload"></i>
+        <button data-formurl="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_reindex&token={$token}" type="button" class="btn btn-primary pull-right" id="algolia_reindex" name="algolia_reindex">
+            <i class="icon-refresh"></i>
             Reindex data
         </button>
     </h2>
 
     <div class="wrapper">
-        <div style="clear: both;"</div>
-
         <div id="results-wrapper" style="display: none;">
-            <div class="content">
-                <div class="show-hide">
-
-                    <div class="content-item">
-                        <div>Progression</div>
-                        <div style='padding: 5px;'>
-                            <div id="reindex-percentage">
-                            </div>
-                            <div style='clear: both'></div>
-                        </div>
+            <div class="panel panel-default show-hide">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h3>Progression</h3>
+                        <div id="reindex-percentage"></div>
                     </div>
-
-                    <div class="content-item">
-                        <div>Logs</div>
-                        <div style='padding: 5px;'>
-                            <table id="reindex-log"></table>
-                        </div>
-                    </div>
-
-                    <div class="content-item">
-                        <button style="display: none;" type="submit" name="submit" id="submit" class="close-results button button-primary">
-                            Close
-                        </button>
+                    <div class="col-lg-6">
+                        <h3>Logs</h3>
+                        <table id="reindex-log" class="table"></table>
                     </div>
                 </div>
-            </div>
+                <button style="display: none;" type="submit" name="submit" id="submit" class="close-results btn btn-default">
+                    <i class="icon-times"></i>
+                    Close
+                </button>
         </div>
     </div>
     {/if}
@@ -136,7 +123,7 @@
                             <label class="control-label col-lg-3">
                                 Search-Only API Key
                             </label>
-                            <div class="col-lg-6 ">
+                            <div class="col-lg-4 ">
                                 <input type="text" name="SEARCH_KEY" id="SEARCH_KEY" value="{$algolia_registry->search_key}" class="">
                             </div>
                         </div>
@@ -144,7 +131,7 @@
                             <label class="control-label col-lg-3">
                                 Admin Key
                             </label>
-                            <div class="col-lg-6 ">
+                            <div class="col-lg-4 ">
                                 <input type="text" name="ADMIN_KEY" id="ADMIN_KEY" value="{$algolia_registry->admin_key}" class="">
                             </div>
                         </div>
@@ -152,26 +139,20 @@
                             <label for="algolia_index_name" class="control-label col-lg-3">
                                 Index names prefix
                             </label>
-                            <div class="col-lg-6 ">
+                            <div class="col-lg-4 ">
                                 <input type="text" value="{$algolia_registry->index_name}" name="INDEX_NAME" id="algolia_index_name" placeholder="prestashop_">
                             </div>
                         </div>
                     </div><!-- /.form-wrapper -->
-                    <div style="clear: both;"></div>
-
-                    <div style="float: left;">
-                        <div style="padding: 0px 10px;">
-                            <h3>Reset configuration to default</h3>
-                            <p class="help-block">
-                                This will set the config back to default except api keys
-                            </p>
-                            <div class="content-item">
-                                <div data-form="?controller=AdminAlgolia&configure=algolia&action=admin_post_reset_config_to_default&token={$token}" data-value="admin_post_reset_config_to_default" id="reset-config" class="btn btn-default">Reset</div>
-                            </div>
-                        </div>
+                    <br>
+                    <div class="alert alert-warning">
+                        <h4>Reset configuration to default</h4>
+                        <span data-form="?controller=AdminAlgolia&configure=algolia&action=admin_post_reset_config_to_default&token={$token}" data-value="admin_post_reset_config_to_default" id="reset-config" class="btn btn-default">
+                            <i class="icon-refresh"></i>
+                            Reset
+                        </span>
+                        <span> This will set the config back to default except api keys</span>
                     </div>
-
-                    <div style="clear: both;"></div>
 
                     <div class="panel-footer">
                         <button type="submit" value="1" id="module_form_submit_btn" name="submitAlgoliaSettings" class="btn btn-default pull-right">
@@ -188,17 +169,31 @@
                 <div class="panel" id="type_of_search">
                     <div class="content">
                         <h3>Search bar</h3>
-                        <p class="help-block">Configure here your search input field.</p>
-                        <div class="content-item">
-                            <label for="search-input-selector">DOM selector</label>
-                            <div>
+
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label" for="search-input-selector">DOM selector</label>
+                            <div class="col-lg-5">
                                 <input type="text" value="{$algolia_registry->search_input_selector}" name="SEARCH_INPUT_SELECTOR" id="search-input-selector">
-                                <p class="description">The jQuery selector used to select your search bar.</p>
+                                <p class="help-block">The jQuery selector used to select your search bar.</p>
                             </div>
                         </div>
-                        <div class="has-extra-content content-item">
-                            <label>Search experience</label>
-                            <div>
+
+                        <div class="has-extra-content content-item clearfix">
+                            <h3>Search experience</h3>
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label" for="instant_radio_autocomplete">Autocomplete</label>
+                                <div class="col-lg-9">
+                                    <span class="switch prestashop-switch fixed-width-lg">
+                                        <input type="radio" name="instant_radio_autocomplete" id="instant_radio_autocomplete_on" value="autocomplete" checked="checked">
+                                        <label for="instant_radio_autocomplete_on">Yes</label>
+                                        <input type="radio" name="instant_radio_autocomplete" id="instant_radio_autocomplete_off" value="0">
+                                        <label for="instant_radio_autocomplete_off">No</label>
+                                        <a class="slide-button btn"></a>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- <div class="form-group">
                                 <input type="checkbox"
                                 {if in_array('autocomplete', $algolia_registry->type_of_search)}
                                     checked="checked"
@@ -208,23 +203,41 @@
                                 value="autocomplete"
                                 id="instant_radio_autocomplete" />
                                 <label for="instant_radio_autocomplete">Autocomplete</label>
-                                <p class="description">Add an auto-completion menu to your search bar.</p>
-                            </div>
+                                <p class="help-block">Add an auto-completion menu to your search bar.</p>
+                            </div> -->
+
                             <div class="show-hide" style="display: none;">
-                                <div>
-                                    <label for="instant_radio_autocomplete_nb_products">Results for product section</label>
-                                    <input type="number" min="0" value="{$algolia_registry->number_products}" name="NUMBER_PRODUCTS" id="instant_radio_autocomplete_nb_products">
-                                    <p class="description">The number of results for the product section in the dropdown menu.</p>
+                                <div class="form-group">
+                                    <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_products">Results for product section</label>
+                                    <div class="col-lg-9">
+                                        <input class="form-control fixed-width-sm" type="number" min="0" value="{$algolia_registry->number_products}" name="NUMBER_PRODUCTS" id="instant_radio_autocomplete_nb_products">
+                                        <p class="help-block">The number of results for the product section in the dropdown menu.</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label for="instant_radio_autocomplete_nb_categories">Results for categories section</label>
-                                    <input type="number" min="0" value="{$algolia_registry->number_categories}" name="NUMBER_CATEGORIES" id="instant_radio_autocomplete_nb_categories">
-                                    <p class="description">The number of results for the categories section in the dropdown menu.</p>
+                                <div class="form-group">
+                                    <label class="col-lg-3 control-label" for="instant_radio_autocomplete_nb_categories">Results for categories section</label>
+                                    <div class="col-lg-9">
+                                        <input class="form-control fixed-width-sm" type="number" min="0" value="{$algolia_registry->number_categories}" name="NUMBER_CATEGORIES" id="instant_radio_autocomplete_nb_categories">
+                                        <p class="help-block">The number of results for the categories section in the dropdown menu.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="has-extra-content content-item">
-                            <div>
+
+                        <div class="has-extra-content content-item clearfix">
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label" for="instant_radio">Instant-search results page</label>
+                                <div class="col-lg-9">
+                                    <span class="switch prestashop-switch fixed-width-lg">
+                                        <input type="radio" name="instant_radio" id="instant_radio_on" value="instant" checked="checked">
+                                        <label for="instant_radio_on">Yes</label>
+                                        <input type="radio" name="instant_radio" id="instant_radio_off" value="0">
+                                        <label for="instant_radio_off">No</label>
+                                        <a class="slide-button btn"></a>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- <div class="form-group">
                                 <input type="checkbox"
                                 {if in_array('instant', $algolia_registry->type_of_search)}
                                     checked="checked"
@@ -235,27 +248,32 @@
                                 id="instant_radio_instant" />
                                 <label for="instant_radio_instant">Instant-search results page</label>
                                 <p class="description">Refresh the whole results page as you type.</p>
-                            </div>
+                            </div> -->
                             <div class="show-hide" style="display: none;">
-                                <div>
-                                    <label for="instant_radio_instant_jquery_selector">DOM selector</label>
-                                    <input type="text"
-                                           id="instant_radio_instant_jquery_selector"
-                                           value="{$algolia_registry->instant_jquery_selector}"
-                                    placeholder="#content"
-                                    name="JQUERY_SELECTOR"
-                                    value="" />
-                                    <p class="description">The jQuery selector used to inject the search results.</p>
+                                <div class="form-group" >
+                                    <label class="control-label col-lg-3" for="instant_radio_instant_jquery_selector">DOM selector</label>
+                                    <div class="col-lg-5">
+                                        <input type="text"
+                                            id="instant_radio_instant_jquery_selector"
+                                            value="{$algolia_registry->instant_jquery_selector}"
+                                            placeholder="#content"
+                                            name="JQUERY_SELECTOR"
+                                            value="" />
+                                        <p class="help-block">The jQuery selector used to inject the search results.</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label for="instant_radio_instant_nb_results">Number of results by page</label>
-                                    <input type="number" min="0" value="{$algolia_registry->number_by_page}" name="NUMBER_BY_PAGE" id="instant_radio_instant_nb_results">
-                                    <p class="description">The number of results to display on a results page.</p>
+                                <div class="form-group" >
+                                    <label class="control-label col-lg-3" for="instant_radio_instant_nb_results">Number of results by page</label>
+                                    <div class="col-lg-9">
+                                        <input class="fixed-width-sm" type="number" min="0" value="{$algolia_registry->number_by_page}" name="NUMBER_BY_PAGE" id="instant_radio_instant_nb_results">
+                                        <p class="help-block">The number of results to display on a results page.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                         <h3>Theme</h3>
-                        <p class="help-block">Configure here the theme of your search results.</p>
+                        <p class="alert alert-info">Configure here the theme of your search results.</p>
                         <div class="content-item">
                             <div class="theme-browser">
                                 <div class="themes">
@@ -281,7 +299,7 @@
                                             <div class="theme-name">
                                                 {$theme->name}
                                                 <input type="radio"
-                                                       id="{$theme->dir}"
+                                                    id="{$theme->dir}"
                                                 {if $theme->dir eq $algolia_registry->theme}
                                                 checked="checked"
                                                 {/if}
@@ -293,14 +311,14 @@
                                     </div>
                                     {/foreach}
                                 </div>
+                                <div class="clearfix"></div>
                             </div>
-                            <div style="clear: both"></div>
                         </div>
                         <div class="panel-footer">
                             <button type="submit" value="1" id="module_form_submit_btn" name="submitAlgoliaSettings" class="btn btn-default pull-right">
                                 <i class="process-icon-save"></i> Save changes
                             </button>
-                            <div style="clear: both"></div>
+                            <div class="clearfix"></div>
                         </div>
                     </div>
                 </div>
@@ -311,11 +329,11 @@
             <form id="extra-metas-form" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_extra_meta&token={$token}" method="post">
                 <div class="panel" id="customization">
                     <div class="content">
-                        <p class="help-block">
+                        <p class="alert alert-info">
                             Configure here the additional attributes you want to include in your Algolia records.
                         </p>
 
-                        <table id="extra-meta-and-taxonomies">
+                        <table class="table" id="extra-meta-and-taxonomies">
                             <tr data-order="-1">
                                 <th class="table-col-enabled">Enabled</th>
                                 <th>Name</th>
@@ -334,7 +352,7 @@
                         </table>
 
                         <div class="sub-tab-content" id="extra-metas-attributes">
-                            <table>
+                            <table class="table">
                                 <tr data-order="-1">
                                     <th class="table-col-enabled">Enabled</th>
                                     <th>Name</th>
@@ -436,8 +454,10 @@
             <form action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_searchable_attributes&token={$token}" method="post">
                 <div class="panel" id="customization">
                     <div class="content">
-                        <p class="help-block">Configure here the attributes you want to be able to search in. The order of this setting matters as those at the top of the list are considered more important.</p>
-                        <table>
+                        <p class="alert alert-info">
+                            Configure here the attributes you want to be able to search in. The order of this setting matters as those at the top of the list are considered more important.
+                        </p>
+                        <table class="table">
                             <tr data-order="-1">
                                 <th class="table-col-enabled">Enabled</th>
                                 <th>Name</th>
@@ -501,8 +521,10 @@
             <form action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_custom_ranking&token={$token}" method="post">
                 <div class="panel" id="customization">
                     <div class="content">
-                        <p class="help-block">Configure here the attributes used to reflect the popularity of your records (number of likes, number of views, number of sales...).</p>
-                        <table>
+                        <p class="alert alert-info">
+                            Configure here the attributes used to reflect the popularity of your records (number of likes, number of views, number of sales...).
+                        </p>
+                        <table class="table">
                             <tr data-order="-1">
                                 <th class="table-col-enabled">Enabled</th>
                                 <th>Meta key</th>
@@ -566,8 +588,10 @@
             <form id="sortable-form" action="index.php?controller=AdminAlgolia&configure=algolia&action=admin_post_update_sortable_attributes&token={$token}" method="post">
                 <div class="panel" id="customization">
                     <div class="content">
-                        <p class="help-block">By default results are sorted by text relevance &amp; your ranking criteria. Configure here the attributes you want to use for the additional sorts (by price, by date, etc...).</p>
-                        <table>
+                        <p class="alert alert-info">
+                            By default results are sorted by text relevance &amp; your ranking criteria. Configure here the attributes you want to use for the additional sorts (by price, by date, etc...).
+                        </p>
+                        <table class="table">
                             <tr data-order="-1">
                                 <th class="table-col-enabled">Enabled</th>
                                 <th>Name</th>

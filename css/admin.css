@@ -1,115 +1,14 @@
-.bootstrap input[type="text"]
-{
-    display: inline-block;
+#algolia-settings h2{
+    margin-bottom: 50px;
 }
-
-#algolia-settings .wrapper
-{
-    max-width: 1100px;
-    margin: 20px;
-}
-
-#algolia-settings .panel .content
-{
-    background-color: white;
-    border-top: none;
-}
-#algolia-settings .panel .content h3
-{
-    border-bottom: 1px solid #DDD;
-    padding-left: 5px;
-}
-#algolia-settings .panel .content .help-block {
-    border-left: 5px solid #DDD;
-    background-color: #F1F1F1;
-    padding: 10px;
-    margin-left: 5px;
-}
-
-#algolia-settings .panel .content .warning {
-    border-left: 5px solid #DDD;
-    background-color: #f1cc6d;
-    padding: 10px;
-    margin: 5px;
-    margin-right: 0px;
-}
-
-#algolia-settings .panel .content .help-block a {
-    text-decoration: none;
-    font-weight: bold;
-    color: black;
-}
-#algolia-settings .panel .content label
-{
-    font-weight: bold;
-}
-#algolia-settings .panel .content p.description
-{
-    margin-left: 10px;
-    color: rgb(102, 102, 102);
-}
-#algolia-settings .panel .content input
-{
-}
-
-#algolia-settings .panel .content input[type="text"], #algolia-settings .panel .content input[type="password"]
-{
-    padding: 5px;
-    border-radius: 5px;
-    width: 200px;
-}
-#algolia-settings .panel .content table {
-    width: 100%;
-    border-spacing: 0;
-}
-#algolia-settings .panel .content table th, #algolia-settings .panel .content table td {
-    text-align: left;
-    padding: 5px;
-    border-bottom: 1px solid #ddd;
-}
-#algolia-settings .panel .content table th {
-    background: #EFEFEF;
-    border-top: 1px solid #AAA;
-    border-bottom: 1px solid #AAA;
-}
-
-#algolia-settings .panel .content table .no-border {
-    border: 0;
-    background: none;
-}
-
-#algolia-settings .panel .content .content-item
-{
-    padding: 10px 5px;
-}
-
-#algolia-settings .panel .title
-{
-    text-align: center;
-    padding: 5px;
-    border-bottom: solid 1px #DDDDDD;
-}
-
-#algolia-settings .panel .show-hide
-{
-    margin-left: 50px;
+#algolia-settings h3{
+    border-bottom: solid 1px #eee;
+    margin: 10px 0 !important;
+    font-size: 1.7em;
 }
 
 #algolia-settings .table-col-enabled {
     width: 75px;
-}
-
-#algolia-settings .tabs .title
-{
-    float: left;
-    display: inline;
-    padding: 10px 20px;
-    border-radius: 5px 5px 0 0;
-    background-color: transparent;
-    border: solid 1px #DDDDDD;
-    border-bottom: none;
-    margin-right: 2px;
-    cursor: pointer;
 }
 
 #algolia-settings #extra-metas-attributes tr td:nth-child(n+3),
@@ -125,55 +24,6 @@
     margin-bottom: 20px;
 }
 
-#algolia-settings #_extra-metas .title.selected
-{
-    background-color: white;
-    border-bottom: solid 1px #f5f5f5;
-    margin-bottom: -1px;
-    padding-bottom: 11px;
-    cursor: auto;
-}
-
-#algolia-settings #_extra-metas .title
-{
-    float: left;
-    display: inline;
-    padding: 10px 20px;
-    border-radius: 5px 5px 0 0;
-    background-color: rgba(241, 241, 241, 1);
-    border: solid 1px #DDDDDD;
-    border-bottom: none;
-    margin-right: 2px;
-    cursor: pointer;
-}
-
-#algolia-settings .tabs .title.selected
-{
-    background-color: white;
-    border-bottom: solid 1px #f5f5f5;
-    margin-bottom: -1px;
-    padding-bottom: 11px;
-    cursor: auto;
-}
-
-#algolia-settings .tabs
-{
-    border-bottom: solid 1px #DDDDDD;
-}
-
-#algolia-settings #results-wrapper .content-item
-{
-    padding: 5px;
-}
-
-#algolia-settings #results-wrapper
-{
-    padding: 10px 5px;
-    border: solid 1px #DDDDDD;
-    background-color: white;
-    margin-top: 20px;
-}
-
 #algolia-settings #taxonomies tbody,
 #algolia-settings #extra-metas tbody,
 #algolia-settings #indexable-types tbody,
@@ -182,6 +32,10 @@
 #algolia-settings #sortable_attributes tbody
 {
     cursor: move;
+}
+
+#algolia-settings .ui-sortable-helper{
+    background: white;
 }
 
 #algolia-settings .no-screenshot
@@ -193,37 +47,12 @@
     top: 50%;
 }
 
-#algolia-settings .warning
-{
-    background-color: #c7deec;
-    padding: 10px;
-    margin-top: -20px;
-    margin-left: -5px;
-    margin-right: -5px;
-    margin-bottom: 10px;
-}
-
-.header-button
-{
-    float: right;
-    margin-right: 20px !important;
-}
-
-#algolia_reindex i
-{
-    vertical-align: middle;
-}
-
-#dashboard-link {
-    display: block;
-    margin-top: 0.5em;
-}
 
 #algolia-settings .theme-browser .theme
 {
     cursor: pointer;
     float: left;
-    margin: 0 4% 4% 0;
+    margin: 0 4% 10px 0;
     position: relative;
     width: 30.6%;
     border: 1px solid #dedede;
@@ -269,10 +98,4 @@
     content: '';
     display: block;
     padding-top: 66.66666%;
-}
-
-#algolia-settings label
-{
-    vertical-align: middle;
-    width: 100%;
 }
