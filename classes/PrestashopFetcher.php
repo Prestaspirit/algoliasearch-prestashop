@@ -256,7 +256,7 @@ class PrestashopFetcher
         }
 
         $results = array_intersect_key($results, array_unique(array_map('serialize', $results)));
-        
+
         foreach ($results as &$result)
             $result = implode(' /// ', $result);
 

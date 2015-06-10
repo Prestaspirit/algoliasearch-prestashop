@@ -181,30 +181,24 @@
                         <div class="has-extra-content content-item clearfix">
                             <h3>Search experience</h3>
                             <div class="form-group">
-                                <label class="col-lg-3 control-label" for="instant_radio_autocomplete">Autocomplete</label>
+                                <label class="col-lg-3 control-label" for="AUTOCOMPLETE">Autocomplete</label>
                                 <div class="col-lg-9">
                                     <span class="switch prestashop-switch fixed-width-lg">
-                                        <input type="radio" name="instant_radio_autocomplete" id="instant_radio_autocomplete_on" value="autocomplete" checked="checked">
-                                        <label for="instant_radio_autocomplete_on">Yes</label>
-                                        <input type="radio" name="instant_radio_autocomplete" id="instant_radio_autocomplete_off" value="0">
-                                        <label for="instant_radio_autocomplete_off">No</label>
+										{if in_array('autocomplete', $algolia_registry->type_of_search)}
+											<input class="on" type="radio" name="AUTOCOMPLETE" id="instant_radio_autocomplete_on" value="autocomplete" checked="checked">
+											<label for="instant_radio_autocomplete_on">Yes</label>
+											<input type="radio" name="AUTOCOMPLETE" id="instant_radio_autocomplete_off" value="0">
+											<label for="instant_radio_autocomplete_off">No</label>
+										{else}
+											<input class="on" type="radio" name="AUTOCOMPLETE" id="instant_radio_autocomplete_on" value="autocomplete">
+											<label for="instant_radio_autocomplete_on">Yes</label>
+											<input type="radio" name="AUTOCOMPLETE" id="instant_radio_autocomplete_off" value="0" checked="checked">
+											<label for="instant_radio_autocomplete_off">No</label>
+										{/if}
                                         <a class="slide-button btn"></a>
                                     </span>
                                 </div>
                             </div>
-
-                            <!-- <div class="form-group">
-                                <input type="checkbox"
-                                {if in_array('autocomplete', $algolia_registry->type_of_search)}
-                                    checked="checked"
-                                {/if}
-                                class="instant_radio"
-                                name="TYPE_OF_SEARCH[]"
-                                value="autocomplete"
-                                id="instant_radio_autocomplete" />
-                                <label for="instant_radio_autocomplete">Autocomplete</label>
-                                <p class="help-block">Add an auto-completion menu to your search bar.</p>
-                            </div> -->
 
                             <div class="show-hide" style="display: none;">
                                 <div class="form-group">
@@ -226,29 +220,26 @@
 
                         <div class="has-extra-content content-item clearfix">
                             <div class="form-group">
-                                <label class="col-lg-3 control-label" for="instant_radio">Instant-search results page</label>
+                                <label class="col-lg-3 control-label" for="INSTANT">Instant-search results page</label>
                                 <div class="col-lg-9">
                                     <span class="switch prestashop-switch fixed-width-lg">
-                                        <input type="radio" name="instant_radio" id="instant_radio_on" value="instant" checked="checked">
-                                        <label for="instant_radio_on">Yes</label>
-                                        <input type="radio" name="instant_radio" id="instant_radio_off" value="0">
-                                        <label for="instant_radio_off">No</label>
-                                        <a class="slide-button btn"></a>
+										{if in_array('instant', $algolia_registry->type_of_search)}
+											<input class="on" type="radio" name="INSTANT" id="instant_radio_on" value="instant" checked="checked">
+											<label for="instant_radio_on">Yes</label>
+											<input type="radio" name="INSTANT" id="instant_radio_off" value="0">
+											<label for="instant_radio_off">No</label>
+											<a class="slide-button btn"></a>
+										{else}
+											<input class="on" type="radio" name="INSTANT" id="instant_radio_on" value="instant" checked="checked">
+											<label for="instant_radio_on">Yes</label>
+											<input type="radio" name="INSTANT" id="instant_radio_off" value="0">
+											<label for="instant_radio_off">No</label>
+										{/if}
+										<a class="slide-button btn"></a>
                                     </span>
                                 </div>
                             </div>
-                            <!-- <div class="form-group">
-                                <input type="checkbox"
-                                {if in_array('instant', $algolia_registry->type_of_search)}
-                                    checked="checked"
-                                {/if}
-                                class="instant_radio"
-                                name="TYPE_OF_SEARCH[]"
-                                value="instant"
-                                id="instant_radio_instant" />
-                                <label for="instant_radio_instant">Instant-search results page</label>
-                                <p class="description">Refresh the whole results page as you type.</p>
-                            </div> -->
+
                             <div class="show-hide" style="display: none;">
                                 <div class="form-group" >
                                     <label class="control-label col-lg-3" for="instant_radio_instant_jquery_selector">DOM selector</label>
@@ -269,6 +260,27 @@
                                         <p class="help-block">The number of results to display on a results page.</p>
                                     </div>
                                 </div>
+								<div class="form-group">
+									<label class="col-lg-3 control-label" for="REPLACE_CATEGORIES">Replace category</label>
+									<div class="col-lg-9">
+										<span class="switch prestashop-switch fixed-width-lg">
+											{if $algolia_registry->replace_categories eq true}
+												<input type="radio" name="REPLACE_CATEGORIES" id="replace_categories_on" value="replace" checked="checked">
+												<label for="replace_categories_on">Yes</label>
+												<input type="radio" name="REPLACE_CATEGORIES" id="replace_categories_off" value="0">
+												<label for="replace_categories_off">No</label>
+												<a class="slide-button btn"></a>
+											{else}
+												<input type="radio" name="REPLACE_CATEGORIES" id="replace_categories_on" value="replace">
+												<label for="replace_categories_on">Yes</label>
+												<input type="radio" name="REPLACE_CATEGORIES" id="replace_categories_off" value="0" checked="checked">
+												<label for="replace_categories_off">No</label>
+											{/if}
+											<a class="slide-button btn"></a>
+										</span>
+										<p>Replace category pages by an instant search result page</p>
+									</div>
+								</div>
                             </div>
                         </div>
 

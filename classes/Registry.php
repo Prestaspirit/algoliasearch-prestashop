@@ -25,7 +25,8 @@ class Registry
         'number_categories'             => 5,
         'number_of_word_for_content'    => 30,
         'search_input_selector'         => "[name='search_query']",
-        'theme'                         => 'default'
+        'theme'                         => 'default',
+        'replace_categories'            => true
     );
 
     public static function getInstance()

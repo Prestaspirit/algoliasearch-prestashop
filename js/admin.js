@@ -4,13 +4,14 @@ jQuery(document).ready(function($) {
     /**
      * Handle display/hide of subcontent
      */
-    $(".has-extra-content input[type='checkbox']").each(function () {
+
+    $(".has-extra-content input[type='radio'].on").each(function () {
         if ($(this).is(':checked'))
             $(this).closest(".has-extra-content").find(".show-hide").show();
     });
 
     $(".has-extra-content input[type='radio']").change(function (e) {
-        $(".has-extra-content input[type='radio']").each(function () {
+        $(".has-extra-content input[type='radio'].on").each(function (i) {
             if ($(this).is(':checked'))
                 $(this).closest(".has-extra-content").find(".show-hide").show();
             else

@@ -124,7 +124,8 @@ class FrontAlgoliaController
         if (in_array('instant', $this->algolia_registry->type_of_search) == false)
             return;
 
-        /** @TODO check replace categories */
+        if ($this->algolia_registry->replace_categories == false || isset($this->algolia_registry->metas['categories']) == false)
+            return;
 
         if (isset($_GET['id_category']) == false || is_numeric($_GET['id_category']) == false)
             return;

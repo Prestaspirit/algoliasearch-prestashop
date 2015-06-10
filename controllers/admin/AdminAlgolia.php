@@ -139,6 +139,18 @@ class AdminAlgoliaController extends ModuleAdminController
 
     public function admin_post_update_type_of_search()
     {
+        $type_of_search = array();
+
+        if (isset($_POST['AUTOCOMPLETE']) && $_POST['AUTOCOMPLETE'])
+            $type_of_search[] = 'autocomplete';
+
+        if (isset($_POST['INSTANT']) && $_POST['INSTANT'])
+            $type_of_search[] = 'instant';
+
+        $this->algolia_registry->type_of_search = $type_of_search;
+
+        $this->algolia_registry->replace_categories = isset($_POST['REPLACE_CATEGORIES']) && $_POST['REPLACE_CATEGORIES'];
+
         if (isset($_POST['TYPE_OF_SEARCH']) && is_array($_POST['TYPE_OF_SEARCH']))
             $this->algolia_registry->type_of_search = $_POST['TYPE_OF_SEARCH'];
 
