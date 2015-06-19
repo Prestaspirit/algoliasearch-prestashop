@@ -2,7 +2,7 @@
 
 [Algolia Search](http://www.algolia.com) is a hosted full-text, numerical, and faceted search engine capable of delivering realtime results from the first keystroke.
 
-This plugin replaces the default search of Wordpress with an Algolia realtime search. It has been designed in a generic way to support plugins like WooCommerce in addition to the standard blog system.
+This plugin replaces the default search of Prestashop with an Algolia realtime search.
 
 ## Installation
 
